@@ -1,0 +1,50 @@
+{
+  "name": "kuzzle-plugin-prometheus",
+  "version": "0.1.0",
+  "description": "Kuzzle plugin: statistical data export to Prometheus",
+  "main": "lib/PrometheusPlugin.js",
+  "scripts": {
+    "test": "npm run --silent lint && npm run --silent unit-testing",
+    "lint": "./node_modules/.bin/eslint --max-warnings=0 ./lib ./test",
+    "unit-testing": "nyc --reporter=text-summary --reporter=lcov mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuzzleio/kuzzle-plugin-prometheus.git"
+  },
+  "keywords": [
+    "kuzzle",
+    "plugin",
+    "worker",
+    "prometheus"
+  ],
+  "author": {
+    "name": "Kuzzle Team"
+  },
+  "bugs": {
+    "url": "https://github.com/kuzzleio/kuzzle-plugin-prometheus/issues"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "cucumber": "^5.1.0",
+    "eslint": "^5.13.0",
+    "kuzzle-common-objects": "^3.0.13",
+    "mocha": "^5.2.0",
+    "mock-require": "^3.0.3",
+    "nyc": "^13.2.0",
+    "rewire": "^4.0.1",
+    "should-sinon": "0.0.6",
+    "sinon": "^7.2.3",
+    "should": "^13.2.3",
+    "kuzzle-sdk": "^6.0.0"
+  },
+  "dependencies": {
+    "prom-client": "^11.3.0"
+  },
+  "maintainers": [
+    {
+      "name": "kuzzle",
+      "email": "support@kuzzle.io"
+    }
+  ]
+}
