@@ -1,23 +1,21 @@
 {
   "name": "kuzzle-plugin-prometheus",
   "version": "0.1.0",
-  "description": "Kuzzle plugin: statistical data export to Prometheus",
-  "main": "lib/PrometheusPlugin.js",
+  "description": "Kuzzle plugin: monitoring Kuzzle using Prometheus",
+  "main": "lib/index.js",
   "scripts": {
     "test": "npm run --silent lint && npm run --silent unit-testing",
     "lint": "./node_modules/.bin/eslint --max-warnings=0 ./lib ./test",
-    "unit-testing": "nyc --reporter=text-summary --reporter=lcov mocha"
+    "unit-testing": "nyc --reporter=text-summary --reporter=lcov mocha",
+    "codecov": "codecov",
+    "build": "node build.js",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kuzzleio/kuzzle-plugin-prometheus.git"
   },
-  "keywords": [
-    "kuzzle",
-    "plugin",
-    "worker",
-    "prometheus"
-  ],
+  "keywords": ["kuzzle", "plugin", "monitoring", "prometheus"],
   "author": {
     "name": "Kuzzle Team"
   },
@@ -26,6 +24,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "codecov": "^3.2.0",
     "cucumber": "^5.1.0",
     "eslint": "^5.13.0",
     "kuzzle-common-objects": "^3.0.13",
@@ -39,7 +38,13 @@
     "kuzzle-sdk": "^6.0.0"
   },
   "dependencies": {
-    "prom-client": "^11.3.0"
+    "prom-client": "^11.3.0",
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/runtime": "^7.4.4",
+    "semver": "^6.0.0"
   },
   "maintainers": [
     {

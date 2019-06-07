@@ -6,7 +6,6 @@ services:
     command: /run-dev.sh
     volumes:
       - "./run-dev.sh:/run-dev.sh"
-      - "../../../kuzzle:/var/app"
       - "./install-plugins.sh:/install-plugins.sh"
       - "./pm2.json:/config/pm2.json"
       - "../:/var/app/plugins/enabled/kuzzle-plugin-prometheus"
@@ -27,6 +26,7 @@ services:
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
       - NODE_ENV=development
+      - NODE_LTS=6
       - DEBUG=kuzzle:plugins
 
   redis:
@@ -51,6 +51,11 @@ services:
       - "9090:9090"
     links:
       - kuzzle
+
+  pushgateway:
+    image: prom/pushgateway
+    ports:
+      - 9091:9091
     
   grafana:
     image: grafana/grafana

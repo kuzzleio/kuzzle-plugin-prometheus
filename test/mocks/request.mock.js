@@ -1,19 +1,16 @@
 class RequestMock {
-  constructor(args = {}) {
-    Object.entries(args).forEach(([key, value]) => {
-      this[key] = value;
-    });
+  constructor() {
+    this.timestamp = Date.now()
+    this.context = {};
+    this.context.user = {};
+    this.context.connection = {};
 
-    this.context = this.context || {};
-    this.context.user = this.context.user || {};
-    this.context.connection = this.context.connection || {};
+    this.input = {};
+    this.input.body = {};
+    this.input.args = {};
 
-    this.input = this.input || {};
-    this.input.body = this.input.body || {};
-    this.input.args = this.input.args || {};
-
-    this.result = this.result || {};
-    this.response = this.response || {};
+    this.result = {};
+    this.response = {};
   }
 }
 
