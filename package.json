@@ -15,7 +15,12 @@
     "type": "git",
     "url": "git+https://github.com/kuzzleio/kuzzle-plugin-prometheus.git"
   },
-  "keywords": ["kuzzle", "plugin", "monitoring", "prometheus"],
+  "keywords": [
+    "kuzzle",
+    "plugin",
+    "monitoring",
+    "prometheus"
+  ],
   "author": {
     "name": "Kuzzle Team"
   },
