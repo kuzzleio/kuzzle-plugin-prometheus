@@ -55,11 +55,11 @@ $ ln -sr ./ ../../enable/kuzzle-plugin-prometheus && cd -
 ```
 
 ### Metrics
-#### `requestCount`
-Count the number of request for the associated event.
 
-#### `requestLatency`
-Monitor the response time for the associated event (only relevant for requests post-processing events such as `request:onSuccess`, `request:onError`, `document:afterCreate`...
+- [x] `request`: Request information for the associated event.
+- [ ] `stats`: Statistical information about Kuzzle (active connections, ongoing requests per protocols...).
+- [ ] `cluster`: State of Kuzzle nodes.
+
 
 > If you have idea for new metrics do not hesitate to open an issue.
 
@@ -73,16 +73,12 @@ This plugin is configurable using the Kuzzle configuration file `kuzzlerc`.
         "host": "http://pushgateway:9091",
         "jobName": "kuzzle"
       },
-      "monitoredEvents": [
-        {
-          "name": "request:onSuccess",
-          "metrics": ["requestCount", "requestLatency"]
-        },
-        {
-          "name": "request:onError",
-          "metrics": ["requestCount"]
-        }
-      ]
+      "monitoring": {
+        "request": [
+          "request:onSuccess",
+          "request:onError"
+        ]
+      }
     }
   }
 ```
@@ -94,11 +90,30 @@ This plugin is configurable using the Kuzzle configuration file `kuzzlerc`.
 | `host`  | `String`  | Prometheus PushGateway host URL (including port)  |
 | `jobName`  | `String`  | Prometheus job name used to group metrics  |
 
-#### `monitoredEvents`
+#### `monitoring`
 
 | Field | Type | Description |
 |---|---|---|
-| `name`  | `String`  |  [Kuzzle Event](https://next-docs.kuzzle.io/core/1/plugins/guides/events/intro/) to monitor   |
-| `metrics`  | `Array`  | [Metrics](#metrics) to monitor for the associated event  |
+| `request`  | `Array`  |  [Kuzzle Events](https://next-docs.kuzzle.io/core/1/plugins/guides/events/intro/) to monitor|
 
+
+### Demonstration
+
+If you want to simply have a look to a sample Grafana dashboard run the demonstration stack:
+
+```
+$ docker-compose -f demo/docker-compose.yml up
+```
+
+Once started, go to `http://localhost:3000` and log in with default Grafana credentials:
+* username: `admin`
+* password: `admin`
+
+When successfully logged in you can now import demonstration dashboards from `demo/dashboards` folder.
+To do so, hover on `+` icon in left sidebar and click on `Import`.Then click on `Upload .json File` and choose the dashboard of your choice. Set up the targeted Prometheus to `Prometheus` and you're done.
+Make several requests using Kuzzle HTTP API, SDKs or by browsering it with the Admin Console.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/7868838/59320124-7aec4680-8ccd-11e9-8fb8-3864c9d8d60f.png"/>
+</p>
 
