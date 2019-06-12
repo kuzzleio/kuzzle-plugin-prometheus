@@ -3,8 +3,7 @@ const PrometheusPlugin = require('../lib/index.js'),
   RequestMock = require('./mocks/request.mock'),
   ConfigurationMock = require('./mocks/config.mock'),
   Prometheus = require('prom-client'),
-  sinon = require('sinon'),
-  should = require('should');
+  sinon = require('sinon');
 
 describe('PrometheusPlugin', () => {
   let contextMock, plugin, configuration, request;
@@ -22,47 +21,55 @@ describe('PrometheusPlugin', () => {
   describe('#init', () => {
     it('should create a PrometheusPlugin with correctly initialized metrics and hooks', () => {
       plugin.gateway.should.be.an.instanceOf(Prometheus.Pushgateway);
-      plugin.prometheusMetrics.should.not.be.empty();
-
-      plugin.prometheusMetrics['request:onError'][
-        'requestCount'
-      ].should.be.an.instanceOf(Prometheus.Counter);
-      plugin.prometheusMetrics['request:onSuccess'][
-        'requestCount'
-      ].should.be.an.instanceOf(Prometheus.Counter);
-      plugin.prometheusMetrics['request:onSuccess'][
-        'requestLatency'
-      ].should.be.an.instanceOf(Prometheus.Summary);
-      should.exist(plugin.hooks['request:onError']);
-      should.exist(plugin.hooks['request:onSuccess']);
+      plugin.jobName.should.match('kuzzle');
+      plugin.gateway.push.should.be.an.Function();
+      plugin.metrics.request.should.not.be.undefined();
+      Object.keys(plugin.hooks).should.have.length(2);
     });
   });
-  describe('#hooks', () => {
-    it('should push request count metrics to Prometheus PushGateway', () => {
-      let currentMetric =
-        plugin.prometheusMetrics['request:onSuccess']['requestCount'];
+  describe('#requestInfo', () => {
+    it('should push request metrics to Prometheus PushGateway', () => {
+      request.init({
+        input: { controller: 'test', action: 'test' },
+        status: 200
+      });
+      plugin.requestInfo(request, 'request:onSuccess');
 
-      plugin.requestCount(request, 'request:onSuccess');
+      sinon.spy(plugin.metrics.request, 'observe');
+      plugin.metrics.request.observe.calledWith(
+        {
+          controller: 'test',
+          action: 'test',
+          status: 200,
+          event: 'request:onSuccess'
+        },
+        Date.now() - request.timestamp
+      );
 
-      sinon.spy(currentMetric, 'inc');
-      currentMetric.inc.calledWith();
-      sinon.spy(plugin, 'pushToGateway');
-      plugin.pushToGateway.calledWith('kuzzle');
+      sinon.spy(plugin.gateway, 'push');
+      plugin.gateway.push.calledWith({jobName: 'kuzzle'});
     });
-    it('should push request latency metrics to Prometheus PushGateway', () => {
-      let currentMetric =
-        plugin.prometheusMetrics['request:onSuccess']['requestLatency'];
-      plugin.requestLatency(request, 'request:onSuccess');
 
-      sinon.spy(currentMetric, 'observe');
-      currentMetric.observe.calledWith();
-      sinon.spy(plugin, 'pushToGateway');
-      plugin.pushToGateway.calledWith('kuzzle');
-    });
-  });
-  describe('#pushToGateway', () => {
-    it('should return a Promise', () => {
-      plugin.pushToGateway('kuzzle').should.be.a.Promise();
+    it('should log an error if push to PushGateway fail', () => {
+      plugin.config.pushGateway.host = 'http://aBadUrl:9091';
+      request.init({
+        input: { controller: 'test', action: 'test' },
+        status: 200
+      });
+      plugin.requestInfo(request, 'request:onSuccess');
+
+      sinon.spy(plugin.metrics.request, 'observe');
+      plugin.metrics.request.observe.calledWith(
+        {
+          controller: 'test',
+          action: 'test',
+          status: 200,
+          event: 'request:onSuccess'
+        },
+        Date.now() - request.timestamp
+      );
+
+      sinon.stub(plugin.gateway, 'push').throws();
     });
   });
 });

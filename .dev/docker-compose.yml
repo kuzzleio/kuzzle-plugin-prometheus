@@ -3,13 +3,12 @@ version: '3'
 services:
   kuzzle:
     image: kuzzleio/plugin-dev:${KUZZLE_DOCKER_TAG:-latest}
-    command: /run-dev.sh
+    command: /run.sh
     volumes:
-      - "./run-dev.sh:/run-dev.sh"
-      - "./install-plugins.sh:/install-plugins.sh"
-      - "./pm2.json:/config/pm2.json"
+      - "./run.sh:/run.sh"
       - "../:/var/app/plugins/enabled/kuzzle-plugin-prometheus"
-      - "../kuzzlerc:/etc/kuzzlerc"
+      - "../config/kuzzlerc:/etc/kuzzlerc"
+      - "../config/pm2.json:/config/pm2.json"
     cap_add:
       - SYS_PTRACE
     ulimits:
@@ -46,7 +45,7 @@ services:
     depends_on:
       - kuzzle
     volumes:
-      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "../config/prometheus.yml:/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
     links:
@@ -65,6 +64,6 @@ services:
     depends_on:
       - prometheus
     volumes:
-      - "./grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml"
+      - "../config/grafana.yml:/etc/grafana/provisioning/datasources/datasource.yaml"
     links:
       - prometheus

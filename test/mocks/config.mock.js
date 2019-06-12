@@ -5,16 +5,12 @@ class ConfigurationMock {
       host: 'http://pushgateway:9091',
       jobName: 'kuzzle'
     };
-    this.monitoredEvents = [
-      {
-        name: 'request:onSuccess',
-        metrics: ['requestCount', 'requestLatency']
-      },
-      {
-        name: 'request:onError',
-        metrics: ['requestCount']
-      }
-    ];
+    this.monitoring = {
+      request: [
+        'request:onSuccess',
+        'request:onError'
+      ] 
+    }
   }
 }
 

@@ -8,7 +8,22 @@ log () {
 
 elastic_host=${kuzzle_services__db__client__host:-http://elasticsearch:9200}
 
-/install-plugins.sh
+working_dir="/var/app"
+plugins_dir="plugins/enabled"
+
+cd "$working_dir"
+
+# npm install plugins
+for target in ${plugins_dir}/* ; do
+  if [ -d "$target" ]; then
+    echo 'Installing dependencies for ' $(basename "$target")
+    cd "$target"
+    npm install --unsafe-perm
+    # This is dirty but we are in a development environment, who cares
+    chmod 777 node_modules/
+    cd "$working_dir"
+  fi
+done
 
 log "Waiting for elasticsearch"
 while ! curl -f -s -o /dev/null "$elastic_host"

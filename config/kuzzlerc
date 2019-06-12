@@ -8,22 +8,18 @@
       "pipeTimeout": 250,
       "initTimeout": 2000
     },
-
     "kuzzle-plugin-prometheus": {
       "pushGateway": {
         "host": "http://pushgateway:9091",
         "jobName": "kuzzle"
       },
-      "monitoredEvents": [
-        {
-          "name": "request:onSuccess",
-          "metrics": ["requestCount", "requestLatency"]
-        },
-        {
-          "name": "request:onError",
-          "metrics": ["requestCount"]
-        }
-      ]
+      "monitoring": {
+        "cluster": true,
+        "request": [
+          "request:onSuccess",
+          "request:onError"
+        ]
+      }
     }
   }
 }

@@ -29,27 +29,29 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "babel-plugin-transform-util-promisify": "^0.2.2",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/runtime": "^7.4.4",
+    "semver": "^6.0.0",
     "codecov": "^3.2.0",
     "cucumber": "^5.1.0",
     "eslint": "^5.13.0",
     "kuzzle-common-objects": "^3.0.13",
+    "kuzzle-sdk": "^6.0.0",
     "mocha": "^5.2.0",
     "mock-require": "^3.0.3",
     "nyc": "^13.2.0",
     "rewire": "^4.0.1",
-    "should-sinon": "0.0.6",
-    "sinon": "^7.2.3",
     "should": "^13.2.3",
-    "kuzzle-sdk": "^6.0.0"
+    "should-sinon": "0.0.6",
+    "sinon": "^7.2.3"
   },
   "dependencies": {
-    "prom-client": "^11.3.0",
-    "@babel/cli": "^7.4.4",
-    "@babel/core": "^7.4.4",
-    "@babel/plugin-transform-runtime": "^7.4.4",
-    "@babel/preset-env": "^7.4.4",
-    "@babel/runtime": "^7.4.4",
-    "semver": "^6.0.0"
+    "prom-client": "^11.3.0"
   },
   "maintainers": [
     {

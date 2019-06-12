@@ -49,7 +49,8 @@ class ContextMock {
 
     this.log = {
       info: sinon.stub(),
-      warn: sinon.stub()
+      warn: sinon.stub(),
+      error: sinon.stub()
     };
   }
 }
