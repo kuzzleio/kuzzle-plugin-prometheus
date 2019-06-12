@@ -69,7 +69,8 @@ describe('PrometheusPlugin', () => {
         Date.now() - request.timestamp
       );
 
-      sinon.stub(plugin.gateway, 'push').throws();
+      sinon.spy(plugin.gateway, 'push');
+      plugin.gateway.push.threw();
     });
   });
 });
