@@ -58,7 +58,7 @@
       "cacheTimeout": null,
       "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
-        "h": 16,
+        "h": 8,
         "w": 6,
         "x": 0,
         "y": 0
@@ -133,7 +133,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
-      "fill": 1,
+      "fill": 2,
       "gridPos": {
         "h": 8,
         "w": 18,
@@ -141,7 +141,7 @@
         "y": 0
       },
       "id": 10,
-      "interval": "5s",
+      "interval": "3s",
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -165,11 +165,11 @@
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (nodeHost, nodeMAC, nodeIP) (rate(kuzzle_requests_count{job=\"kuzzle\", event=\"request:onSuccess\"}[1m]))",
+          "expr": "sum by (nodeHost, nodeMAC, nodeIP) (rate(kuzzle_requests_count{job=\"kuzzle\"}[30s]))",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
@@ -181,98 +181,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Requests per Kuzzle node - onSuccess",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "reqps",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
-      "fill": 1,
-      "gridPos": {
-        "h": 8,
-        "w": 18,
-        "x": 6,
-        "y": 8
-      },
-      "id": 11,
-      "interval": "5s",
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "max": true,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "sideWidth": 400,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {},
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum by (nodeHost, nodeMAC, nodeIP) (rate(kuzzle_requests_count{job=\"kuzzle\", event=\"request:onError\"}[1m]))",
-          "format": "time_series",
-          "instant": false,
-          "intervalFactor": 1,
-          "legendFormat": "IP: {{ nodeIP }} - host: {{ nodeHost }} ",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Requests per Kuzzle node - onError",
+      "title": "Requests per Kuzzle node",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -320,11 +229,11 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 8
       },
       "hideTimeOverride": false,
       "id": 4,
-      "interval": "1s",
+      "interval": "3s",
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -354,7 +263,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (controller, action)(irate(kuzzle_requests_count{job=\"kuzzle\", event=\"request:onSuccess\"}[5m]))",
+          "expr": "sum by (controller, action)(irate(kuzzle_requests_count{job=\"kuzzle\", event=\"request:onSuccess\"}[30s]))",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -364,10 +273,10 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": "5m",
+      "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Requests per API route - last 5 minutes",
+      "title": "Requests per API route",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -407,7 +316,7 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
@@ -416,11 +325,11 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 18
       },
       "hideTimeOverride": false,
       "id": 2,
-      "interval": "1s",
+      "interval": "3s",
       "legend": {
         "alignAsTable": true,
         "avg": true,
@@ -435,7 +344,7 @@
         "total": false,
         "values": true
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
@@ -450,7 +359,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (controller, action) (histogram_quantile(0.95, irate(kuzzle_requests_bucket{job=\"kuzzle\", event=\"request:onSuccess\"}[5m])))",
+          "expr": "sum by (controller, action) (histogram_quantile(0.95, irate(kuzzle_requests_bucket{job=\"kuzzle\", event=\"request:onSuccess\"}[30s])))",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -461,205 +370,10 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": "5m",
+      "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Reponse latency per API route - last 5 minutes",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "ms",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
-      "fill": 1,
-      "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 36
-      },
-      "hideTimeOverride": false,
-      "id": 7,
-      "interval": "1s",
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "hideEmpty": true,
-        "hideZero": true,
-        "max": true,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "sideWidth": 400,
-        "sort": "max",
-        "sortDesc": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {},
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum by (controller, action)(irate(kuzzle_requests_count{job=\"kuzzle\", event=\"request:onSuccess\"}[1h]))",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{controller}} - {{action}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": "1h",
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Requests per API route - last 1 hour",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "reqps",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
-      "fill": 1,
-      "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 46
-      },
-      "hideTimeOverride": false,
-      "id": 8,
-      "interval": "1s",
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "hideEmpty": true,
-        "hideZero": true,
-        "max": true,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "sideWidth": 400,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {},
-      "percentage": false,
-      "pointradius": 3,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum by (controller, action) (histogram_quantile(0.95, irate(kuzzle_requests_bucket{job=\"kuzzle\", event=\"request:onSuccess\"}[1h])))",
-          "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{controller}} - {{action}}",
-          "refId": "B"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": "1h",
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Reponse latency per API route - last 1 hour",
+      "title": "Reponse latency per API route",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -706,7 +420,7 @@
     "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
@@ -737,5 +451,5 @@
   "timezone": "browser",
   "title": "Kuzzle",
   "uid": "54b4c478-0536-488f-81dc-99886103122b",
-  "version": 2
+  "version": 1
 }

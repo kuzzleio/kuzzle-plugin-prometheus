@@ -24,9 +24,9 @@
 This is the official Prometheus monitoring plugin for the free and open-source backend Kuzzle.
 It provides you features such as:
 
-* Event based monitoring using Kuzzle Events.
-* System metrics (CPU, RAM, I/O...).
 * [Kuzzle cluster mode](https://github.com/kuzzleio/kuzzle-plugin-cluster) compatibility.
+* Event based monitoring using [Kuzzle Events](https://docs.kuzzle.io/core/1/plugins/guides/events/intro/).
+* System metrics (CPU, RAM, I/O...).
 
 ### Kuzzle
 
@@ -116,6 +116,7 @@ To do so, hover on `+` icon in left sidebar and click on `Import`.Then click on 
 Make several requests using Kuzzle HTTP API, SDKs or by browsering it with the Admin Console.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/7868838/60273315-2d3f2300-98f6-11e9-8829-215d7c079eba.png"/>
+  <img src="https://user-images.githubusercontent.com/7868838/60284159-2969cb80-990b-11e9-92bd-1e6156df0c2e.png"/>
+  <img src="https://user-images.githubusercontent.com/7868838/60284165-2bcc2580-990b-11e9-89fb-3d0307265ea9.png"/>
 </p>
 
