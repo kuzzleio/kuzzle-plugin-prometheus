@@ -23,7 +23,9 @@
 
 This is the official Prometheus monitoring plugin for the free and open-source backend Kuzzle.
 It provides you features such as:
-* Event based monitoring.
+
+* Event based monitoring using Kuzzle Events.
+* System metrics (CPU, RAM, I/O...).
 * [Kuzzle cluster mode](https://github.com/kuzzleio/kuzzle-plugin-cluster) compatibility.
 
 ### Kuzzle
@@ -38,9 +40,10 @@ an administration console and a set of plugins that provide advanced functionali
 
 ### Architecture
 
-Metrics are pushed from each node to the Prometheus PushGateway. 
+Each Kuzzle node expose a route .
+
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/7868838/59284145-0b923a80-8c6c-11e9-8267-56deac4ac78f.png"/>
+  <img src="https://user-images.githubusercontent.com/7868838/60268822-979f9580-98ed-11e9-82b4-298edf8d7893.png"/>
 </p>
 
 
@@ -51,50 +54,43 @@ To install this plugin on your Kuzzle stack (for each of your Kuzzle nodes):
 ```
 $ git clone https://github.com/kuzzleio/kuzzle-plugin-prometheus.git /path/to/your/kuzzle/plugins/available/kuzzle-plugin-prometheus
 $ cd /path/to/your/kuzzle/plugins/available/kuzzle-plugin-prometheus && npm install
-$ ln -sr ./ ../../enable/kuzzle-plugin-prometheus && cd -
+$ ln -sr ./ ../../enabled/kuzzle-plugin-prometheus && cd -
 ```
-
-### Metrics
-
-- [x] `request`: Request information for the associated event.
-- [ ] `stats`: Statistical information about Kuzzle (active connections, ongoing requests per protocols...).
-- [ ] `cluster`: State of Kuzzle nodes.
-
-
-> If you have idea for new metrics do not hesitate to open an issue.
 
 ### Configuration
 
+You can find sample configuration files for this plugin and Prometheus scraping job.
+
+#### Plugin
+
 This plugin is configurable using the Kuzzle configuration file `kuzzlerc`.
+
 ```json
   "plugins": {
     "kuzzle-plugin-prometheus": {
-      "pushGateway": {
-        "host": "http://pushgateway:9091",
-        "jobName": "kuzzle"
-      },
-      "monitoring": {
-        "request": [
-          "request:onSuccess",
-          "request:onError"
-        ]
-      }
+      "syncInterval": 7500,
+      "systemMetricsInterval": 5000
     }
   }
 ```
 
-#### `pushGateway`
+The two available options are:
+* `syncInterval`: Time interval in __milliseconds__ between two synchronization with Redis.
+* `systemMetricsInterval`: Time interval in __milliseconds__ between two system metrics polling.
 
-| Field | Type | Description |
-|---|---|---|
-| `host`  | `String`  | Prometheus PushGateway host URL (including port)  |
-| `jobName`  | `String`  | Prometheus job name used to group metrics  |
+#### Prometheus
 
-#### `monitoring`
+```yaml
+global:
+  scrape_interval:     5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
 
-| Field | Type | Description |
-|---|---|---|
-| `request`  | `Array`  |  [Kuzzle Events](https://next-docs.kuzzle.io/core/1/plugins/guides/events/intro/) to monitor|
+scrape_configs:
+  - job_name: 'kuzzle'
+    metrics_path: /_plugin/kuzzle-plugin-prometheus/metrics
+    static_configs:
+      - targets: ['kuzzleEndpoint:7512'] # 
+```
 
 
 ### Demonstration
@@ -102,18 +98,23 @@ This plugin is configurable using the Kuzzle configuration file `kuzzlerc`.
 If you want to simply have a look to a sample Grafana dashboard run the demonstration stack:
 
 ```
-$ docker-compose -f demo/docker-compose.yml up
+$ docker-compose -f demo/docker-compose.yml up --scale kuzzle=3
 ```
+
+This will start a demonstration stack composed with:
+* A three node Kuzzle cluster behind an Nginx loadbalancer.
+* A Prometheus container configured to scrap metrics.
+* A Grafana container.
 
 Once started, go to `http://localhost:3000` and log in with default Grafana credentials:
 * username: `admin`
 * password: `admin`
 
-When successfully logged in you can now import demonstration dashboards from `demo/dashboards` folder.
+When successfully logged in you can now import demonstration dashboards from `config/dashboards` folder.
 To do so, hover on `+` icon in left sidebar and click on `Import`.Then click on `Upload .json File` and choose the dashboard of your choice. Set up the targeted Prometheus to `Prometheus` and you're done.
 Make several requests using Kuzzle HTTP API, SDKs or by browsering it with the Admin Console.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/7868838/59320124-7aec4680-8ccd-11e9-8fb8-3864c9d8d60f.png"/>
+  <img src="https://user-images.githubusercontent.com/7868838/60273315-2d3f2300-98f6-11e9-8829-215d7c079eba.png"/>
 </p>
 

@@ -1,10 +1,10 @@
 {
   "name": "kuzzle-plugin-prometheus",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Kuzzle plugin: monitoring Kuzzle using Prometheus",
   "main": "lib/index.js",
   "scripts": {
-    "test": "npm run --silent lint && npm run --silent unit-testing",
+    "test": "npm run --silent lint && npm run unit-testing",
     "lint": "./node_modules/.bin/eslint --max-warnings=0 ./lib ./test",
     "unit-testing": "nyc --reporter=text-summary --reporter=lcov mocha",
     "codecov": "codecov",
@@ -51,6 +51,7 @@
     "sinon": "^7.2.3"
   },
   "dependencies": {
+    "macaddress": "^0.2.9",
     "prom-client": "^11.3.0"
   },
   "maintainers": [

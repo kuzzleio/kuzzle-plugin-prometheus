@@ -1,22 +1,28 @@
-version: '3'
+version: "3"
 
 services:
+  nginx:
+    image: nginx:1.15-alpine
+    ports:
+      - 7512:7512
+    depends_on:
+      - kuzzle
+    volumes:
+      - ../config/nginx.conf:/etc/nginx/conf.d/kuzzle.conf
+
   kuzzle:
-    image: kuzzleio/kuzzle
+    image: kuzzleio/cluster
     command: /run.sh
+    restart: on-failure
     volumes:
       - "./run.sh:/run.sh"
       - "../:/var/app/plugins/enabled/kuzzle-plugin-prometheus"
       - "../config/kuzzlerc:/etc/kuzzlerc"
-    cap_add:
-      - SYS_PTRACE
     sysctls:
       - net.core.somaxconn=8192
     depends_on:
       - redis
       - elasticsearch
-    ports:
-      - "7512:7512"
     environment:
       - kuzzle_services__db__client__host=http://elasticsearch:9200
       - kuzzle_services__internalCache__node__host=redis
@@ -24,7 +30,7 @@ services:
       - NODE_ENV=production
 
   redis:
-    image: redis:3.2
+    image: redis:5
 
   elasticsearch:
     image: kuzzleio/elasticsearch:5.6.10
@@ -46,11 +52,6 @@ services:
     links:
       - kuzzle
 
-  pushgateway:
-    image: prom/pushgateway
-    ports:
-      - 9091:9091
-    
   grafana:
     image: grafana/grafana
     container_name: grafana

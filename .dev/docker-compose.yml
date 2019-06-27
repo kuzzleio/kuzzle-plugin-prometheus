@@ -25,11 +25,11 @@ services:
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
       - NODE_ENV=development
-      - NODE_LTS=6
+      - NODE_LTS=8
       - DEBUG=kuzzle:plugins
 
   redis:
-    image: redis:3.2
+    image: redis:5
 
   elasticsearch:
     image: kuzzleio/elasticsearch:5.6.10
@@ -51,11 +51,6 @@ services:
     links:
       - kuzzle
 
-  pushgateway:
-    image: prom/pushgateway
-    ports:
-      - 9091:9091
-    
   grafana:
     image: grafana/grafana
     container_name: grafana

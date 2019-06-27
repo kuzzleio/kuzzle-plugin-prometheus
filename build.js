@@ -19,8 +19,6 @@
  * limitations under the License.
  */
 
-'use strict';
-
 const 
   semver = require('semver'),
   process = require('process'),

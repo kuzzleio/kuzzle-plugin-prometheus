@@ -1,25 +1,57 @@
 {
-  // The complete list of properties can be found here: https://github.com/kuzzleio/kuzzle/blob/master/.kuzzlerc.sample
-  // You can also refere to the documentation: https://docs.kuzzle.io/guide/essentials/configuration/
+  "dump": {
+    "enabled": false
+  },
+  "limits": {
+    "subscriptionMinterms": 1000
+  },
   "plugins": {
     "common": {
-      "bootstrapLockTimeout": 5000,
-      "pipeWarnTime": 40,
-      "pipeTimeout": 250,
-      "initTimeout": 2000
+      "initTimeout": 20000,
+      "pipeWarnTime": 5000,
+      "pipeTimeout": 10000
+    },
+    "cluster": {
+      "privileged": true,
+      "minimumNodes": 1
     },
     "kuzzle-plugin-prometheus": {
-      "pushGateway": {
-        "host": "http://pushgateway:9091",
-        "jobName": "kuzzle"
-      },
-      "monitoring": {
-        "cluster": true,
-        "request": [
-          "request:onSuccess",
-          "request:onError"
-        ]
+      "syncInterval": 7500,
+      "systemMetricsInterval": 5000
+    }
+  },
+  "services": {
+    "db": {
+      "client": {
+        "host": "http://elasticsearch:9200"
       }
+    },
+    "internalCache": {
+      "node": {
+        "host": "redis",
+        "port": 6379
+      }
+    },
+    "memoryStorage": {
+      "node": {
+        "host": "redis",
+        "port": 6379
+      }
+    }
+  },
+  "server": {
+    "logs": {
+      "transports": [
+        {
+          "transport": "console",
+          "level": "info",
+          "stderrLevels": [],
+          "format": "simple",
+          "silent": false
+        }
+      ],
+      "accessLogFormat": "combined",
+      "accessLogIpOffset": 0
     }
   }
 }

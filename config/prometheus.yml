@@ -5,7 +5,7 @@ global:
 
 # A scrape configuration containing exactly one endpoint to scrape:
 scrape_configs:
-  - job_name: "kuzzle"
+  - job_name: 'kuzzle'
+    metrics_path: /_plugin/kuzzle-plugin-prometheus/metrics
     static_configs:
-      - targets:
-        - pushgateway:9091
+      - targets: ['nginx:7512'] # the address of an application that exposes metrics for prometheus
