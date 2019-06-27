@@ -40,7 +40,8 @@ an administration console and a set of plugins that provide advanced functionali
 
 ### Architecture
 
-Each Kuzzle node expose a route .
+Each Kuzzle node expose a route `/metrics` which expose all nodes metrics. To do so, Redis is used to sync metrics data between nodes.
+This mechanism make this plugin cluster compatible.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/7868838/60268822-979f9580-98ed-11e9-82b4-298edf8d7893.png"/>
