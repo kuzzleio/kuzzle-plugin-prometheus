@@ -1,0 +1,1 @@
+# Demonstration monitored Kuzzle cluster

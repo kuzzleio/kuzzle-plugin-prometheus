@@ -41,9 +41,8 @@ describe('PrometheusPlugin', () => {
     it('should instanciate Prometheus using default values', () => {
       configuration = {}; // Empty configuration
       return plugin.init(configuration, context).then(() => {
-        should(plugin.config.syncInterval).be.equals(
-          configuration.syncInterval
-        );
+        should(plugin.config.syncInterval).be.equals(7500);
+        should(plugin.config.systemMetricsInterval).be.equals(5000);
       });
     });
   });
@@ -56,17 +55,16 @@ describe('PrometheusPlugin', () => {
           input: { controller: 'test', action: 'test' },
           context: { connection: 'http' }
         });
-        return plugin.recordRequests(request, 'request:onSuccess').then(() => {
-          plugin.kuzzleMetrics.requests.observe.calledWith(
-            {
-              controller: 'test',
-              action: 'test',
-              event: 'request:onSuccess',
-              protocol: 'http'
-            },
-            Date.now() - request.timestamp
-          );
-        });
+        plugin.recordRequests(request, 'request:onSuccess');
+        plugin.kuzzleMetrics.requests.observe.calledWith(
+          {
+            controller: 'test',
+            action: 'test',
+            event: 'request:onSuccess',
+            protocol: 'http'
+          },
+          Date.now() - request.timestamp
+        );
       });
     });
 
@@ -80,9 +78,8 @@ describe('PrometheusPlugin', () => {
         });
         sandbox.spy(plugin.kuzzleMetrics.requests, 'observe');
 
-        return plugin.recordRequests(request, 'request:onSuccess').then(() => {
-          should(plugin.kuzzleMetrics.requests.observe).not.be.called();
-        });
+        plugin.recordRequests(request, 'request:onSuccess');
+        should(plugin.kuzzleMetrics.requests.observe).not.be.called();
       });
     });
   });
@@ -92,10 +89,9 @@ describe('PrometheusPlugin', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'dec');
-        return plugin.recordRooms(request, 'room:new').then(() => {
-          should(plugin.kuzzleMetrics.rooms.inc).be.calledOnce();
-          should(plugin.kuzzleMetrics.rooms.dec).not.be.called();
-        });
+        plugin.recordRooms('room:new');
+        should(plugin.kuzzleMetrics.rooms.inc).be.calledOnce();
+        should(plugin.kuzzleMetrics.rooms.dec).not.be.called();
       });
     });
 
@@ -103,10 +99,9 @@ describe('PrometheusPlugin', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'dec');
-        return plugin.recordRooms(request, 'room:remove').then(() => {
-          should(plugin.kuzzleMetrics.rooms.dec).be.calledOnce();
-          should(plugin.kuzzleMetrics.rooms.inc).not.be.called();
-        });
+        plugin.recordRooms('room:remove');
+        should(plugin.kuzzleMetrics.rooms.dec).be.calledOnce();
+        should(plugin.kuzzleMetrics.rooms.inc).not.be.called();
       });
     });
   });
@@ -129,7 +124,10 @@ describe('PrometheusPlugin', () => {
       return plugin.init(configuration, context).then(() => {
         return plugin.pushRegistry().then(() => {
           should(plugin.context.accessors.sdk.ms.set)
-            .be.calledWith(plugin.key, JSON.stringify(plugin.registry.getMetricsAsJSON()))
+            .be.calledWith(
+              plugin.key,
+              JSON.stringify(plugin.registry.getMetricsAsJSON())
+            )
             .and.be.ok();
         });
       });

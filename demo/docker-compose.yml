@@ -8,7 +8,7 @@ services:
     depends_on:
       - kuzzle
     volumes:
-      - ../config/nginx.conf:/etc/nginx/conf.d/kuzzle.conf
+      - "./nginx.conf:/etc/nginx/conf.d/kuzzle.conf"
 
   kuzzle:
     image: kuzzleio/cluster
@@ -17,7 +17,7 @@ services:
     volumes:
       - "./run.sh:/run.sh"
       - "../:/var/app/plugins/enabled/kuzzle-plugin-prometheus"
-      - "../config/kuzzlerc:/etc/kuzzlerc"
+      - "./kuzzlerc:/etc/kuzzlerc"
     sysctls:
       - net.core.somaxconn=8192
     depends_on:
@@ -46,7 +46,7 @@ services:
     depends_on:
       - kuzzle
     volumes:
-      - "../config/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
     links:
@@ -60,6 +60,6 @@ services:
     depends_on:
       - prometheus
     volumes:
-      - "../config/grafana.yml:/etc/grafana/provisioning/datasources/datasource.yaml"
+      - "./grafana.yml:/etc/grafana/provisioning/datasources/datasource.yaml"
     links:
       - prometheus

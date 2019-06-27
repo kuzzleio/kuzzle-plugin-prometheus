@@ -60,7 +60,7 @@ $ ln -sr ./ ../../enabled/kuzzle-plugin-prometheus && cd -
 
 ### Configuration
 
-You can find sample configuration files for this plugin and Prometheus scraping job.
+You can find sample configuration files for this plugin and Prometheus scraping job in `demo` folder.
 
 #### Plugin
 
@@ -103,7 +103,7 @@ $ docker-compose -f demo/docker-compose.yml up --scale kuzzle=3
 ```
 
 This will start a demonstration stack composed with:
-* A three node Kuzzle cluster behind an Nginx loadbalancer.
+* A three node Kuzzle cluster behind an Nginx load balancer.
 * A Prometheus container configured to scrap metrics.
 * A Grafana container.
 
@@ -111,7 +111,7 @@ Once started, go to `http://localhost:3000` and log in with default Grafana cred
 * username: `admin`
 * password: `admin`
 
-When successfully logged in you can now import demonstration dashboards from `config/dashboards` folder.
+When successfully logged in you can now import demonstration dashboards from `dashboards` folder.
 To do so, hover on `+` icon in left sidebar and click on `Import`.Then click on `Upload .json File` and choose the dashboard of your choice. Set up the targeted Prometheus to `Prometheus` and you're done.
 Make several requests using Kuzzle HTTP API, SDKs or by browsering it with the Admin Console.
 
