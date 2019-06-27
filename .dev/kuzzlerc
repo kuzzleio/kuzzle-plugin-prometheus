@@ -1,7 +1,7 @@
 {
   "plugins": {
     "kuzzle-plugin-prometheus": {
-      "syncInterval": 7500,
+      "syncInterval": 5000,
       "systemMetricsInterval": 5000
     }
   }

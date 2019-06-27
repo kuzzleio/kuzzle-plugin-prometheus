@@ -83,7 +83,7 @@ The two available options are:
 
 ```yaml
 global:
-  scrape_interval:     5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  scrape_interval:     10s # Set the scrape interval to every 10 seconds. Default is every 1 minute.
   evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
 
 scrape_configs:
