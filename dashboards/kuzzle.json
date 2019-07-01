@@ -124,7 +124,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Active Realtime subscriptions",
+      "title": "Active Rooms",
       "type": "gauge"
     },
     {

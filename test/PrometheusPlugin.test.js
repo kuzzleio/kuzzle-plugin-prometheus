@@ -25,7 +25,7 @@ describe('PrometheusPlugin', () => {
   });
 
   describe('#init', () => {
-    it('should instanciate Prometheus using provided configuration', () => {
+    it('should instantiate Prometheus using provided configuration', () => {
       return plugin.init(configuration, context).then(() => {
         should(plugin.kuzzleMetrics.requests).be.instanceOf(
           Prometheus.Histogram
@@ -38,7 +38,7 @@ describe('PrometheusPlugin', () => {
       });
     });
 
-    it('should instanciate Prometheus using default values', () => {
+    it('should instantiate Prometheus using default values', () => {
       configuration = {}; // Empty configuration
       return plugin.init(configuration, context).then(() => {
         should(plugin.config.syncInterval).be.equals(7500);
@@ -107,7 +107,7 @@ describe('PrometheusPlugin', () => {
   });
 
   describe('#metrics', () => {
-    it('should returns a Prometheus formatted response', () => {
+    it('should return a Prometheus formatted response', () => {
       return plugin.init(configuration, context).then(() => {
         plugin.syncRegisters = sandbox.stub().resolves(plugin.registry);
         request.init({ response: { setHeader: sinon.stub() } });
@@ -144,7 +144,7 @@ describe('PrometheusPlugin', () => {
         sandbox.spy(Prometheus.AggregatorRegistry, 'aggregate');
         return plugin.syncRegisters().then(registry => {
           should(plugin.context.accessors.sdk.ms.scan)
-            .be.calledWith(0, { match: 'kuzzle_prometheus_*' })
+            .be.calledWith(0, { match: '{kuzzle_prometheus}-*' })
             .and.be.ok();
           should(
             Prometheus.AggregatorRegistry.aggregate.args[0].length
@@ -172,7 +172,7 @@ describe('PrometheusPlugin', () => {
         sandbox.spy(Prometheus.AggregatorRegistry, 'aggregate');
         return plugin.syncRegisters().then(registry => {
           should(plugin.context.accessors.sdk.ms.scan)
-            .be.calledWith(0, { match: 'kuzzle_prometheus_*' })
+            .be.calledWith(0, { match: '{kuzzle_prometheus}-*' })
             .and.be.ok();
           should(plugin.context.accessors.sdk.ms.mget)
             .be.calledWith([

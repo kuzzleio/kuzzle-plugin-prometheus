@@ -60,11 +60,11 @@ $ ln -sr ./ ../../enabled/kuzzle-plugin-prometheus && cd -
 
 ### Configuration
 
-You can find sample configuration files for this plugin and Prometheus scraping job in `demo` folder.
+You can find sample configuration files for this plugin and the Prometheus scraping job in the `demo` folder.
 
 #### Plugin
 
-This plugin is configurable using the Kuzzle configuration file `kuzzlerc`.
+This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
 
 ```json
   "plugins": {
@@ -76,7 +76,7 @@ This plugin is configurable using the Kuzzle configuration file `kuzzlerc`.
 ```
 
 The two available options are:
-* `syncInterval`: Time interval in __milliseconds__ between two synchronization with Redis.
+* `syncInterval`: Time interval in __milliseconds__ between two synchronizations with Redis.
 * `systemMetricsInterval`: Time interval in __milliseconds__ between two system metrics polling.
 
 #### Prometheus
@@ -103,17 +103,17 @@ $ docker-compose -f demo/docker-compose.yml up --scale kuzzle=3
 ```
 
 This will start a demonstration stack composed with:
-* A three node Kuzzle cluster behind an Nginx load balancer.
+* A three nodes Kuzzle cluster behind an Nginx load balancer.
 * A Prometheus container configured to scrap metrics.
 * A Grafana container.
 
-Once started, go to `http://localhost:3000` and log in with default Grafana credentials:
+Once started, go to `http://localhost:3000` and log in with the default Grafana credentials:
 * username: `admin`
 * password: `admin`
 
-When successfully logged in you can now import demonstration dashboards from `dashboards` folder.
-To do so, hover on `+` icon in left sidebar and click on `Import`.Then click on `Upload .json File` and choose the dashboard of your choice. Set up the targeted Prometheus to `Prometheus` and you're done.
-Make several requests using Kuzzle HTTP API, SDKs or by browsering it with the Admin Console.
+When successfully logged in you can import demonstration dashboards from the `dashboards` folder.
+To do so, hover on the `+` icon in the left sidebar, and click on `Import`. Then click on `Upload .json File` and choose the dashboard of your choice. Set up the targeted Prometheus to `Prometheus` and you're done.
+Make several requests using Kuzzle's HTTP API or SDKs, or by using the Admin Console.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/7868838/60284159-2969cb80-990b-11e9-92bd-1e6156df0c2e.png"/>
