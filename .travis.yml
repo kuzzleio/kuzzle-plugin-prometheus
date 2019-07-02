@@ -1,0 +1,42 @@
+jobs:
+  include:
+    - stage: "Tests"
+      name: "Linting"
+      os: linux
+      sudo: required
+      language: node_js
+      node_js: 8
+      cache: npm
+      install:
+        - npm install --silent
+      script:
+        - npm run lint
+
+    - stage: "Tests"
+      name: "Unit tests - Node.js 6"
+      os: linux
+      sudo: required
+      language: node_js
+      node_js: 
+        - 6
+      cache: npm
+      install:
+        - npm install --silent
+      script:
+        - npm run unit-testing
+
+    - stage: "Tests"
+      name: "Unit tests - Node.js 8"
+      os: linux
+      sudo: required
+      language: node_js
+      node_js: 
+        - 8
+      cache: npm
+      install:
+        - npm install --silent
+      script:
+        - npm run unit-testing
+      after_script:
+        - npm run codecov
+

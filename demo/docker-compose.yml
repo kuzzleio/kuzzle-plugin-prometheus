@@ -1,0 +1,65 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:1.15-alpine
+    ports:
+      - 7512:7512
+    depends_on:
+      - kuzzle
+    volumes:
+      - "./nginx.conf:/etc/nginx/conf.d/kuzzle.conf"
+
+  kuzzle:
+    image: kuzzleio/cluster
+    command: /run.sh
+    restart: on-failure
+    volumes:
+      - "./run.sh:/run.sh"
+      - "../:/var/app/plugins/enabled/kuzzle-plugin-prometheus"
+      - "./kuzzlerc:/etc/kuzzlerc"
+    sysctls:
+      - net.core.somaxconn=8192
+    depends_on:
+      - redis
+      - elasticsearch
+    environment:
+      - kuzzle_services__db__client__host=http://elasticsearch:9200
+      - kuzzle_services__internalCache__node__host=redis
+      - kuzzle_services__memoryStorage__node__host=redis
+      - NODE_ENV=production
+
+  redis:
+    image: redis:5
+
+  elasticsearch:
+    image: kuzzleio/elasticsearch:5.6.10
+    ulimits:
+      nofile: 65536
+    environment:
+      - cluster.name=kuzzle
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    depends_on:
+      - kuzzle
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    links:
+      - kuzzle
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - "./grafana.yml:/etc/grafana/provisioning/datasources/datasource.yaml"
+    links:
+      - prometheus

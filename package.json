@@ -1,0 +1,59 @@
+{
+  "name": "kuzzle-plugin-prometheus",
+  "version": "1.0.0",
+  "description": "Kuzzle plugin: monitoring Kuzzle using Prometheus",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "npm run --silent lint && npm run unit-testing",
+    "lint": "./node_modules/.bin/eslint --max-warnings=0 ./lib ./test",
+    "unit-testing": "nyc --reporter=text-summary --reporter=lcov mocha",
+    "codecov": "codecov",
+    "build": "node build.js",
+    "postinstall": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuzzleio/kuzzle-plugin-prometheus.git"
+  },
+  "keywords": [
+    "kuzzle",
+    "plugin",
+    "monitoring",
+    "prometheus"
+  ],
+  "author": {
+    "name": "Kuzzle Team"
+  },
+  "bugs": {
+    "url": "https://github.com/kuzzleio/kuzzle-plugin-prometheus/issues"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "codecov": "^3.2.0",
+    "eslint": "^5.13.0",
+    "kuzzle-common-objects": "^3.0.13",
+    "mocha": "^5.2.0",
+    "nyc": "^13.2.0",
+    "should": "^13.2.3",
+    "should-sinon": "0.0.6",
+    "sinon": "^7.2.3"
+  },
+  "dependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "babel-plugin-transform-util-promisify": "^0.2.2",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/runtime": "^7.4.4",
+    "semver": "^6.0.0",
+    "macaddress": "^0.2.9",
+    "prom-client": "^11.3.0"
+  },
+  "maintainers": [
+    {
+      "name": "kuzzle",
+      "email": "support@kuzzle.io"
+    }
+  ]
+}

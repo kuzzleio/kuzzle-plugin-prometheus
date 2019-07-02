@@ -1,0 +1,8 @@
+{
+  "plugins": {
+    "kuzzle-plugin-prometheus": {
+      "syncInterval": 5000,
+      "systemMetricsInterval": 5000
+    }
+  }
+}
