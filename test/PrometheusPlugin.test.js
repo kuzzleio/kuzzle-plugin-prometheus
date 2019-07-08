@@ -107,13 +107,34 @@ describe('PrometheusPlugin', () => {
   });
 
   describe('#metrics', () => {
-    it('should return a Prometheus formatted response', () => {
+    it('should return a Prometheus formatted response on HTTP call', () => {
       return plugin.init(configuration, context).then(() => {
         plugin.syncRegisters = sandbox.stub().resolves(plugin.registry);
-        request.init({ response: { setHeader: sinon.stub() } });
+        request.init({
+          context: {
+            connection: { protocol: 'http' }
+          },
+          response: { setHeader: sinon.stub() }
+        });
         return plugin.metrics(request).then(response => {
           should(request.response.setHeader).be.calledOnce();
           should(response).be.an.instanceOf(String);
+        });
+      });
+    });
+
+    it('should not return a Prometheus formatted response on non-HTTP call', () => {
+      return plugin.init(configuration, context).then(() => {
+        plugin.syncRegisters = sandbox.stub().resolves(plugin.registry);
+        request.init({
+          context: {
+            connection: { protocol: 'websocket' }
+          },
+          response: { setHeader: sinon.stub() }
+        });
+        return plugin.metrics(request).then(response => {
+          !should(request.response.setHeader).not.be.called();
+          should(response).be.undefined();
         });
       });
     });
