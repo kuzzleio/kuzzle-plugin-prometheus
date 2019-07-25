@@ -82,8 +82,8 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
           "controller",
           "action",
           "event",
-          "status",
-          "protocol"
+          "protocol",
+          "status"
         ]
       }
     }
@@ -95,7 +95,7 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
 * `systemMetricsInterval`: Time interval in __milliseconds__ between two system metrics polling.
 * `labels`:
   * `common`: An array of labels added to every metrics, defaults to `['nodeHost', 'nodeMAC', 'nodeIP']`
-  * `kuzzle`: 
+  * `kuzzle`: An array of Kuzzle metrics to collect, defaults to `['controller', 'action', 'event', 'protocol', 'status']`
 
 #### Prometheus
 
