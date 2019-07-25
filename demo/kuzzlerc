@@ -17,7 +17,22 @@
     },
     "kuzzle-plugin-prometheus": {
       "syncInterval": 5000,
-      "systemMetricsInterval": 5000
+      "collectSystemMetrics": true,
+      "systemMetricsInterval": 5000,
+      "labels": {
+        "common": [
+          "nodeHost",
+          "nodeMAC",
+          "nodeIP"
+        ],
+        "kuzzle": [
+          "controller",
+          "action",
+          "event",
+          "protocol",
+          "status"
+        ]
+      }
     }
   },
   "services": {

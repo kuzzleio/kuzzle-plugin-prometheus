@@ -8,9 +8,7 @@ class RequestMock {
   }
 
   init(args) {
-    Object.keys(args).forEach((key) => {
-      this[key] = args[key];
-    });
+    Object.assign(this, args);
   }
 }
 

@@ -1,4 +1,4 @@
-const 
+const
   RequestMock = require('./request.mock'),
   KuzzleError = require('kuzzle-common-objects').error,
   sinon = require('sinon');

@@ -70,14 +70,32 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
   "plugins": {
     "kuzzle-plugin-prometheus": {
       "syncInterval": 7500,
-      "systemMetricsInterval": 5000
+      "collectSystemMetrics": true,
+      "systemMetricsInterval": 5000,
+      "labels": {
+        "common": [
+          "nodeHost",
+          "nodeMAC",
+          "nodeIP"
+        ],
+        "kuzzle": [
+          "controller",
+          "action",
+          "event",
+          "status",
+          "protocol"
+        ]
+      }
     }
   }
 ```
 
-The two available options are:
 * `syncInterval`: Time interval in __milliseconds__ between two synchronizations with Redis.
+* `collectSystemMetrics`: If set to true (default), collects system metrics.
 * `systemMetricsInterval`: Time interval in __milliseconds__ between two system metrics polling.
+* `labels`:
+  * `common`: An array of labels added to every metrics, defaults to `['nodeHost', 'nodeMAC', 'nodeIP']`
+  * `kuzzle`: 
 
 #### Prometheus
 
