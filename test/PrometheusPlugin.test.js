@@ -1,4 +1,5 @@
-const PrometheusPlugin = require('../lib/index.js'),
+const
+  PrometheusPlugin = require('../lib/index.js'),
   ContextMock = require('./mocks/context.mock'),
   RequestMock = require('./mocks/request.mock'),
   ConfigurationMock = require('./mocks/config.mock'),
@@ -40,11 +41,80 @@ describe('PrometheusPlugin', () => {
 
     it('should instantiate Prometheus using default values', () => {
       configuration = {}; // Empty configuration
+
       return plugin.init(configuration, context).then(() => {
-        should(plugin.config.syncInterval).be.equals(7500);
-        should(plugin.config.systemMetricsInterval).be.equals(5000);
+        should(plugin.config).eql({
+          syncInterval: 7500,
+          collectSystemMetrics: true,
+          systemMetricsInterval: 5000,
+          labels: {
+            common: [
+              'nodeHost',
+              'nodeMAC',
+              'nodeIP'
+            ],
+            kuzzle: [
+              'controller',
+              'action',
+              'event',
+              'protocol',
+              'status'
+            ]
+          }
+        });
       });
     });
+
+    it('should throw if common labels is not an array' , () => {
+      return should(plugin.init({labels: {common: true}}, context))
+        .be.rejectedWith('[prometheus plugin] Configuration error: Expected \'labels.common\' to be an array, boolean received.');
+    });
+
+    it('should throw if common labels contains an unknown value', () => {
+      return should(plugin.init({
+        labels: {
+          common: ['foobar']
+        }
+      }, context))
+        .be.rejectedWith('[prometheus plugin] Configuration error: Invalid common label foobar, should be one of [nodeHost, nodeMAC, nodeIP]');
+    });
+
+    it('should throw if kuzzle labels is not an array', () => {
+      return should(plugin.init({
+        labels: {
+          kuzzle: true
+        }
+      }, context))
+        .be.rejectedWith('[prometheus plugin] Configuration error: Expected \'labels.kuzzle\' to be an array, boolean received')
+    });
+
+    it('should throw if kuzzle labels contains an unknown value', () => {
+      return should(plugin.init({
+        labels: {
+          kuzzle: ['foobar']
+        }
+      }, context))
+        .be.rejectedWith('[prometheus plugin] Configuration error: Invalid kuzzle label foobar, should be one of [controller, action, event, protocol, status]')
+    });
+
+    it('should throw if no kuzzle label is provided', () => {
+      return should(plugin.init({
+        labels: {
+          kuzzle: []
+        }
+      }, context))
+        .be.rejectedWith('[prometheus plugin] Configuration error: \'labels.kuzzle\' cannot be empty.');
+    });
+
+    it('should not record default metrics if configured not to do so', () => {
+      return plugin.init({
+        collectSystemMetrics: false
+      })
+        .then(() => {
+          should(plugin.systemMetricsJob).be.undefined();
+        });
+    });
+
   });
 
   describe('#recordRequests', () => {
@@ -72,7 +142,7 @@ describe('PrometheusPlugin', () => {
       return plugin.init(configuration, context).then(() => {
         request.init({
           input: {
-            controller: 'plugin-kuzzle-prometheus/prometheus',
+            controller: 'kuzzle-plugin-prometheus/prometheus',
             action: 'metrics'
           }
         });
@@ -82,6 +152,35 @@ describe('PrometheusPlugin', () => {
         should(plugin.kuzzleMetrics.requests.observe).not.be.called();
       });
     });
+
+    it('should observe configured labels only', () => {
+      return plugin.init({
+        labels: {
+          kuzzle: ['action']
+        }
+      }, context)
+        .then(() => {
+          request.init({
+            input: {
+              controller: 'controller',
+              action: 'action',
+              foo: 'bar',
+              event: 'event',
+              protocol: 'protocol',
+              status: 'status'
+            }
+          });
+          const spy = sandbox.spy(plugin.kuzzleMetrics.requests, 'observe');
+
+          plugin.recordRequests(request, 'request:onSuccess');
+
+          should(spy)
+            .be.calledOnce()
+            .be.calledWith({
+              action: 'action'
+            });
+        });
+    })
   });
 
   describe('#recordRooms', () => {
