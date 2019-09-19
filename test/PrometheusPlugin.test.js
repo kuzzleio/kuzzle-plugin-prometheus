@@ -32,7 +32,7 @@ describe('PrometheusPlugin', () => {
           Prometheus.Histogram
         );
         should(plugin.kuzzleMetrics.rooms).be.instanceOf(Prometheus.Gauge);
-        should(Object.keys(plugin.hooks).length).be.equals(4);
+        should(Object.keys(plugin.hooks).length).be.equals(6);
         should(plugin.config.syncInterval).be.equals(
           configuration.syncInterval
         );
@@ -201,6 +201,28 @@ describe('PrometheusPlugin', () => {
         plugin.recordRooms('room:remove');
         should(plugin.kuzzleMetrics.rooms.dec).be.calledOnce();
         should(plugin.kuzzleMetrics.rooms.inc).not.be.called();
+      });
+    });
+  });
+
+  describe('#recordConnections', () => {
+    it('should increment active connections number when `connection:new` event triggered', () => {
+      return plugin.init(configuration, context).then(() => {
+        sandbox.spy(plugin.kuzzleMetrics.connections, 'inc');
+        sandbox.spy(plugin.kuzzleMetrics.connections, 'dec');
+        plugin.recordConnections('connection:new');
+        should(plugin.kuzzleMetrics.connections.inc).be.calledOnce();
+        should(plugin.kuzzleMetrics.connections.dec).not.be.called();
+      });
+    });
+
+    it('should decrement active connections number when `connection:remove` event triggered', () => {
+      return plugin.init(configuration, context).then(() => {
+        sandbox.spy(plugin.kuzzleMetrics.connections, 'inc');
+        sandbox.spy(plugin.kuzzleMetrics.connections, 'dec');
+        plugin.recordConnections('connection:remove');
+        should(plugin.kuzzleMetrics.connections.dec).be.calledOnce();
+        should(plugin.kuzzleMetrics.connections.inc).not.be.called();
       });
     });
   });
