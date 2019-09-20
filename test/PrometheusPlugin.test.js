@@ -188,7 +188,7 @@ describe('PrometheusPlugin', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'dec');
-        plugin.recordRooms('room:new');
+        plugin.recordRooms({}, 'room:new');
         should(plugin.kuzzleMetrics.rooms.inc).be.calledOnce();
         should(plugin.kuzzleMetrics.rooms.dec).not.be.called();
       });
@@ -198,7 +198,7 @@ describe('PrometheusPlugin', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'dec');
-        plugin.recordRooms('room:remove');
+        plugin.recordRooms({}, 'room:remove');
         should(plugin.kuzzleMetrics.rooms.dec).be.calledOnce();
         should(plugin.kuzzleMetrics.rooms.inc).not.be.called();
       });
@@ -210,7 +210,7 @@ describe('PrometheusPlugin', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.connections, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.connections, 'dec');
-        plugin.recordConnections('connection:new');
+        plugin.recordConnections({}, 'connection:new');
         should(plugin.kuzzleMetrics.connections.inc).be.calledOnce();
         should(plugin.kuzzleMetrics.connections.dec).not.be.called();
       });
@@ -220,7 +220,7 @@ describe('PrometheusPlugin', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.connections, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.connections, 'dec');
-        plugin.recordConnections('connection:remove');
+        plugin.recordConnections({}, 'connection:remove');
         should(plugin.kuzzleMetrics.connections.dec).be.calledOnce();
         should(plugin.kuzzleMetrics.connections.inc).not.be.called();
       });
