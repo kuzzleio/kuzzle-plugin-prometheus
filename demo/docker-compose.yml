@@ -1,3 +1,4 @@
+---
 version: "3"
 
 services:
@@ -11,7 +12,7 @@ services:
       - "./nginx.conf:/etc/nginx/conf.d/kuzzle.conf"
 
   kuzzle:
-    image: kuzzleio/cluster
+    image: kuzzleio/kuzzle:1
     command: /run.sh
     restart: on-failure
     volumes:
@@ -24,6 +25,7 @@ services:
       - redis
       - elasticsearch
     environment:
+      - KUZZLE_PLUGINS=kuzzle-plugin-cluster
       - kuzzle_services__db__client__host=http://elasticsearch:9200
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
