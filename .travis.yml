@@ -1,3 +1,4 @@
+---
 jobs:
   include:
     - stage: "Tests"
@@ -5,7 +6,7 @@ jobs:
       os: linux
       sudo: required
       language: node_js
-      node_js: 8
+      node_js: 10
       cache: npm
       install:
         - npm install --silent
@@ -13,25 +14,12 @@ jobs:
         - npm run lint
 
     - stage: "Tests"
-      name: "Unit tests - Node.js 6"
+      name: "Unit tests - Node.js 10"
       os: linux
       sudo: required
       language: node_js
-      node_js: 
-        - 6
-      cache: npm
-      install:
-        - npm install --silent
-      script:
-        - npm run unit-testing
-
-    - stage: "Tests"
-      name: "Unit tests - Node.js 8"
-      os: linux
-      sudo: required
-      language: node_js
-      node_js: 
-        - 8
+      node_js:
+        - 10
       cache: npm
       install:
         - npm install --silent
@@ -39,4 +27,3 @@ jobs:
         - npm run unit-testing
       after_script:
         - npm run codecov
-
