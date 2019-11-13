@@ -27,6 +27,10 @@ It provides you features such as:
 * [Kuzzle cluster mode](https://github.com/kuzzleio/kuzzle-plugin-cluster) compatibility.
 * Event based monitoring using [Kuzzle Events](https://docs.kuzzle.io/core/1/plugins/guides/events/intro/).
 * System metrics (CPU, RAM, I/O...).
+* Kuzzle metrics:
+  * Response time
+  * Realtime subscriptions
+  * Active connections
 
 ### Kuzzle
 
@@ -37,16 +41,6 @@ an administration console and a set of plugins that provide advanced functionali
 * :earth_africa: __[Website](https://kuzzle.io)__
 * :books: __[Documentation](https://docs.kuzzle.io)__
 * :email: __[Gitter](https://gitter.im/kuzzleio/kuzzle)__
-
-### Architecture
-
-Each Kuzzle node expose a route `/metrics` which expose all nodes metrics. To do so, Redis is used to sync metrics data between nodes.
-This mechanism make this plugin cluster compatible.
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/7868838/60268822-979f9580-98ed-11e9-82b4-298edf8d7893.png"/>
-</p>
-
 
 ### Installation
 
@@ -69,7 +63,6 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
 ```json
   "plugins": {
     "kuzzle-plugin-prometheus": {
-      "syncInterval": 7500,
       "collectSystemMetrics": true,
       "systemMetricsInterval": 5000,
       "labels": {
@@ -90,7 +83,6 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
   }
 ```
 
-* `syncInterval`: Time interval in __milliseconds__ between two synchronizations with Redis.
 * `collectSystemMetrics`: If set to true (default), collects system metrics.
 * `systemMetricsInterval`: Time interval in __milliseconds__ between two system metrics polling.
 * `labels`:
@@ -108,7 +100,7 @@ scrape_configs:
   - job_name: 'kuzzle'
     metrics_path: /_plugin/kuzzle-plugin-prometheus/metrics
     static_configs:
-      - targets: ['kuzzleEndpoint:7512'] # 
+      - targets: ['kuzzleEndpoint:7512'] 
 ```
 
 
@@ -117,11 +109,11 @@ scrape_configs:
 If you want to simply have a look to a sample Grafana dashboard run the demonstration stack:
 
 ```
-$ docker-compose -f demo/docker-compose.yml up --scale kuzzle=3
+$ docker-compose -f demo/docker-compose.yml up
 ```
 
 This will start a demonstration stack composed with:
-* A three nodes Kuzzle cluster behind an Nginx load balancer.
+* A Kuzzle node behind an Nginx load balancer.
 * A Prometheus container configured to scrap metrics.
 * A Grafana container.
 

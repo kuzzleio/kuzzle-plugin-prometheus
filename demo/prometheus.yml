@@ -1,11 +1,12 @@
+---
 # global config
 global:
-  scrape_interval:     10s # Set the scrape interval to every 10 seconds. Default is every 1 minute.
-  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  scrape_interval: 10s      # Set the scrape interval to every 10 seconds. Default is every 1 minute.
+  evaluation_interval: 15s  # Evaluate rules every 15 seconds. The default is every 1 minute.
 
 # A scrape configuration containing exactly one endpoint to scrape:
 scrape_configs:
   - job_name: 'kuzzle'
     metrics_path: /_plugin/kuzzle-plugin-prometheus/metrics
     static_configs:
-      - targets: ['nginx:7512'] # the address of an application that exposes metrics for prometheus
+      - targets: ['kuzzle:7512']  # the address of an application that exposes metrics for prometheus
