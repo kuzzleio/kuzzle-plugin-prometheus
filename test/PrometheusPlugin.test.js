@@ -183,21 +183,21 @@ describe('PrometheusPlugin', () => {
   });
 
   describe('#recordRooms', () => {
-    it('should increment active rooms number when `room:new` event triggered', () => {
+    it('should increment active rooms number when `core:hotelClerk:addSubscription` event triggered', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'dec');
-        plugin.recordRooms({}, 'room:new');
+        plugin.recordRooms({}, 'core:hotelClerk:addSubscription');
         should(plugin.kuzzleMetrics.rooms.inc).be.calledOnce();
         should(plugin.kuzzleMetrics.rooms.dec).not.be.called();
       });
     });
 
-    it('should decrement active rooms number when `room:remove` event triggered', () => {
+    it('should decrement active rooms number when `core:hotelClerk:removeRoomForCustomer` event triggered', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'dec');
-        plugin.recordRooms({}, 'room:remove');
+        plugin.recordRooms({}, 'core:hotelClerk:removeRoomForCustomer');
         should(plugin.kuzzleMetrics.rooms.dec).be.calledOnce();
         should(plugin.kuzzleMetrics.rooms.inc).not.be.called();
       });
