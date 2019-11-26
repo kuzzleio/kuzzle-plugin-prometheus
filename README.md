@@ -38,16 +38,6 @@ an administration console and a set of plugins that provide advanced functionali
 * :books: __[Documentation](https://docs.kuzzle.io)__
 * :email: __[Gitter](https://gitter.im/kuzzleio/kuzzle)__
 
-### Architecture
-
-Each Kuzzle node expose a route `/metrics` which expose all nodes metrics. To do so, Redis is used to sync metrics data between nodes.
-This mechanism make this plugin cluster compatible.
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/7868838/60268822-979f9580-98ed-11e9-82b4-298edf8d7893.png"/>
-</p>
-
-
 ### Installation
 
 To install this plugin on your Kuzzle stack (for each of your Kuzzle nodes):
@@ -69,7 +59,6 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
 ```json
   "plugins": {
     "kuzzle-plugin-prometheus": {
-      "syncInterval": 7500,
       "collectSystemMetrics": true,
       "systemMetricsInterval": 5000,
       "labels": {
@@ -90,7 +79,6 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
   }
 ```
 
-* `syncInterval`: Time interval in __milliseconds__ between two synchronizations with Redis.
 * `collectSystemMetrics`: If set to true (default), collects system metrics.
 * `systemMetricsInterval`: Time interval in __milliseconds__ between two system metrics polling.
 * `labels`:
@@ -117,7 +105,7 @@ scrape_configs:
 If you want to simply have a look to a sample Grafana dashboard run the demonstration stack:
 
 ```
-$ docker-compose -f demo/docker-compose.yml up --scale kuzzle=3
+$ docker-compose -f demo/docker-compose.yml up
 ```
 
 This will start a demonstration stack composed with:
