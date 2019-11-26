@@ -33,9 +33,6 @@ describe('PrometheusPlugin', () => {
         );
         should(plugin.kuzzleMetrics.rooms).be.instanceOf(Prometheus.Gauge);
         should(Object.keys(plugin.hooks).length).be.equals(6);
-        should(plugin.config.syncInterval).be.equals(
-          configuration.syncInterval
-        );
       });
     });
 
@@ -44,7 +41,6 @@ describe('PrometheusPlugin', () => {
 
       return plugin.init(configuration, context).then(() => {
         should(plugin.config).eql({
-          syncInterval: 7500,
           collectSystemMetrics: true,
           systemMetricsInterval: 5000,
           labels: {
@@ -184,21 +180,21 @@ describe('PrometheusPlugin', () => {
   });
 
   describe('#recordRooms', () => {
-    it('should increment active rooms number when `room:new` event triggered', () => {
+    it('should increment active rooms number when `core:hotelClerk:addSubscription` event triggered', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'dec');
-        plugin.recordRooms({}, 'room:new');
+        plugin.recordRooms({}, 'core:hotelClerk:addSubscription');
         should(plugin.kuzzleMetrics.rooms.inc).be.calledOnce();
         should(plugin.kuzzleMetrics.rooms.dec).not.be.called();
       });
     });
 
-    it('should decrement active rooms number when `room:remove` event triggered', () => {
+    it('should decrement active rooms number when `core:hotelClerk:removeRoomForCustomer` event triggered', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.kuzzleMetrics.rooms, 'dec');
-        plugin.recordRooms({}, 'room:remove');
+        plugin.recordRooms({}, 'core:hotelClerk:removeRoomForCustomer');
         should(plugin.kuzzleMetrics.rooms.dec).be.calledOnce();
         should(plugin.kuzzleMetrics.rooms.inc).not.be.called();
       });
@@ -256,73 +252,6 @@ describe('PrometheusPlugin', () => {
         return plugin.metrics(request).then(response => {
           !should(request.response.setHeader).not.be.called();
           should(response).be.undefined();
-        });
-      });
-    });
-  });
-
-  describe('#pushRegistry', () => {
-    it('should push the local Prometheus Registry to Redis using node key', () => {
-      return plugin.init(configuration, context).then(() => {
-        return plugin.pushRegistry().then(() => {
-          should(plugin.context.accessors.sdk.ms.set)
-            .be.calledWith(
-              plugin.key,
-              JSON.stringify(plugin.registry.getMetricsAsJSON())
-            )
-            .and.be.ok();
-        });
-      });
-    });
-  });
-
-  describe('#syncRegisters', () => {
-    it('should aggregate Prometheus Registers from Redis when there is only one node', () => {
-      return plugin.init(configuration, context).then(() => {
-        plugin.context.accessors.sdk.ms.scan.resolves({
-          cursor: 0,
-          values: [plugin.key]
-        });
-        sandbox.spy(Prometheus.AggregatorRegistry, 'aggregate');
-        return plugin.syncRegisters().then(registry => {
-          should(plugin.context.accessors.sdk.ms.scan)
-            .be.calledWith(0, { match: '{kuzzle_prometheus}-*' })
-            .and.be.ok();
-          should(
-            Prometheus.AggregatorRegistry.aggregate.args[0].length
-          ).be.equals(1);
-          should(registry).be.instanceOf(Prometheus.Registry);
-        });
-      });
-    });
-
-    it('should aggregate Prometheus Registers from Redis when there is multiple nodes', () => {
-      return plugin.init(configuration, context).then(() => {
-        plugin.context.accessors.sdk.ms.scan.resolves({
-          cursor: 0,
-          values: [
-            plugin.key,
-            'kuzzle_prometheus_fakeHost_MAC_IP',
-            'kuzzle_prometheus_fakeHost2_MAC2_IP2'
-          ]
-        });
-
-        plugin.context.accessors.sdk.ms.mget.resolves([
-          JSON.stringify(plugin.registry.getMetricsAsJSON()),
-          JSON.stringify(plugin.registry.getMetricsAsJSON())
-        ]);
-        sandbox.spy(Prometheus.AggregatorRegistry, 'aggregate');
-        return plugin.syncRegisters().then(registry => {
-          should(plugin.context.accessors.sdk.ms.scan)
-            .be.calledWith(0, { match: '{kuzzle_prometheus}-*' })
-            .and.be.ok();
-          should(plugin.context.accessors.sdk.ms.mget)
-            .be.calledWith([
-              'kuzzle_prometheus_fakeHost_MAC_IP',
-              'kuzzle_prometheus_fakeHost2_MAC2_IP2'
-            ])
-            .and.be.ok();
-          should(registry).be.instanceOf(Prometheus.Registry);
         });
       });
     });
