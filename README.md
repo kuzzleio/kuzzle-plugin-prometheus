@@ -38,6 +38,13 @@ an administration console and a set of plugins that provide advanced functionali
 * :books: __[Documentation](https://docs.kuzzle.io)__
 * :email: __[Gitter](https://gitter.im/kuzzleio/kuzzle)__
 
+### Compatibility matrice
+
+| Kuzzle Version | Plugin Version |
+| -------------- | -------------- |
+| 1.10.x         | 1.x.x          | 
+| 2.x.x          | 2.x.x          |
+
 ### Installation
 
 To install this plugin on your Kuzzle stack (for each of your Kuzzle nodes):
