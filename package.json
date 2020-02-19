@@ -27,7 +27,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "codecov": "^3.6.1",
+    "codecov": "^3.6.5",
     "eslint": "^5.13.0",
     "kuzzle-common-objects": "^4.0.1",
     "mocha": "^5.2.0",
