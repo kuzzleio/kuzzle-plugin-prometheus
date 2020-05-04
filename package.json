@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-plugin-prometheus",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Kuzzle plugin: monitoring Kuzzle using Prometheus",
   "main": "lib/index.js",
   "scripts": {
