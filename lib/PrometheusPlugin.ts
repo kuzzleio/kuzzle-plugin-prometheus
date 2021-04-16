@@ -10,7 +10,11 @@ export class PrometheusPlugin extends Plugin {
   private defaultConfig: JSONObject;
   private prometheusController : PrometheusController;
 
-  async init (config: JSONObject, context: PluginContext) {
+  constructor () {
+    super({
+      kuzzleVersion: '>=2.10.2 <3'
+    });
+
     this.defaultConfig = {
       collectSystemMetrics: true,
       systemMetricsInterval: 5000,
@@ -29,12 +33,14 @@ export class PrometheusPlugin extends Plugin {
         ]
       }
     };
+  }
 
-
+  async init (config: JSONObject, context: PluginContext) {
     this.config = { ...this.defaultConfig, ...config };
     this.context = context;
 
     this.prometheusController = new PrometheusController(this.config, this.context);
+    await this.prometheusController.init();
 
     this.api = {
       'prometheus': this.prometheusController.definitions

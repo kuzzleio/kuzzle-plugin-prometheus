@@ -184,7 +184,7 @@ export class PrometheusController {
    * @param {String}  event
    */
   recordRequests(request: KuzzleRequest, event: string) {
-    if (request.input.controller === 'kuzzle-plugin-prometheus/prometheus'
+    if (request.input.controller === 'prometheus'
       && request.input.action === 'metrics'
     ) {
       return;
