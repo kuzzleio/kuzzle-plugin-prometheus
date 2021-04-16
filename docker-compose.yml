@@ -32,5 +32,7 @@ services:
 
   elasticsearch:
     image: kuzzleio/elasticsearch:7
+    logging:
+      driver: none
     ulimits:
       nofile: 65536
