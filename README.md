@@ -44,7 +44,15 @@ an administration console and a set of plugins that provide advanced functionali
 | -------------- | -------------- |
 | 1.10.x         | 1.x.x          | 
 | 2.x.x          | 2.x.x          |
+| 3.x.x          | >= 2.11.x      |
 
+## Local development
+
+You can use the [docker-composer.yml](docker/docker-compose.yml) file provided in this repository to start a Kuzzle stack with this plugin pre-installed.  
+
+```bash
+docker-compose up
+```
 ### Installation
 
 To install this plugin on your Kuzzle stack (for each of your Kuzzle nodes):
@@ -101,7 +109,7 @@ global:
 
 scrape_configs:
   - job_name: 'kuzzle'
-    metrics_path: /_plugin/kuzzle-plugin-prometheus/metrics
+    metrics_path: /_/prometheus/metrics
     static_configs:
       - targets: ['kuzzleEndpoint:7512'] # 
 ```
