@@ -40,7 +40,7 @@ export class PrometheusController {
    * @param config 
    * @param context 
    */
-  constructor(config: JSONObject, context: PluginContext) {
+  constructor (config: JSONObject, context: PluginContext) {
     this.config = config;
     this.context = context;
 
@@ -53,7 +53,7 @@ export class PrometheusController {
     };
   }
 
-  async init() {
+  async init () {
     this._hostname = os.hostname();
 
     this._mac = <string> await util.promisify(macaddress.one)();
@@ -150,7 +150,7 @@ export class PrometheusController {
    *
    * @param {String} event
    */
-  recordConnections(_, event: string) {
+  recordConnections (_, event: string) {
     switch (event) {
       case 'connection:new':
         this._kuzzleMetrics.connections.inc();
@@ -167,7 +167,7 @@ export class PrometheusController {
    *
    * @param {String} event
    */
-  recordRooms(_, event: string) {
+  recordRooms (_, event: string) {
     switch (event) {
       case 'core:hotelClerk:addSubscription':
         this._kuzzleMetrics.rooms.inc();
@@ -184,7 +184,7 @@ export class PrometheusController {
    * @param {Request} request
    * @param {String}  event
    */
-  recordRequests(request: KuzzleRequest, event: string) {
+  recordRequests (request: KuzzleRequest, event: string) {
     if (request.input.controller === 'prometheus'
       && request.input.action === 'metrics'
     ) {
@@ -228,7 +228,7 @@ export class PrometheusController {
    *
    * @param {Request} request
    */
-  async metrics(request: KuzzleRequest) : Promise<string> {
+  async metrics (request: KuzzleRequest) : Promise<string> {
     if (request.context.connection.protocol === 'http') {
       request.response.setHeader('Content-Type', this._registry.contentType);
       request.response.raw = true;
