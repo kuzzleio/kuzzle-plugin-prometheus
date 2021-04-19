@@ -1,5 +1,4 @@
 import { Backend } from 'kuzzle';
-import PluginCluster from 'kuzzle/plugins/available/kuzzle-plugin-cluster';
 
 import { PrometheusPlugin } from '../../../index';
 
