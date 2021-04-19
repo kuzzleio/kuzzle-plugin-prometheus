@@ -12,7 +12,7 @@ import macaddress from 'macaddress';
 
 const getIPFromMAC = mac => {
   const interfaces : NodeJS.Dict<os.NetworkInterfaceInfo[]> = os.networkInterfaces();
-  for (const inet in interfaces) {
+  for (const inet of Object.keys(interfaces)) {
     for (const settings of interfaces[inet]) {
       if (settings.mac === mac) {
         return settings.address;
