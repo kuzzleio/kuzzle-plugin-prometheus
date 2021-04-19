@@ -32,7 +32,7 @@ export class PrometheusController {
   private _kuzzleMetrics? : JSONObject;
   private _systemMetricsJob? : any;
 
-  public definitions: ControllerDefinition;
+  public definition: ControllerDefinition;
   public hooks: JSONObject;
 
   /**
@@ -44,7 +44,7 @@ export class PrometheusController {
     this.config = config;
     this.context = context;
 
-    this.definitions = {
+    this.definition = {
       actions: {
         metrics: {
           handler: this.metrics.bind(this),
