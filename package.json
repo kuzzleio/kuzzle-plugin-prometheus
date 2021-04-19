@@ -13,7 +13,7 @@
     "prod": "node features/fixtures/application/app.js",
     "dev": "NODE_ENV=development npx nodemon --ignore features/step_definitions --ignore frontend --ignore frontend-dev --ext 'js,json,ts' --inspect=0.0.0.0:9229 --exec node -r ts-node/register features/fixtures/application/app.ts",
     "test": "npm run test:lint && npm run test:unit && npm run test:functional",
-    "test:unit": "echo 'No Unit tests defined'",
+    "test:unit": "mocha",
     "test:functional": "cucumber-js --exit --fail-fast",
     "test:lint": "eslint ./lib --ext .ts --config .eslintrc.json",
     "test:lint:fix": "eslint ./lib --ext .ts --config .eslintrc.json --fix",

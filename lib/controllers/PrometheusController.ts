@@ -8,6 +8,7 @@ import {
 import os from 'os';
 import Prometheus from 'prom-client';
 import util from 'util';
+import macaddress from 'macaddress';
 
 const getIPFromMAC = mac => {
   const interfaces : NodeJS.Dict<os.NetworkInterfaceInfo[]> = os.networkInterfaces();
@@ -55,7 +56,7 @@ export class PrometheusController {
   async init() {
     this._hostname = os.hostname();
 
-    this._mac = await util.promisify(require('macaddress').one)();
+    this._mac = <string> await util.promisify(macaddress.one)();
     this._ip = getIPFromMAC(this._mac);
     this._registry = Prometheus.register;
 
