@@ -43,7 +43,7 @@ export class PrometheusPlugin extends Plugin {
     await this.prometheusController.init();
 
     this.api = {
-      'prometheus': this.prometheusController.definitions
+      'prometheus': this.prometheusController.definition
     };
 
     this.hooks = {
