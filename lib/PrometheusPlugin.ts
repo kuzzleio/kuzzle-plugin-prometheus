@@ -12,7 +12,7 @@ export class PrometheusPlugin extends Plugin {
 
   constructor () {
     super({
-      kuzzleVersion: '>=2.10.2 <3'
+      kuzzleVersion: '>=2.11.0 <3'
     });
 
     this.defaultConfig = {
