@@ -4,12 +4,12 @@ services:
   nginx:
     image: nginx:1.15-alpine
     ports:
-        - 7512:7512
+      - 7512:7512
     depends_on:
-        - kuzzle
+      - kuzzle
     volumes:
-        - "./nginx.conf:/etc/nginx/conf.d/kuzzle.conf"
-        
+      - "./nginx.conf:/etc/nginx/conf.d/kuzzle.conf"
+
   kuzzle:
     image: kuzzleio/kuzzle-runner
     command: ${DOCKER_COMMAND:-npm run dev}
