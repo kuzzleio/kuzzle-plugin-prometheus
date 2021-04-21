@@ -55,13 +55,46 @@ docker-compose up
 ```
 ### Installation
 
-To install this plugin on your Kuzzle stack (for each of your Kuzzle nodes):
+To install this plugin on your Kuzzle stack (for each of your Kuzzle nodes),
+you will first need a Kuzzle Application like so. (see [Getting Started](/core/2/guides/getting-started))
+
+```typescript
+import { Backend } from 'kuzzle';
+
+const app = new Backend('kuzzle');
+
+app.start()
+  .then(() => {
+    app.log.info('Application started');
+  })
+  .catch(console.error);
+```
+
+Once you have it, you will need to:
+- Import the Prometheus plugin,
+- Create a new instance of the plugin
+- And then use it in your application.
+  
+You will end up with something like this:
+
+```typescript
+import { Backend } from 'kuzzle';
+import { PrometheusPlugin } from 'kuzzle-plugin-prometheus'; // Import the prometheus plugin
+
+const app = new Backend('kuzzle');
+
+const prometheusPlugin = new PrometheusPlugin(); // Create a new instance of the prometheus plugin
+
+app.plugin.use(prometheusPlugin); // Add the plugin to your application
+
+app.start()
+  .then(() => {
+    app.log.info('Application started');
+  })
+  .catch(console.error);
 
 ```
-$ git clone https://github.com/kuzzleio/kuzzle-plugin-prometheus.git /path/to/your/kuzzle/plugins/available/kuzzle-plugin-prometheus
-$ cd /path/to/your/kuzzle/plugins/available/kuzzle-plugin-prometheus && npm install
-$ ln -sr ./ ../../enabled/kuzzle-plugin-prometheus && cd -
-```
+
 
 ### Configuration
 
