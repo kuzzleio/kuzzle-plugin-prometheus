@@ -123,15 +123,6 @@ export class PrometheusController {
       })
     };
 
-    this.hooks = {
-      'connection:new': this.recordConnections.bind(this),
-      'connection:remove': this.recordConnections.bind(this),
-      'core:hotelClerk:addSubscription': this.recordRooms.bind(this),
-      'core:hotelClerk:removeRoomForCustomer': this.recordRooms.bind(this),
-      'request:onSuccess': this.recordRequests.bind(this),
-      'request:onError': this.recordRequests.bind(this)
-    };
-
     if (this.config.collectSystemMetrics) {
       this._systemMetricsJob = Prometheus.collectDefaultMetrics({
         register: this._registry,
@@ -230,7 +221,11 @@ export class PrometheusController {
    */
   async metrics (request: KuzzleRequest) : Promise<string> {
     if (request.context.connection.protocol === 'http') {
-      request.response.setHeader('Content-Type', this._registry.contentType);
+      request.response.configure({
+        headers: {
+          'Content-Type': this._registry.contentType
+        }
+      });
       request.response.raw = true;
       return this._registry.metrics();
     }

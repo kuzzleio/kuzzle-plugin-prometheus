@@ -235,10 +235,10 @@ describe('PrometheusPlugin', () => {
           context: {
             connection: { protocol: 'http' }
           },
-          response: { setHeader: sinon.stub() }
+          response: { configure: sinon.stub() }
         });
         return plugin.prometheusController.metrics(request).then(response => {
-          should(request.response.setHeader).be.calledOnce();
+          should(request.response.configure).be.calledOnce();
           should(response).be.an.instanceOf(String);
         });
       });
@@ -251,10 +251,10 @@ describe('PrometheusPlugin', () => {
           context: {
             connection: { protocol: 'websocket' }
           },
-          response: { setHeader: sinon.stub() }
+          response: { configure: sinon.stub() }
         });
         return plugin.prometheusController.metrics(request).then(response => {
-          !should(request.response.setHeader).not.be.called();
+          !should(request.response.configure).not.be.called();
           should(response).be.undefined();
         });
       });

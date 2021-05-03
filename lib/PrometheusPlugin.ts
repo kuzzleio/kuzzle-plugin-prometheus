@@ -90,7 +90,12 @@ export class PrometheusPlugin extends Plugin {
     };
 
     this.hooks = {
-      ...this.prometheusController.hooks
+      'connection:new': this.prometheusController.recordConnections.bind(this),
+      'connection:remove': this.prometheusController.recordConnections.bind(this),
+      'core:hotelClerk:addSubscription': this.prometheusController.recordRooms.bind(this),
+      'core:hotelClerk:removeRoomForCustomer': this.prometheusController.recordRooms.bind(this),
+      'request:onSuccess': this.prometheusController.recordRequests.bind(this),
+      'request:onError': this.prometheusController.recordRequests.bind(this)
     };
   }
 }
