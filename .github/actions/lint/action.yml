@@ -3,7 +3,7 @@ description: Run ESLint
 runs:
   using: "composite"
   steps:
-    - name: Install deps
+    - name: Run linter
       shell: bash
       run: |
            npm ci
