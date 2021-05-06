@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "description": "Kuzzle plugin: monitoring Kuzzle using Prometheus",
   "author": {
-    "name": "Kuzzle Team"
+    "name": "The Kuzzle Team <support@kuzzle.io>"
   },
   "scripts": {
     "npm:docker": "docker-compose run kuzzle npm",
@@ -37,6 +37,7 @@
     "type": "git",
     "url": "git+https://github.com/kuzzleio/kuzzle-plugin-prometheus.git"
   },
+  "issues": "https://github.com/kuzzleio/kuzzle-plugin-prometheus/issues",
   "keywords": [
     "kuzzle",
     "plugin",
