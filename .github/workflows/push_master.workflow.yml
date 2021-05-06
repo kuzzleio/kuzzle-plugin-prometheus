@@ -9,6 +9,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-18.04
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
@@ -30,6 +31,7 @@ jobs:
   unit-tests:
      name: Unit Tests
      runs-on: ubuntu-18.04
+     timeout-minutes: 30
      needs: [lint]
      steps:
        - uses: actions/checkout@v2
@@ -48,3 +50,32 @@ jobs:
          with:
            node-version: "12"
        - uses: ./.github/actions/unit-tests
+
+   npm-deploy:
+    name: Publish Package to NPM.js
+    runs-on: ubuntu-18.04
+    needs: [lint, unit-tests]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.npm
+            **/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
