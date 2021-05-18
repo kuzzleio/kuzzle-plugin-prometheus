@@ -5,5 +5,6 @@ class ConfigurationMock {
     this.systemMetricsInterval = 5000;
   }
 }
-
+  
 module.exports = ConfigurationMock;
+  

@@ -1,45 +1,78 @@
 {
   "name": "kuzzle-plugin-prometheus",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "Kuzzle plugin: monitoring Kuzzle using Prometheus",
-  "main": "lib/index.js",
+  "author": {
+    "name": "The Kuzzle Team <support@kuzzle.io>"
+  },
   "scripts": {
-    "test": "npm run --silent lint && npm run unit-testing",
-    "lint": "./node_modules/.bin/eslint --max-warnings=0 ./lib ./test",
-    "unit-testing": "nyc --reporter=text-summary --reporter=lcov mocha",
-    "codecov": "codecov"
+    "npm:docker": "docker-compose run kuzzle npm",
+    "install:docker": "npm run npm:docker install kuzzle",
+    "dev:docker": "docker-compose up",
+    "services": "npx kourou app:start-services",
+    "prod": "node application/app.js",
+    "dev": "NODE_ENV=development npx nodemon --ignore features/step_definitions --ignore frontend --ignore frontend-dev --ext 'js,json,ts' --inspect=0.0.0.0:9229 --exec node -r ts-node/register application/app.ts",
+    "test": "npm run test:lint && npm run test:unit && npm run test:functional",
+    "test:unit": "mocha",
+    "test:functional": "cucumber-js --exit --fail-fast",
+    "test:lint": "eslint ./lib --ext .ts --config .eslintrc.json",
+    "test:lint:fix": "eslint ./lib --ext .ts --config .eslintrc.json --fix",
+    "build": "tsc --build tsconfig.json",
+    "clean": "touch index.ts && npm run build | grep TSFILE | cut -d' ' -f 2 | xargs rm",
+    "package:create": "npm run build && npm pack",
+    "doc:prepare": "npx kuzdoc framework:install",
+    "doc:dev": "npx kuzdoc repo:dev -d /official-plugins/workflows/1/ -v 1",
+    "doc:build": "npx kuzdoc repo:build -d /official-plugins/workflows/1/ -v 1",
+    "doc:upload": "npx kuzdoc repo:deploy -d /official-plugins/workflows/1/ -v 1",
+    "doc:cloudfront": "npx kuzdoc repo:cloudfront -d /official-plugins/workflows/1/*",
+    "doc:deploy": "npm run doc:upload && npm run doc:cloudfront"
+  },
+  "main": "index.ts",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "macaddress": "^0.2.9",
+    "prom-client": "^11.3.0"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kuzzleio/kuzzle-plugin-prometheus.git"
   },
+  "issues": "https://github.com/kuzzleio/kuzzle-plugin-prometheus/issues",
   "keywords": [
     "kuzzle",
     "plugin",
     "monitoring",
     "prometheus"
   ],
-  "author": {
-    "name": "Kuzzle Team"
-  },
-  "bugs": {
-    "url": "https://github.com/kuzzleio/kuzzle-plugin-prometheus/issues"
-  },
-  "license": "Apache-2.0",
   "devDependencies": {
-    "codecov": "^3.6.1",
-    "eslint": "^5.13.0",
-    "kuzzle-common-objects": "^4.0.1",
-    "mocha": "^5.2.0",
-    "nyc": "^13.2.0",
-    "should": "^13.2.3",
+    "kuzzle": "^2.11.0",
+    "@types/node": "^14.6.0",
+    "@typescript-eslint/eslint-plugin": "^3.9.1",
+    "@typescript-eslint/parser": "^3.9.1",
+    "cucumber": "^6.0.5",
+    "eslint": "^7.7.0",
+    "eslint-friendly-formatter": "^4.0.1",
+    "eslint-loader": "^4.0.2",
+    "mocha": "8.0.1",
+    "mock-require": "^3.0.3",
+    "nodemon": "^2.0.7",
+    "rewire": "^5.0.0",
+    "should": "13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "^7.5.0"
+    "sinon": "^9.0.3",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
   },
-  "dependencies": {
-    "macaddress": "^0.2.9",
-    "prom-client": "^11.3.0"
+  "peerDependencies": {
+    "kuzzle": "^2.11.0"
   },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.d.ts",
+    "lib/**/*.json"
+  ],
   "maintainers": [
     {
       "name": "kuzzle",
