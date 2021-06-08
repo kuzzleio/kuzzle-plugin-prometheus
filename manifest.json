@@ -1,5 +1,0 @@
-{
-  "name": "kuzzle-plugin-prometheus",
-  "version": "0.1.0",
-  "kuzzleVersion": ">=2.0.0 <3.0.0"
-}

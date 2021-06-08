@@ -6,10 +6,11 @@ class RequestMock {
     this.response = {};
     this.timestamp = Date.now()
   }
-
+  
   init(args) {
     Object.assign(this, args);
   }
 }
-
+  
 module.exports = RequestMock;
+  
