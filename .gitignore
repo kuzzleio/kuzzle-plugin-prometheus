@@ -4,5 +4,10 @@ node_modules
 coverage
 build
 
-*.d.ts
-*.js.map
+lib/**/*.js
+lib/**/*.d.ts
+lib/**/*.js.map
+
+index.d.ts
+index.js.map
+index.js
