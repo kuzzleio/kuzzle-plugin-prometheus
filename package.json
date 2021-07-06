@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-plugin-prometheus",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Kuzzle plugin: monitoring Kuzzle using Prometheus",
   "author": {
     "name": "The Kuzzle Team <support@kuzzle.io>"
@@ -28,7 +28,7 @@
     "doc:cloudfront": "npx kuzdoc repo:cloudfront -d /official-plugins/workflows/1/*",
     "doc:deploy": "npm run doc:upload && npm run doc:cloudfront"
   },
-  "main": "index.ts",
+  "main": "index.js",
   "license": "Apache-2.0",
   "dependencies": {
     "macaddress": "^0.2.9",
@@ -65,7 +65,7 @@
     "typescript": "^3.9.7"
   },
   "peerDependencies": {
-    "kuzzle": "^2.11.0"
+    "kuzzle": "^2.13.3"
   },
   "files": [
     "index.js",
