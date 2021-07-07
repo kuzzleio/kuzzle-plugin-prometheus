@@ -37,8 +37,8 @@ export class PrometheusController {
 
   /**
    * PrometheusController constructor
-   * @param config 
-   * @param context 
+   * @param config
+   * @param context
    */
   constructor (config: JSONObject, context: PluginContext) {
     this.config = config;
