@@ -90,12 +90,14 @@ export class PrometheusPlugin extends Plugin {
     };
 
     this.hooks = {
-      'connection:new': this.prometheusController.recordConnections.bind(this.prometheusController),
-      'connection:remove': this.prometheusController.recordConnections.bind(this.prometheusController),
-      'core:hotelClerk:addSubscription': this.prometheusController.recordRooms.bind(this.prometheusController),
-      'core:hotelClerk:removeRoomForCustomer': this.prometheusController.recordRooms.bind(this.prometheusController),
-      'request:onSuccess': this.prometheusController.recordRequests.bind(this.prometheusController),
-      'request:onError': this.prometheusController.recordRequests.bind(this.prometheusController)
+      'connection:new': () => this.prometheusController.recordConnections('inc'),
+      'connection:remove': () => this.prometheusController.recordConnections('dec'),
+      'core:realtime:room:create:after': () => this.prometheusController.recordRooms('inc'),
+      'core:realtime:room:remove:before': () => this.prometheusController.recordRooms('dec'),
+      'core:realtime:user:subscribe:after': () => this.prometheusController.recordSubscriptions('inc'),
+      'core:realtime:user:unsubscribe:after': () => this.prometheusController.recordSubscriptions('dec'),
+      'request:onSuccess': (request, event) => this.prometheusController.recordRequests(request, event),
+      'request:onError': (request, event) => this.prometheusController.recordRequests(request, event)
     };
   }
 }
