@@ -3,6 +3,7 @@ import {
   PluginContext,
   KuzzleRequest,
   JSONObject,
+  PluginImplementationError,
 } from 'kuzzle';
 
 import os from 'os';
@@ -117,10 +118,14 @@ export class PrometheusController {
         name: `kuzzle_active_rooms`,
         help: `Kuzzle active rooms counter`
       }),
+      subscriptions: new Prometheus.Gauge({
+        name: `kuzzle_active_subscriptions`,
+        help: `Kuzzle active subscriptions counter`
+      }),
       connections: new Prometheus.Gauge({
         name: `kuzzle_active_connections`,
         help: `Kuzzle active connections counter`
-      })
+      }),
     };
 
     if (this.config.collectSystemMetrics) {
@@ -141,32 +146,26 @@ export class PrometheusController {
    *
    * @param {String} event
    */
-  recordConnections (_, event: string) {
-    switch (event) {
-      case 'connection:new':
-        this._kuzzleMetrics.connections.inc();
-        break;
-      case 'connection:remove':
-        this._kuzzleMetrics.connections.dec();
-        break;
-    }
+  recordConnections (action: 'inc' | 'dec') {
+    this.updateGauge('connections', action);
   }
 
   /**
-   * Record rooms creation to Prometheus Registry
-   * when 'room:new' Kuzzle Event is triggered.
+   * Record active rooms to Prometheus Registry
    *
    * @param {String} event
    */
-  recordRooms (_, event: string) {
-    switch (event) {
-      case 'core:hotelClerk:addSubscription':
-        this._kuzzleMetrics.rooms.inc();
-        break;
-      case 'core:hotelClerk:removeRoomForCustomer':
-        this._kuzzleMetrics.rooms.dec();
-        break;
-    }
+  recordRooms (action: 'inc' | 'dec') {
+    this.updateGauge('rooms', action);
+  }
+
+  /**
+   * Record active subscriptions to Prometheus Registry
+   *
+   * @param {String} event
+   */
+  recordSubscriptions (action: 'inc' | 'dec') {
+    this.updateGauge('subscriptions', action);
   }
 
   /**
@@ -228,6 +227,19 @@ export class PrometheusController {
       });
       request.response.raw = true;
       return this._registry.metrics();
+    }
+  }
+
+  private updateGauge (name: string, action: 'inc' | 'dec') {
+    if (! this._kuzzleMetrics[name]) {
+      throw new PluginImplementationError(`"${name}" is not a valid gauge`);
+    }
+
+    if (action === 'inc') {
+      this._kuzzleMetrics[name].inc();
+    }
+    else {
+      this._kuzzleMetrics[name].dec();
     }
   }
 }

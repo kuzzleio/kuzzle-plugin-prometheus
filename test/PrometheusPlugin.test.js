@@ -32,7 +32,7 @@ describe('PrometheusPlugin', () => {
           Prometheus.Histogram
         );
         should(plugin.prometheusController._kuzzleMetrics.rooms).be.instanceOf(Prometheus.Gauge);
-        should(Object.keys(plugin.hooks).length).be.equals(6);
+        should(Object.keys(plugin.hooks).length).be.equals(8);
       });
     });
 
@@ -184,43 +184,77 @@ describe('PrometheusPlugin', () => {
   });
 
   describe('#recordRooms', () => {
-    it('should increment active rooms number when `core:hotelClerk:addSubscription` event triggered', () => {
+    it('should increment active rooms number', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.prometheusController._kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.prometheusController._kuzzleMetrics.rooms, 'dec');
-        plugin.prometheusController.recordRooms({}, 'core:hotelClerk:addSubscription');
+
+        plugin.prometheusController.recordRooms('inc');
+
         should(plugin.prometheusController._kuzzleMetrics.rooms.inc).be.calledOnce();
         should(plugin.prometheusController._kuzzleMetrics.rooms.dec).not.be.called();
       });
     });
 
-    it('should decrement active rooms number when `core:hotelClerk:removeRoomForCustomer` event triggered', () => {
+    it('should decrement active rooms number', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.prometheusController._kuzzleMetrics.rooms, 'inc');
         sandbox.spy(plugin.prometheusController._kuzzleMetrics.rooms, 'dec');
-        plugin.prometheusController.recordRooms({}, 'core:hotelClerk:removeRoomForCustomer');
+
+        plugin.prometheusController.recordRooms('dec');
+
         should(plugin.prometheusController._kuzzleMetrics.rooms.dec).be.calledOnce();
         should(plugin.prometheusController._kuzzleMetrics.rooms.inc).not.be.called();
       });
     });
   });
 
+  describe('#recordSubscriptions', () => {
+    it('should increment active subscriptions number', () => {
+      return plugin.init(configuration, context).then(() => {
+        sandbox.spy(plugin.prometheusController._kuzzleMetrics.subscriptions, 'inc');
+        sandbox.spy(plugin.prometheusController._kuzzleMetrics.subscriptions, 'dec');
+
+        plugin.prometheusController.recordSubscriptions('inc');
+
+        should(plugin.prometheusController._kuzzleMetrics.subscriptions.inc).be.calledOnce();
+        should(plugin.prometheusController._kuzzleMetrics.subscriptions.dec).not.be.called();
+      });
+    });
+
+    it('should decrement active subscriptions number', () => {
+      return plugin.init(configuration, context).then(() => {
+        sandbox.spy(plugin.prometheusController._kuzzleMetrics.subscriptions, 'inc');
+        sandbox.spy(plugin.prometheusController._kuzzleMetrics.subscriptions, 'dec');
+
+        plugin.prometheusController.recordSubscriptions('dec');
+
+        should(plugin.prometheusController._kuzzleMetrics.subscriptions.dec).be.calledOnce();
+        should(plugin.prometheusController._kuzzleMetrics.subscriptions.inc).not.be.called();
+      });
+    });
+  });
+
   describe('#recordConnections', () => {
-    it('should increment active connections number when `connection:new` event triggered', () => {
+    it('should increment active connections number', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.prometheusController._kuzzleMetrics.connections, 'inc');
         sandbox.spy(plugin.prometheusController._kuzzleMetrics.connections, 'dec');
-        plugin.prometheusController.recordConnections({}, 'connection:new');
+
+        plugin.prometheusController.recordConnections('inc');
+
         should(plugin.prometheusController._kuzzleMetrics.connections.inc).be.calledOnce();
         should(plugin.prometheusController._kuzzleMetrics.connections.dec).not.be.called();
       });
     });
 
-    it('should decrement active connections number when `connection:remove` event triggered', () => {
+    it('should decrement active connections number', () => {
       return plugin.init(configuration, context).then(() => {
         sandbox.spy(plugin.prometheusController._kuzzleMetrics.connections, 'inc');
         sandbox.spy(plugin.prometheusController._kuzzleMetrics.connections, 'dec');
-        plugin.prometheusController.recordConnections({}, 'connection:remove');
+
+        plugin.prometheusController.recordConnections('dec');
+
         should(plugin.prometheusController._kuzzleMetrics.connections.dec).be.calledOnce();
         should(plugin.prometheusController._kuzzleMetrics.connections.inc).not.be.called();
       });
