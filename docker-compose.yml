@@ -1,58 +1,110 @@
-version: "3"
+version: '3.4'
+
 
 services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    ports:
+      - "7512:7512"
+      - "1883:1883"
+    command:
+      - --log.level=DEBUG
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.endpoint=unix:///var/run/docker.sock
+      - --entrypoints.kuzzle_http.address=:7512
+      - --entrypoints.kuzzle_mqtt.address=:1883
+    depends_on:
+      kuzzle:
+        condition: service_healthy
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
   kuzzle:
     image: kuzzleio/kuzzle-runner
-    command: ${DOCKER_COMMAND:-npm run dev}
+    command: bash -c "npm install && npm run dev"
+    volumes:
+      - ".:/var/app"
     cap_add:
       - SYS_PTRACE
     ulimits:
       nofile: 65536
     sysctls:
       - net.core.somaxconn=8192
-    volumes:
-      - .:/var/app
-    ports:
-      - "7512:7512"
-      - "9229:9229"
-      - "1883:1883"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://kuzzle:7512/_healthCheck"]
+      timeout: 1s
+      interval: 2s
+      retries: 10
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      # Kuzzle HTTP/WS
+      - "traefik.http.services.kuzzle_http.loadbalancer.server.port=7512"
+      - "traefik.http.services.kuzzle_http.loadbalancer.healthCheck.path=/_healthCheck"
+      - "traefik.http.services.kuzzle_http.loadbalancer.healthCheck.interval=5s"
+      - "traefik.http.routers.kuzzle.entrypoints=kuzzle_http"
+      - "traefik.http.routers.kuzzle.rule=Host(`localhost`)"
+      - "traefik.http.routers.kuzzle.service=kuzzle_http"
+      # Kuzzle MQTT
+      - "traefik.tcp.services.kuzzle_mqtt.loadbalancer.server.port=1883"
+      - "traefik.tcp.routers.kuzzle.entrypoints=kuzzle_mqtt"
+      - "traefik.tcp.routers.kuzzle.rule=HostSNI(`*`)"
+      - "traefik.tcp.routers.kuzzle.service=kuzzle_mqtt"
     environment:
       - kuzzle_services__storageEngine__client__node=http://elasticsearch:9200
       - kuzzle_services__storageEngine__commonMapping__dynamic=true
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
+      - kuzzle_server__protocols__mqtt__enabled=true
+      - kuzzle_server__protocols__mqtt__developmentMode=false
+      - kuzzle_limits__loginsPerSecond=50
       - NODE_ENV=${NODE_ENV:-development}
-      - DEBUG=${DEBUG:-none}
-      # - DEBUG=${DEBUG:-kuzzle:*,-kuzzle:entry-point:protocols:websocket,-kuzzle:cluster:heartbeat}
 
   redis:
-    image: redis:5
+    image: redis:6
+    container_name: kuzzle_redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    ports:
+      - "6379:6379"
 
   elasticsearch:
     image: kuzzleio/elasticsearch:7
-    logging:
-      driver: none
+    container_name: kuzzle_elasticsearch
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+    ports:
+      - "9200:9200"
     ulimits:
       nofile: 65536
 
   prometheus:
     image: prom/prometheus
     container_name: prometheus
+    volumes:
+      - "./config/prometheus.yml:/etc/prometheus/prometheus.yml"
     depends_on:
-      - kuzzle
+      kuzzle:
+        condition: service_healthy
     ports:
       - "9090:9090"
-    links:
-      - kuzzle
 
   grafana:
     image: grafana/grafana
     container_name: grafana
+    volumes:
+      - "./config/grafana.yml:/etc/grafana/provisioning/datasources/datasource.yaml"
     ports:
       - "3000:3000"
-    depends_on:
-      - prometheus
-    links:
-      - prometheus

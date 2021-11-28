@@ -1,0 +1,18 @@
+ {
+ "plugins": {
+    "kuzzle-plugin-prometheus": {
+      "defaultMetrics": {
+        "enabled": true,
+        "prefix": "kuzzle_",
+        "eventLoopMonitoringPrecision": 10,
+        "gcDurationBuckets": [0.001, 0.01, 0.1, 1, 2, 5]
+      },
+      "labels": {
+        "all": {},
+        "application": {},
+        "core": {},
+        "default": {}
+      }
+    }
+  }
+}

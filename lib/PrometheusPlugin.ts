@@ -23,81 +23,249 @@
 import {
   Plugin,
   PluginContext,
-  JSONObject
+  KuzzleRequest,
+  JSONObject,
+  BadRequestError
 } from 'kuzzle';
 
-import { PrometheusController } from './controllers';
+import _ from 'lodash';
+
+import { MetricService } from './services/MetricService';
+
+/**
+ * Promtheus Plugin configuration type
+ * @type {PromtheusPluginConfig}
+ * @private
+ */
+export type PluginConfiguration = {
+  metrics: {
+    application: {
+      /**
+       * Enable or disable the application metrics toolkit
+       */
+      enabled: boolean;
+
+      /**
+       * String to prefix application metrics with
+       * @default 'kuzzle_'
+       */
+      prefix: string;
+
+      /**
+       * Labels to add to metrics regitered by the Kuzzle application
+       * @default {}
+       */
+      labels: {[key: string]: string};
+    },
+    core: {
+      /**
+       * Enable or disable request duration metrics
+       * This is a plugin provided metric using Kuzzle hooks on request:* events
+       */
+      monitorRequestDuration: boolean;
+
+      /**
+       * String to prefix core metrics with
+       * @default 'kuzzle_'
+       */
+      prefix: string;
+    },
+    default: {
+      /**
+       * Enable or disable the Node.js process metrics (EventLoop lags, GC, CPU, RAM etc...)
+       * @default true
+       */
+      enabled: boolean;
+
+      /**
+       * The event loop monitoring sampling rate in milliseconds
+       * @default 10
+       */
+      eventLoopMonitoringPrecision: number;
+
+      /**
+       * The custom buckets for GC duration histogram in seconds
+       * @default [0.001,0.01,0.1,1,2,5]
+       */
+      gcDurationBuckets: number[];
+
+      /**
+       * String to prefix default metrics with
+       * @default 'kuzzle_'
+       */
+      prefix: string;
+    }
+  };
+}
 
 /**
  * @class PrometheusPlugin
  *
  * @property {KuzzlePluginContext}     context        Kuzzle plugin context
  * @property {Object.<string, string>} hooks          Kuzzle plugin hooks
- * @property {Routes}                  routes         Kuzzle plugin routes
- * @property {Controllers}             controllers    Kuzzle plugin controllers
- * @property {Prometheus.Registry}     registry       Prometheus Registry
- * @property {Object.<string, Object>} kuzzleMetrics  Prometheus metrics dedicated for Kuzzle
- * @property {String}                  key            Key used when pushing Prometheus Registry to Redis
- * @property {String}                  hostname       Hostname
- * @property {String}                  MAC            Host MAC address
- * @property {String}                  IP             Host IPv4 adress
+ * @property {Object.<string, string>} pipes          Kuzzle plugin pipes
+ * @property {MetricService}           metricService  Metric service
+ * @property {PluginConfiguration}     config         Plugin configuration
  *
  * @externs
  */
 export class PrometheusPlugin extends Plugin {
-  private defaultConfig: JSONObject;
-  private prometheusController : PrometheusController;
+  public config: PluginConfiguration;
+  public context: PluginContext;
+  public _manifest: any;
 
-   /**
-   * PrometheusPlugin constructor
-   *
-   * @returns {PrometheusPlugin}
+  /**
+   * Service to manage, update and format Prometheus metrics
    */
-  constructor () {
+  private metricService: MetricService;
+
+  constructor() {
     super({
-      kuzzleVersion: '>=2.11.0 <3'
+      kuzzleVersion: '>=2.14.0 <3' // TODO: update to 2.16.0 when making the PR
     });
 
-    this.defaultConfig = {
-      collectSystemMetrics: true,
-      systemMetricsInterval: 5000,
-      labels: {
-        common: [
-          'nodeHost',
-          'nodeMAC',
-          'nodeIP'
-        ],
-        kuzzle: [
-          'controller',
-          'action',
-          'event',
-          'protocol',
-          'status'
-        ]
+    /**
+     * Default plugin configuration
+     */
+    this.config = {
+      metrics: {
+        application: {
+          enabled: true,
+          prefix: 'kuzzle_',
+          labels: {},
+        },
+        default: {
+          enabled: true,
+          prefix: 'kuzzle_',
+          eventLoopMonitoringPrecision: 10,
+          gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
+        },
+        core: {
+          monitorRequestDuration: true,
+          prefix: 'kuzzle_',
+        }
       }
     };
   }
 
-  async init (config: JSONObject, context: PluginContext) {
-    this.config = { ...this.defaultConfig, ...config };
+  /**
+   * Plugin initialization
+   * @param {PluginConfiguration} config  - Plugin configuration
+   * @param {PluginContext}       context - Kuzzle plugin context
+   */
+  async init(config: PluginConfiguration, context: PluginContext) {
+    this.config = _.merge(this.config, config);
     this.context = context;
 
-    this.prometheusController = new PrometheusController(this.config, this.context);
-    await this.prometheusController.init();
-
-    this.api = {
-      'prometheus': this.prometheusController.definition
+    this.pipes = {
+      'server:afterMetrics': async request => this.guard(request, this.pipeFormatMetrics.bind(this)),
     };
 
     this.hooks = {
-      'connection:new': () => this.prometheusController.recordConnections('inc'),
-      'connection:remove': () => this.prometheusController.recordConnections('dec'),
-      'core:realtime:room:create:after': () => this.prometheusController.recordRooms('inc'),
-      'core:realtime:room:remove:before': () => this.prometheusController.recordRooms('dec'),
-      'core:realtime:user:subscribe:after': () => this.prometheusController.recordSubscriptions('inc'),
-      'core:realtime:user:unsubscribe:after': () => this.prometheusController.recordSubscriptions('dec'),
-      'request:onSuccess': (request, event) => this.prometheusController.recordRequests(request, event),
-      'request:onError': (request, event) => this.prometheusController.recordRequests(request, event)
+      'request:on*': this.recordRequest.bind(this),
+      //'request:onError': (request, event) => this.prometheusController.recordRequests(request, event)
     };
+
+    /**
+     * This route intend to be used by legacy Prometheus server and avoid 
+     * not very necessary changes in their configurations. As it predecessor, works only with HTTP
+     * NOTE: I didn't make a dedicated controller for it since it's just retrocompatibility item.
+     * @deprecated
+     */
+    this.api = {
+      prometheus: {
+        actions: {
+          metrics: {
+            handler: async request => this.guard(request, this.metrics.bind(this)),
+          }
+        }
+      }
+    };
+
+
+    this.metricService = new MetricService(this.config as PluginConfiguration);
+  }
+
+  /**
+   * On server:afterMetrics hook, format the metrics and send them to the client as Prometheus format
+   * @param {KuzzleRequest} request - Kuzzle request
+   * @returns {KuzzleRequest}
+   */
+  async pipeFormatMetrics(request: KuzzleRequest): Promise<KuzzleRequest> {
+    if (request.input.args['format'] || request.input.args['format'] === 'prometheus') {
+      request = await this.prepareResponseWithMetrics(request, request.response.result);
+    }
+
+    return request;
+  }
+
+  /**
+   * This route intend to be used by legacy Prometheus server and avoid 
+   * not very impactful changes in their configurations. As it predecessor, works only with HTTP
+   * @param {KuzzleRequest} request - Kuzzle request
+   * @returns {Promise<KuzzleRequest>}
+   * @deprecated
+   */
+  async metrics(request: KuzzleRequest): Promise<string> {
+    if (request.context.connection.protocol === 'http') {
+      // TODO: Update to regular Kuzzle server:metrics request when it will be available
+      const { result } = await this.context.accessors.sdk.query({
+        controller: 'server',
+        action: 'metrics',
+      });
+
+      request = await this.prepareResponseWithMetrics(request, result);
+
+      return request.response.result;
+    }
+  }
+
+  /**
+   * Log the response time for the given request in the associated metric
+   * @param {KuzzleRequest} request - Kuzzle request
+   */
+  async recordRequest(request: KuzzleRequest): Promise<KuzzleRequest> {
+    this.metricService.recordResponseTime(
+      Date.now() - request.timestamp, 
+      {
+        action: request.input.action,
+        controller: request.input.controller,
+        protocol: request.context.connection.protocol,
+        status: request.status
+      }
+    );
+  }
+
+  /**
+   * Update the given request to set correct Content-Type and result
+   * @param {KuzzleRequest} request - Kuzzle request
+   * @param {JSONObject}    result  - Kuzzle result
+   * @returns {Promise<KuzzleRequest>}
+   */
+  private async prepareResponseWithMetrics(request: KuzzleRequest, jsonMetrics: JSONObject): Promise<KuzzleRequest> {
+    // coreMetrics need to be updated with Kuzzle core values before the metrics are sent to the client
+    this.metricService.updateCoreMetrics(jsonMetrics);
+
+    request.response.configure({
+      headers: {
+        'Content-Type': this.metricService.getPrometheusContentType()
+      },
+      format: 'raw',
+    });
+    request.response.result = await this.metricService.getMetrics();
+
+    return request;
+  }
+
+  /**
+   * Ensure Plugin feature only respond to HTTP requests
+   * @param {KuzzleRequest} request - Kuzzle request
+   * @param {Function}      next    - Next function
+   */
+  private guard(request: KuzzleRequest, next: (request: KuzzleRequest) => Promise<string>): Promise<string> {
+    if (request.context.connection.protocol !== 'http') {
+      throw new BadRequestError('Prometheus plugin is only compatible with HTTP protocol');
+    }
+    return next(request);
   }
 }
