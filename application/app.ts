@@ -1,4 +1,4 @@
-import { Backend } from 'kuzzle'
+import { Backend } from 'kuzzle';
 
 import { PrometheusPlugin } from '../index';
 

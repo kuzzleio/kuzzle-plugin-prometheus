@@ -15,6 +15,7 @@ services:
       - --providers.docker.endpoint=unix:///var/run/docker.sock
       - --entrypoints.kuzzle_http.address=:7512
       - --entrypoints.kuzzle_mqtt.address=:1883
+      - --entrypoints.global_http.address=:80
     depends_on:
       kuzzle:
         condition: service_healthy
@@ -33,7 +34,7 @@ services:
     sysctls:
       - net.core.somaxconn=8192
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://kuzzle:7512/_healthCheck"]
+      test: ["CMD", "curl", "-f", "http://localhost:7512/_healthCheck"]
       timeout: 1s
       interval: 2s
       retries: 10
@@ -93,6 +94,11 @@ services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:9090/-/ready"]
+      timeout: 5s
+      interval: 2s
+      retries: 60
     volumes:
       - "./config/prometheus.yml:/etc/prometheus/prometheus.yml"
     depends_on:
@@ -104,6 +110,9 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
+    depends_on:
+      prometheus:
+        condition: service_healthy
     volumes:
       - "./config/grafana.yml:/etc/grafana/provisioning/datasources/datasource.yaml"
     ports:

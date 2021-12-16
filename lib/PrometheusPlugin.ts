@@ -34,7 +34,7 @@ import { MetricService } from './services/MetricService';
 
 /**
  * Promtheus Plugin configuration type
- * @type {PromtheusPluginConfig}
+ * @type {PluginConfiguration}
  * @private
  */
 export type PluginConfiguration = {
@@ -84,17 +84,15 @@ export type PluginConfiguration = {
  * @class PrometheusPlugin
  *
  * @property {PluginConfiguration}     config         Plugin configuration
- * @property {KuzzlePluginContext}     context        Kuzzle plugin context
- * @property {Object.<string, string>} hooks          Kuzzle plugin hooks
- * @property {Object.<string, string>} pipes          Kuzzle plugin pipes
  * @property {MetricService}           metricService  Metric service
  *
  * @externs
  */
 export class PrometheusPlugin extends Plugin {
+  /**
+   * Plugin configuration validation
+   */
   public config: PluginConfiguration;
-  public context: PluginContext;
-  public _manifest: any;
 
   /**
    * Service to manage, update and format Prometheus metrics
@@ -135,7 +133,7 @@ export class PrometheusPlugin extends Plugin {
     this.context = context;
 
     this.pipes = {
-      'server:afterMetrics': async request => this.guard(request, this.pipeFormatMetrics.bind(this)),
+      'server:afterMetrics': async (request: KuzzleRequest) => this.guard(request, this.pipeFormatMetrics.bind(this)),
     };
 
     this.hooks = {
@@ -153,7 +151,7 @@ export class PrometheusPlugin extends Plugin {
       prometheus: {
         actions: {
           metrics: {
-            handler: async request => this.guard(request, this.metrics.bind(this)),
+            handler: async (request: KuzzleRequest) => this.guard(request, this.metrics.bind(this)),
           }
         }
       }
@@ -186,7 +184,10 @@ export class PrometheusPlugin extends Plugin {
   async metrics(request: KuzzleRequest): Promise<string> {
     if (request.context.connection.protocol === 'http') {
       // TODO: Update to regular Kuzzle server:metrics request when it will be available
-      const { result } = await this.context.accessors.sdk.server.metrics();
+      const { result } = await this.context.accessors.sdk.query({
+        controller: 'server',
+        action: 'metrics',
+      });
 
       request = await this.prepareResponseWithMetrics(request, result);
 
