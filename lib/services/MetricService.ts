@@ -21,7 +21,7 @@
  */
 
 import { JSONObject } from "kuzzle";
-import { Gauge, Metric, Registry, collectDefaultMetrics, Histogram } from "prom-client";
+import { Gauge, Registry, collectDefaultMetrics, Histogram } from "prom-client";
 import { PluginConfiguration } from "../PrometheusPlugin";
 
 /**
@@ -63,37 +63,34 @@ export type CoreMetrics = {
 
 /**
  * MetricService is a service to handle metrics from the Kuzzle API and the application.
- * @property {{[key: string]: Metric}} coreMetrics - The application metrics to register.
- * @property {CoreMetrics}             coreMetrics - The core metrics to register. 
- * @property {Registry}                registry    - The Prometheus registry to register metrics.
+ * @property {{ core: CoreMetrics, requestDuration?: Histogram<string> }} metrics     - The application metrics to register.
+ * @property {{[key: string]: Registry}}                                  registries  - The Prometheus registry to register metrics.
  */
 export class MetricService {
   /**
    * A set of metrics matching the Kuzzle server:metrics action reponse
-   * @property {CoreMetrics} coreMetrics                      - The core metrics to register.
-   * @property {{[key: string]: Metric}} applicationMetrics   - The application metrics to register.
+   * @property {CoreMetrics} core            - The core metrics to register.
+   * @property {Histogram}   requestDuration - The application metrics to register.
    */
-  private metrics: { core: CoreMetrics, application?: { [key: string]: Metric<string> }, requestDuration?: Histogram<string> };
+  private metrics: { core: CoreMetrics, requestDuration?: Histogram<string> };
 
   /**
    * The Prometheus registries used to register metrics and format them
-   * @property {Registry} core          - The core metrics registry
-   * @property {Registry} application   - The application metrics registry
-   * @property {Registry} default       - The default metrics registry (if enabled)
+   * @property {Registry} core              - The core metrics registry
+   * @property {Registry} default           - The default metrics registry (if enabled)
+   * @property {Registry} requestDuration   - The default metrics registry (if enabled)
    */
-  private registries: { core: Registry, application?: Registry, default?: Registry, requestDuration?: Registry };
+  private registries: { core: Registry, default?: Registry, requestDuration?: Registry };
 
   /**
    * @param {PluginConfiguration} config - The plugin configuration
    */
   constructor(config: PluginConfiguration) {
     this.registries = {
-      application: config.metrics.application.enabled ? new Registry() : undefined,
       core: new Registry(),
     };
 
     this.metrics = {
-      application: config.metrics.application.enabled ? {} : undefined,
       core: {
         api: {
           concurrentRequests: new Gauge({ 

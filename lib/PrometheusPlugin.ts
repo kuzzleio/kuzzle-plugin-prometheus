@@ -39,24 +39,6 @@ import { MetricService } from './services/MetricService';
  */
 export type PluginConfiguration = {
   metrics: {
-    application: {
-      /**
-       * Enable or disable the application metrics toolkit
-       */
-      enabled: boolean;
-
-      /**
-       * String to prefix application metrics with
-       * @default 'kuzzle_'
-       */
-      prefix: string;
-
-      /**
-       * Labels to add to metrics regitered by the Kuzzle application
-       * @default {}
-       */
-      labels: {[key: string]: string};
-    },
     core: {
       /**
        * Enable or disable request duration metrics
@@ -101,11 +83,11 @@ export type PluginConfiguration = {
 /**
  * @class PrometheusPlugin
  *
+ * @property {PluginConfiguration}     config         Plugin configuration
  * @property {KuzzlePluginContext}     context        Kuzzle plugin context
  * @property {Object.<string, string>} hooks          Kuzzle plugin hooks
  * @property {Object.<string, string>} pipes          Kuzzle plugin pipes
  * @property {MetricService}           metricService  Metric service
- * @property {PluginConfiguration}     config         Plugin configuration
  *
  * @externs
  */
@@ -121,7 +103,7 @@ export class PrometheusPlugin extends Plugin {
 
   constructor() {
     super({
-      kuzzleVersion: '>=2.14.0 <3' // TODO: update to 2.16.0 when making the PR
+      kuzzleVersion: '>=2.16.0 <3'
     });
 
     /**
@@ -129,11 +111,6 @@ export class PrometheusPlugin extends Plugin {
      */
     this.config = {
       metrics: {
-        application: {
-          enabled: true,
-          prefix: 'kuzzle_',
-          labels: {},
-        },
         default: {
           enabled: true,
           prefix: 'kuzzle_',
@@ -167,7 +144,7 @@ export class PrometheusPlugin extends Plugin {
     };
 
     /**
-     * This route intend to be used by legacy Prometheus server and avoid 
+     * This route intend to be used by legacy Prometheus server and avoid
      * not very necessary changes in their configurations. As it predecessor, works only with HTTP
      * NOTE: I didn't make a dedicated controller for it since it's just retrocompatibility item.
      * @deprecated
@@ -200,7 +177,7 @@ export class PrometheusPlugin extends Plugin {
   }
 
   /**
-   * This route intend to be used by legacy Prometheus server and avoid 
+   * This route intend to be used by legacy Prometheus server and avoid
    * not very impactful changes in their configurations. As it predecessor, works only with HTTP
    * @param {KuzzleRequest} request - Kuzzle request
    * @returns {Promise<KuzzleRequest>}
@@ -209,10 +186,7 @@ export class PrometheusPlugin extends Plugin {
   async metrics(request: KuzzleRequest): Promise<string> {
     if (request.context.connection.protocol === 'http') {
       // TODO: Update to regular Kuzzle server:metrics request when it will be available
-      const { result } = await this.context.accessors.sdk.query({
-        controller: 'server',
-        action: 'metrics',
-      });
+      const { result } = await this.context.accessors.sdk.server.metrics();
 
       request = await this.prepareResponseWithMetrics(request, result);
 
@@ -224,9 +198,9 @@ export class PrometheusPlugin extends Plugin {
    * Log the response time for the given request in the associated metric
    * @param {KuzzleRequest} request - Kuzzle request
    */
-  async recordRequest(request: KuzzleRequest): Promise<KuzzleRequest> {
+  recordRequest(request: KuzzleRequest): void {
     this.metricService.recordResponseTime(
-      Date.now() - request.timestamp, 
+      Date.now() - request.timestamp,
       {
         action: request.input.action,
         controller: request.input.controller,
