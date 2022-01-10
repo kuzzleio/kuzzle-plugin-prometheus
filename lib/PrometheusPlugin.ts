@@ -24,8 +24,6 @@ import {
   Plugin,
   PluginContext,
   KuzzleRequest,
-  JSONObject,
-  BadRequestError
 } from 'kuzzle';
 
 import _ from 'lodash';
@@ -34,48 +32,47 @@ import { MetricService } from './services/MetricService';
 
 /**
  * Promtheus Plugin configuration type
- * @type {PluginConfiguration}
- * @private
  */
-export type PluginConfiguration = {
+export type PrometheusPluginConfiguration = {
   metrics: {
     core: {
       /**
        * Enable or disable request duration metrics
        * This is a plugin provided metric using Kuzzle hooks on request:* events
+       * @default true
        */
-      monitorRequestDuration: boolean;
+      monitorRequestDuration?: boolean;
 
       /**
        * String to prefix core metrics with
        * @default 'kuzzle_'
        */
-      prefix: string;
+      prefix?: string;
     },
     default: {
       /**
        * Enable or disable the Node.js process metrics (EventLoop lags, GC, CPU, RAM etc...)
        * @default true
        */
-      enabled: boolean;
+      enabled?: boolean;
 
       /**
        * The event loop monitoring sampling rate in milliseconds
        * @default 10
        */
-      eventLoopMonitoringPrecision: number;
+      eventLoopMonitoringPrecision?: number;
 
       /**
        * The custom buckets for GC duration histogram in seconds
        * @default [0.001,0.01,0.1,1,2,5]
        */
-      gcDurationBuckets: number[];
+      gcDurationBuckets?: number[];
 
       /**
        * String to prefix default metrics with
        * @default 'kuzzle_'
        */
-      prefix: string;
+      prefix?: string;
     }
   };
 }
@@ -92,7 +89,7 @@ export class PrometheusPlugin extends Plugin {
   /**
    * Plugin configuration validation
    */
-  public config: PluginConfiguration;
+  public config: PrometheusPluginConfiguration;
 
   /**
    * Service to manage, update and format Prometheus metrics
@@ -125,15 +122,15 @@ export class PrometheusPlugin extends Plugin {
 
   /**
    * Plugin initialization
-   * @param {PluginConfiguration} config  - Plugin configuration
+   * @param {PrometheusPluginConfiguration} config  - Plugin configuration
    * @param {PluginContext}       context - Kuzzle plugin context
    */
-  async init(config: PluginConfiguration, context: PluginContext) {
+  async init(config: PrometheusPluginConfiguration, context: PluginContext) {
     this.config = _.merge(this.config, config);
     this.context = context;
 
     this.pipes = {
-      'server:afterMetrics': async (request: KuzzleRequest) => this.guard(request, this.pipeFormatMetrics.bind(this)),
+      'server:afterMetrics': async (request: KuzzleRequest) => this.pipeFormatMetrics(request),
     };
 
     this.hooks = {
@@ -141,24 +138,7 @@ export class PrometheusPlugin extends Plugin {
       //'request:onError': (request, event) => this.prometheusController.recordRequests(request, event)
     };
 
-    /**
-     * This route intend to be used by legacy Prometheus server and avoid
-     * not very necessary changes in their configurations. As it predecessor, works only with HTTP
-     * NOTE: I didn't make a dedicated controller for it since it's just retrocompatibility item.
-     * @deprecated
-     */
-    this.api = {
-      prometheus: {
-        actions: {
-          metrics: {
-            handler: async (request: KuzzleRequest) => this.guard(request, this.metrics.bind(this)),
-          }
-        }
-      }
-    };
-
-
-    this.metricService = new MetricService(this.config as PluginConfiguration);
+    this.metricService = new MetricService(this.config as PrometheusPluginConfiguration);
   }
 
   /**
@@ -166,33 +146,19 @@ export class PrometheusPlugin extends Plugin {
    * @param {KuzzleRequest} request - Kuzzle request
    * @returns {KuzzleRequest}
    */
-  async pipeFormatMetrics(request: KuzzleRequest): Promise<KuzzleRequest> {
-    if (request.input.args['format'] || request.input.args['format'] === 'prometheus') {
-      request = await this.prepareResponseWithMetrics(request, request.response.result);
-    }
+  async pipeFormatMetrics (request: KuzzleRequest): Promise<KuzzleRequest> {
+    // coreMetrics need to be updated with Kuzzle core values before the metrics are sent to the client
+    this.metricService.updateCoreMetrics(request.response.result);
+
+    request.response.configure({
+      headers: {
+        'Content-Type': this.metricService.getPrometheusContentType()
+      },
+      format: 'raw',
+    });
+    request.response.result = await this.metricService.getMetrics();
 
     return request;
-  }
-
-  /**
-   * This route intend to be used by legacy Prometheus server and avoid
-   * not very impactful changes in their configurations. As it predecessor, works only with HTTP
-   * @param {KuzzleRequest} request - Kuzzle request
-   * @returns {Promise<KuzzleRequest>}
-   * @deprecated
-   */
-  async metrics(request: KuzzleRequest): Promise<string> {
-    if (request.context.connection.protocol === 'http') {
-      // TODO: Update to regular Kuzzle server:metrics request when it will be available
-      const { result } = await this.context.accessors.sdk.query({
-        controller: 'server',
-        action: 'metrics',
-      });
-
-      request = await this.prepareResponseWithMetrics(request, result);
-
-      return request.response.result;
-    }
   }
 
   /**
@@ -209,38 +175,5 @@ export class PrometheusPlugin extends Plugin {
         status: request.status
       }
     );
-  }
-
-  /**
-   * Update the given request to set correct Content-Type and result
-   * @param {KuzzleRequest} request - Kuzzle request
-   * @param {JSONObject}    result  - Kuzzle result
-   * @returns {Promise<KuzzleRequest>}
-   */
-  private async prepareResponseWithMetrics(request: KuzzleRequest, jsonMetrics: JSONObject): Promise<KuzzleRequest> {
-    // coreMetrics need to be updated with Kuzzle core values before the metrics are sent to the client
-    this.metricService.updateCoreMetrics(jsonMetrics);
-
-    request.response.configure({
-      headers: {
-        'Content-Type': this.metricService.getPrometheusContentType()
-      },
-      format: 'raw',
-    });
-    request.response.result = await this.metricService.getMetrics();
-
-    return request;
-  }
-
-  /**
-   * Ensure Plugin feature only respond to HTTP requests
-   * @param {KuzzleRequest} request - Kuzzle request
-   * @param {Function}      next    - Next function
-   */
-  private guard(request: KuzzleRequest, next: (request: KuzzleRequest) => Promise<string>): Promise<string> {
-    if (request.context.connection.protocol !== 'http') {
-      throw new BadRequestError('Prometheus plugin is only compatible with HTTP protocol');
-    }
-    return next(request);
   }
 }

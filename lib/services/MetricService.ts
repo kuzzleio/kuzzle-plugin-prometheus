@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-import { JSONObject } from "kuzzle";
-import { Gauge, Registry, collectDefaultMetrics, Histogram } from "prom-client";
-import { PluginConfiguration } from "../PrometheusPlugin";
+import { JSONObject } from 'kuzzle';
+import { Gauge, Registry, collectDefaultMetrics, Histogram } from 'prom-client';
+import { PrometheusPluginConfiguration } from '../PrometheusPlugin';
 
 /**
  * Core metrics type definition
@@ -83,9 +83,9 @@ export class MetricService {
   private registries: { core: Registry, default?: Registry, requestDuration?: Registry };
 
   /**
-   * @param {PluginConfiguration} config - The plugin configuration
+   * @param {PrometheusPluginConfiguration} config - The plugin configuration
    */
-  constructor(config: PluginConfiguration) {
+  constructor(config: PrometheusPluginConfiguration) {
     this.registries = {
       core: new Registry(),
     };
