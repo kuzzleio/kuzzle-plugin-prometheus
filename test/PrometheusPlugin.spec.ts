@@ -4,7 +4,7 @@ import { ContextMock } from './mocks/context.mock';
 import { expect } from 'chai';
 import 'mocha';
 import sinon from 'sinon';
-import { KuzzleRequest, Request, RequestResponse } from 'kuzzle';
+import { KuzzleRequest } from 'kuzzle';
 
 describe('PrometheusPlugin', () => {
   let context, plugin, sandbox;

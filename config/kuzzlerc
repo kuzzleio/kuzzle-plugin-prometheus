@@ -1,6 +1,6 @@
  {
  "plugins": {
-    "kuzzle-plugin-prometheus": {
+    "prometheus": {
       "defaultMetrics": {
         "enabled": true,
         "prefix": "kuzzle_",

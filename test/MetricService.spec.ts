@@ -1,9 +1,8 @@
 import { MetricService } from '../lib/services/MetricService';
-import { PrometheusPlugin, PrometheusPluginConfiguration } from '../lib/PrometheusPlugin';
+import { PrometheusPluginConfiguration } from '../lib/PrometheusPlugin';
 import { expect } from 'chai';
 import 'mocha';
 import sinon from 'sinon';
-import { KuzzleRequest } from 'kuzzle';
 import { Registry } from 'prom-client';
 
 
