@@ -85,7 +85,7 @@ export class MetricService {
   /**
    * @param {PrometheusPluginConfiguration} config - The plugin configuration
    */
-  constructor(config: PrometheusPluginConfiguration) {
+  constructor (config: PrometheusPluginConfiguration) {
     this.registries = {
       core: new Registry(),
     };
@@ -155,7 +155,7 @@ export class MetricService {
    * Update the Prometheus coreMetrics with from the server:metrics JSON response
    * @param {JSONObject} jsonMetrics - The server:metrics JSON response
    */
-  public updateCoreMetrics(jsonMetrics: JSONObject): void {
+  public updateCoreMetrics (jsonMetrics: JSONObject): void {
     // Past metrics are oudated, so we need to reset them
     this.registries.core.resetMetrics();
 
@@ -183,7 +183,7 @@ export class MetricService {
    * Merge all the Prometheus registries into one and returns metrics as Prometheus text format
    * @returns {string} All the regitries metrics formatted as a Prometheus text
    */
-  public async getMetrics(): Promise<string> {
+  public getMetrics (): Promise<string> {
     return Registry.merge(Object.values(this.registries)).metrics();
   }
 
@@ -191,7 +191,7 @@ export class MetricService {
    * Returns the content type used to export metrics to Prometheus
    * @returns {string} The content type used to export metrics to Prometheus
    */
-  public getPrometheusContentType(): string {
+  public getPrometheusContentType (): string {
     return this.registries.core.contentType;
   }
 
@@ -200,7 +200,7 @@ export class MetricService {
    * @param {number}                            time    - Time in ms
    * @param {{[key: string]: string | number}}  labels  - Labels to add to the metric
    */
-  public recordResponseTime(time: number, labels: {[key: string]: string | number}): void {
+  public recordResponseTime (time: number, labels: {[key: string]: string | number}): void {
     this.metrics.requestDuration.labels(labels).observe(time);
   }
 }

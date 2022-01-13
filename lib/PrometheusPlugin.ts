@@ -96,7 +96,7 @@ export class PrometheusPlugin extends Plugin {
    */
   private metricService: MetricService;
 
-  constructor() {
+  constructor () {
     super({
       kuzzleVersion: '>=2.16.0 <3'
     });
@@ -125,7 +125,7 @@ export class PrometheusPlugin extends Plugin {
    * @param {PrometheusPluginConfiguration} config  - Plugin configuration
    * @param {PluginContext}       context - Kuzzle plugin context
    */
-  async init(config: PrometheusPluginConfiguration, context: PluginContext) {
+  async init (config: PrometheusPluginConfiguration, context: PluginContext) {
     this.config = _.merge(this.config, config);
     this.context = context;
 
@@ -135,10 +135,9 @@ export class PrometheusPlugin extends Plugin {
 
     this.hooks = {
       'request:on*': this.recordRequest.bind(this),
-      //'request:onError': (request, event) => this.prometheusController.recordRequests(request, event)
     };
 
-    this.metricService = new MetricService(this.config as PrometheusPluginConfiguration);
+    this.metricService = new MetricService(this.config);
   }
 
   /**
@@ -147,25 +146,26 @@ export class PrometheusPlugin extends Plugin {
    * @returns {KuzzleRequest}
    */
   async pipeFormatMetrics (request: KuzzleRequest): Promise<KuzzleRequest> {
-    // coreMetrics need to be updated with Kuzzle core values before the metrics are sent to the client
-    this.metricService.updateCoreMetrics(request.response.result);
+    if (request.getString('format', 'invalid') === 'prometheus' ) {
+      // coreMetrics need to be updated with Kuzzle core values before the metrics are sent to the client
+      this.metricService.updateCoreMetrics(request.response.result);
+      request.response.configure({
+        headers: {
+          'Content-Type': this.metricService.getPrometheusContentType()
+        },
+        format: 'raw',
+      });
+      request.response.result = await this.metricService.getMetrics();
 
-    request.response.configure({
-      headers: {
-        'Content-Type': this.metricService.getPrometheusContentType()
-      },
-      format: 'raw',
-    });
-    request.response.result = await this.metricService.getMetrics();
-
-    return request;
+      return request;
+    }
   }
 
   /**
    * Log the response time for the given request in the associated metric
    * @param {KuzzleRequest} request - Kuzzle request
    */
-  recordRequest(request: KuzzleRequest): void {
+  recordRequest (request: KuzzleRequest): void {
     this.metricService.recordResponseTime(
       Date.now() - request.timestamp,
       {
