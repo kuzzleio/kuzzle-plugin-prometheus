@@ -54,7 +54,7 @@ jobs:
     name: Functional Tests
     runs-on: ubuntu-18.04
     timeout-minutes: 30
-    needs: [unit-test, lint]
+    needs: [unit-tests, lint]
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
