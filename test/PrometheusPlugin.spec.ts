@@ -77,7 +77,7 @@ describe('PrometheusPlugin', () => {
         controller: 'server',
         action: 'metrics',
         format: 'prometheus',
-      }, {});
+      }, {protocol: 'http'});
 
       const getMetricsStub = sandbox.stub(plugin.metricService, 'getMetrics').returns('fake metrics');
       const getPrometheusContentTypeStub = sandbox.stub(plugin.metricService, 'getPrometheusContentType').returns('text/plain');

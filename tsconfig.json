@@ -12,7 +12,7 @@
     "experimentalDecorators": true,
     "allowJs": false
   },
-  "rootDir": "./",
+  "rootDir": "lib/",
   "include": [
     "lib/**/*.ts",
     "features/**/*.steps.ts",
