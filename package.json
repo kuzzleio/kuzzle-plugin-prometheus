@@ -15,7 +15,7 @@
     "dev": "npx ergol application/app.ts -c ./config/ergol.json",
     "test": "npm run test:lint && npm run test:unit && npm run test:functional",
     "test:unit": "mocha",
-    "test:functional": "cucumber-js --require-module ts-node/register --require features/step_definitions/*.ts --exit --fail-fast",
+    "test:functional": "cucumber-js -r ts-node/register --require features/step_definitions/*.ts --exit --fail-fast",
     "test:lint": "eslint ./lib --ext .ts --config .eslintrc.json",
     "test:lint:fix": "eslint ./lib --ext .ts --config .eslintrc.json --fix",
     "build": "tsc --build tsconfig.json",
