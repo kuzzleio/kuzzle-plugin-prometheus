@@ -22,15 +22,13 @@ describe('PrometheusPlugin', () => {
   describe('#init', () => {
     it('should instantiate Prometheus using provided configuration and fill blank settings with defaults', () => {
       const customConfig : PrometheusPluginConfiguration = {
-        metrics: {
-          default: {
-            enabled: false,
-            prefix: 'kuzzle_custom_',
-            gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
-          },
-          core: {
-            prefix: 'kuzzle_custom_',
-          }
+        default: {
+          enabled: false,
+          prefix: 'kuzzle_custom_',
+          gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
+        },
+        core: {
+          prefix: 'kuzzle_custom_',
         }
       };
 

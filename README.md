@@ -45,14 +45,8 @@ an administration console and a set of plugins that provide advanced functionali
 | 1.10.x         | 1.x.x          | 
 | 2.x.x          | 2.x.x          |
 | 3.x.x          | >= 2.11.x      |
+| 4.x.x          | >= 2.16.0      |
 
-## Local development
-
-You can use the [docker-composer.yml](docker/docker-compose.yml) file provided in this repository to start a Kuzzle stack with this plugin pre-installed.  
-
-```bash
-docker-compose up
-```
 ### Installation
 
 To install this plugin on your Kuzzle stack (for each of your Kuzzle nodes),
@@ -105,33 +99,32 @@ You can find sample configuration files for this plugin and the Prometheus scrap
 This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
 
 ```json
-  "plugins": {
-    "kuzzle-plugin-prometheus": {
-      "collectSystemMetrics": true,
-      "systemMetricsInterval": 5000,
-      "labels": {
-        "common": [
-          "nodeHost",
-          "nodeMAC",
-          "nodeIP"
-        ],
-        "kuzzle": [
-          "controller",
-          "action",
-          "event",
-          "protocol",
-          "status"
-        ]
+ {
+ "plugins": {
+    "prometheus": {
+      "default": {
+        "enabled": true,
+        "prefix": "kuzzle_",
+        "eventLoopMonitoringPrecision": 10,
+        "gcDurationBuckets": [0.001, 0.01, 0.1, 1, 2, 5]
+      },
+      "core": {
+        "monitorRequestDuration": true,
+        "prefix": "kuzzle_"
       }
     }
   }
+}
 ```
 
-* `collectSystemMetrics`: If set to true (default), collects system metrics.
-* `systemMetricsInterval`: Time interval in __milliseconds__ between two system metrics polling.
-* `labels`:
-  * `common`: An array of labels added to every metrics, defaults to `['nodeHost', 'nodeMAC', 'nodeIP']`
-  * `kuzzle`: An array of Kuzzle metrics to collect, defaults to `['controller', 'action', 'event', 'protocol', 'status']`
+* `default`: Default Node.js metrics retrieved by [the Prom Client library](https://github.com/siimon/prom-client/tree/master/lib/metrics)
+  * `enabled`: Enable/Disable the default Node.js metrics (default: `true`)
+  * `prefix`: String to use to prefix metrics name (default: `kuzzle_`)
+  * `eventLoopMonitoringPrecision`: Node.js Event Loop sampling rate in milliseconds. Must be greater than zero (default: `10`)
+  * `gcDurationBuckets`: Custom Prometheus buckets for Node.js GC duration histogram in seconds (default: `[0.001, 0.01, 0.1, 1, 2, 5]`)
+* `core`: Kuzzle Core metrics directly extract from the `server:metrics` API action or from plugin inner logic.
+  * `monitorRequestDuration`: Enable/Disable request duration sampling (default: `true`)
+  * `prefix`: String to use to prefix metrics name (default: `kuzzle_`) 
 
 #### Prometheus
 
@@ -142,22 +135,25 @@ global:
 
 scrape_configs:
   - job_name: 'kuzzle'
-    metrics_path: /_/prometheus/metrics
+    metrics_path: /_metrics
+    params:
+      format: ['prometheus']
     static_configs:
-      - targets: ['kuzzleEndpoint:7512'] # 
-```
-
-
-### Demonstration
-
-If you want to simply have a look to a sample Grafana dashboard run the demonstration stack:
+      - targets: ['kuzzle:7512'] # the address of an application that exposes metrics for prometheus
 
 ```
-$ docker-compose -f demo/docker-compose.yml up
+
+
+### Local development
+
+You can run a local development stack using Docker Compose
+
+```
+$ docker-compose up
 ```
 
 This will start a demonstration stack composed with:
-* A three nodes Kuzzle cluster behind an Nginx load balancer.
+* A scalable Kuzzle cluster using the Docker Compose option `--scale kuzzle=<number-of-replicas>` proxified by a Traefik router
 * A Prometheus container configured to scrap metrics.
 * A Grafana container.
 

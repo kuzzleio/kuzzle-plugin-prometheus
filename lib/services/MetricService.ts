@@ -94,19 +94,19 @@ export class MetricService {
       core: {
         api: {
           concurrentRequests: new Gauge({ 
-            name: `${config.metrics.core.prefix}api_concurrent_requests`, 
+            name: `${config.core.prefix}api_concurrent_requests`, 
             help: 'Number of concurrent requests', 
             registers: [this.registries.core] 
           }),
           pendingRequests: new Gauge({ 
-            name: `${config.metrics.core.prefix}api_pending_requests`, 
+            name: `${config.core.prefix}api_pending_requests`, 
             help: 'Number of pending requests', 
             registers: [this.registries.core] 
           }),
         },
         network: {
           connections: new Gauge({ 
-            name: `${config.metrics.core.prefix}network_connections`,
+            name: `${config.core.prefix}network_connections`,
             help: 'Number of connections', 
             labelNames: ['protocol'], 
             registers: [this.registries.core] 
@@ -114,12 +114,12 @@ export class MetricService {
         },
         realtime: {
           rooms: new Gauge({
-            name: `${config.metrics.core.prefix}realtime_rooms`, 
+            name: `${config.core.prefix}realtime_rooms`, 
             help: 'Number of rooms', 
             registers: [this.registries.core] 
           }),
           subscriptions: new Gauge({
-            name: `${config.metrics.core.prefix}realtime_subscriptions`,
+            name: `${config.core.prefix}realtime_subscriptions`,
             help: 'Number of subscriptions', 
             registers: [this.registries.core] 
           }),
@@ -127,12 +127,12 @@ export class MetricService {
       },
     };
 
-    if (config.metrics.core.monitorRequestDuration) {
+    if (config.core.monitorRequestDuration) {
       // Need to be registered in a separate registry to avoid
       // the core registry resetting in updateCoreMetrics
       this.registries.requestDuration = new Registry();
       this.metrics.requestDuration = new Histogram({
-        name: `${config.metrics.core.prefix}api_request_duration_ms`,
+        name: `${config.core.prefix}api_request_duration_ms`,
         help: 'Duration of Kuzzle requests in ms',
         labelNames: ['action', 'controller', 'protocol', 'status'],
         registers: [this.registries.requestDuration],
@@ -140,13 +140,13 @@ export class MetricService {
       });
     }
 
-    if (config.metrics.default.enabled) {
+    if (config.default.enabled) {
       this.registries.default = new Registry();
       collectDefaultMetrics({
         register: this.registries.default,
-        prefix: config.metrics.default.prefix,
-        eventLoopMonitoringPrecision: config.metrics.default.eventLoopMonitoringPrecision,
-        gcDurationBuckets: config.metrics.default.gcDurationBuckets,
+        prefix: config.default.prefix,
+        eventLoopMonitoringPrecision: config.default.eventLoopMonitoringPrecision,
+        gcDurationBuckets: config.default.gcDurationBuckets,
       });
     }
   }

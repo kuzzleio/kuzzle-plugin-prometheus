@@ -34,47 +34,51 @@ import { MetricService } from './services/MetricService';
  * Promtheus Plugin configuration type
  */
 export type PrometheusPluginConfiguration = {
-  metrics: {
-    core: {
-      /**
-       * Enable or disable request duration metrics
-       * This is a plugin provided metric using Kuzzle hooks on request:* events
-       * @default true
-       */
-      monitorRequestDuration?: boolean;
+  core: {
+    /**
+     * Enable or disable request duration metrics
+     * This is a plugin provided metric using Kuzzle hooks on request:* events
+     * @default true
+     */
+    monitorRequestDuration?: boolean;
 
-      /**
-       * String to prefix core metrics with
-       * @default 'kuzzle_'
-       */
-      prefix?: string;
-    },
-    default: {
-      /**
-       * Enable or disable the Node.js process metrics (EventLoop lags, GC, CPU, RAM etc...)
-       * @default true
-       */
-      enabled?: boolean;
-
-      /**
-       * The event loop monitoring sampling rate in milliseconds
-       * @default 10
-       */
-      eventLoopMonitoringPrecision?: number;
-
-      /**
-       * The custom buckets for GC duration histogram in seconds
-       * @default [0.001,0.01,0.1,1,2,5]
-       */
-      gcDurationBuckets?: number[];
-
-      /**
-       * String to prefix default metrics with
-       * @default 'kuzzle_'
-       */
-      prefix?: string;
-    }
+    /**
+     * String to prefix core metrics with
+     * @default 'kuzzle_'
+     */
+    prefix?: string;
   };
+  default: {
+    /**
+     * Enable or disable the Node.js process metrics (EventLoop lags, GC, CPU, RAM etc...)
+     * @default true
+     */
+    enabled?: boolean;
+
+    /**
+     * The event loop monitoring sampling rate in milliseconds
+     * @default 10
+     */
+    eventLoopMonitoringPrecision?: number;
+
+    /**
+     * The custom buckets for GC duration histogram in seconds
+     * @default [0.001,0.01,0.1,1,2,5]
+     */
+    gcDurationBuckets?: number[];
+
+    /**
+     * String to prefix default metrics with
+     * @default 'kuzzle_'
+     */
+    prefix?: string;
+  };
+  /**
+   * Labels to add to the metrics
+   * NOTE: not intended to be used by the user
+   * @default {}
+   */
+  labels?: {[key: string]: string};
 }
 
 /**
@@ -105,18 +109,16 @@ export class PrometheusPlugin extends Plugin {
      * Default plugin configuration
      */
     this.config = {
-      metrics: {
-        default: {
-          enabled: true,
-          prefix: 'kuzzle_',
-          eventLoopMonitoringPrecision: 10,
-          gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
-        },
-        core: {
-          monitorRequestDuration: true,
-          prefix: 'kuzzle_',
-        }
-      }
+      default: {
+        enabled: true,
+        prefix: 'kuzzle_',
+        eventLoopMonitoringPrecision: 10,
+        gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
+      },
+      core: {
+        monitorRequestDuration: true,
+        prefix: 'kuzzle_',
+      },
     };
   }
 
@@ -146,7 +148,8 @@ export class PrometheusPlugin extends Plugin {
    * @returns {KuzzleRequest}
    */
   async pipeFormatMetrics (request: KuzzleRequest): Promise<KuzzleRequest> {
-    if (request.getString('format', 'invalid') === 'prometheus' && request.context.connection.protocol === 'http') {
+    if ( request.getString('format', 'invalid') === 'prometheus' 
+      && request.context.connection.protocol === 'http') {
       // coreMetrics need to be updated with Kuzzle core values before the metrics are sent to the client
       this.metricService.updateCoreMetrics(request.response.result);
       request.response.configure({
