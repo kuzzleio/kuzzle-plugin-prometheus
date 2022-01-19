@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-import { JSONObject, PluginContext } from 'kuzzle';
+import { JSONObject } from 'kuzzle';
 import { Gauge, Registry, collectDefaultMetrics, Histogram } from 'prom-client';
 import { PrometheusPluginConfiguration } from '../PrometheusPlugin';
 
