@@ -146,7 +146,7 @@ export class PrometheusPlugin extends Plugin {
    * @returns {KuzzleRequest}
    */
   async pipeFormatMetrics (request: KuzzleRequest): Promise<KuzzleRequest> {
-    if (request.getString('format', 'invalid') === 'prometheus') {
+    if (request.getString('format', 'invalid') === 'prometheus' && request.context.connection.protocol === 'http') {
       // coreMetrics need to be updated with Kuzzle core values before the metrics are sent to the client
       this.metricService.updateCoreMetrics(request.response.result);
       request.response.configure({
@@ -159,6 +159,7 @@ export class PrometheusPlugin extends Plugin {
     }
     return request;
   }
+
 
   /**
    * Log the response time for the given request in the associated metric
