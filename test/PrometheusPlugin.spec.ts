@@ -109,6 +109,24 @@ describe('PrometheusPlugin', () => {
       expect(getPrometheusContentTypeSpy.called).to.be.false;
       expect(updateCoreMetricsSpy.called).to.be.false;
     });
+
+    it('should not format the metrics if protocol is not HTTP', async () => {
+      plugin.init(undefined, context);
+      const request = new KuzzleRequest({
+        controller: 'server',
+        action: 'metrics',
+      }, {protocol: 'foo'});
+
+      const getMetricsSpy = sandbox.spy(plugin.metricService, 'getMetrics');
+      const getPrometheusContentTypeSpy = sandbox.spy(plugin.metricService, 'getPrometheusContentType');
+      const updateCoreMetricsSpy = sandbox.spy(plugin.metricService, 'updateCoreMetrics');
+
+      await plugin.pipeFormatMetrics(request);
+
+      expect(getMetricsSpy.called).to.be.false;
+      expect(getPrometheusContentTypeSpy.called).to.be.false;
+      expect(updateCoreMetricsSpy.called).to.be.false;
+    });
   });
 
   describe('#recordRequest', () => {
