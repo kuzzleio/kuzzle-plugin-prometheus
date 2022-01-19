@@ -34,24 +34,22 @@ describe('PrometheusPlugin', () => {
 
       plugin.init(customConfig, context);
       expect(plugin.config).to.be.eql({
-        metrics: {
-          default: {
-            enabled: false,
-            prefix: 'kuzzle_custom_',
-            eventLoopMonitoringPrecision: 10,
-            gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
-          },
-          core: {
-            monitorRequestDuration: true,
-            prefix: 'kuzzle_custom_',
-          }
+        default: {
+          enabled: false,
+          prefix: 'kuzzle_custom_',
+          eventLoopMonitoringPrecision: 10,
+          gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
+        },
+        core: {
+          monitorRequestDuration: true,
+          prefix: 'kuzzle_custom_',
         }
       });
     });
 
     it('should instantiate Prometheus and register hook, pipe, route and Metric service properly without additional config', () => {
       plugin.init(undefined, new ContextMock());
-      expect(plugin.hooks['request:on*']).to.exist.and.be.an('function');
+      expect(plugin.hooks['request:onSuccess']).to.exist.and.be.an('function');
       expect(plugin.pipes['server:afterMetrics']).to.exist.and.be.an('function');
 
       // This is a trick to test TS class private properties and avoid the private guard on it

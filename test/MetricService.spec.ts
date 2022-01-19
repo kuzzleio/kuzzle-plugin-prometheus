@@ -11,17 +11,15 @@ describe('MetricService', () => {
 
   beforeEach(() => {
     config = {
-      metrics: {
-        default: {
-          enabled: true,
-          prefix: 'kuzzle_',
-          eventLoopMonitoringPrecision: 10,
-          gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
-        },
-        core: {
-          monitorRequestDuration: true,
-          prefix: 'kuzzle_',
-        }
+      default: {
+        enabled: true,
+        prefix: 'kuzzle_',
+        eventLoopMonitoringPrecision: 10,
+        gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
+      },
+      core: {
+        monitorRequestDuration: true,
+        prefix: 'kuzzle_',
       }
     };
     sandbox = sinon.createSandbox();
@@ -32,18 +30,29 @@ describe('MetricService', () => {
   });
 
   describe('#constructor', () => {
+    // We need to override global Kuzzle getter to manipulate the request response
+    Reflect.defineProperty(global, 'kuzzle', {
+      get () {
+        return {
+          id: 'kuzzle',
+        };
+      },
+    });
+
     it('should at least record core metrics if we disable everything', () => {
-      config.metrics.default.enabled = false;
-      config.metrics.core.monitorRequestDuration = false;
+      config.default.enabled = false;
+      config.core.monitorRequestDuration = false;
 
       const metricService = new MetricService(config);
 
       expect(Object.keys(metricService['registries']).length).to.equal(1);
       expect(metricService['registries']['core']).to.be.an('object');
+      expect(metricService['defaultLabels']).to.be.an('object');
+      expect(metricService['defaultLabels']['nodeId']).to.equal('kuzzle');
     });
 
     it('should create a dedicated Prometheus registry for requests duration when enabled', () => {
-      config.metrics.default.enabled = false;
+      config.default.enabled = false;
 
       const metricService = new MetricService(config);
 
@@ -86,7 +95,8 @@ describe('MetricService', () => {
     it('should record the response time for the given request', async () => {
       const metricService = new MetricService(config);
       metricService.recordResponseTime(42, { action: 'foo', controller: 'bar', status: 200, protocol: 'http' });
-      expect(await metricService['registries']['requestDuration'].getSingleMetricAsString('kuzzle_api_request_duration_ms')).to.contain('kuzzle_api_request_duration_ms_sum{action="foo",controller="bar",status="200",protocol="http"} 42');
+      expect(await metricService['registries']['requestDuration'].getSingleMetricAsString('kuzzle_api_request_duration_ms'))
+        .to.contain('kuzzle_api_request_duration_ms_sum{action="foo",controller="bar",status="200",protocol="http",nodeId="kuzzle"} 42');
     });
   });
 

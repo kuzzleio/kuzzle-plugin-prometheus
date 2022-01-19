@@ -8,11 +8,13 @@ import _ from 'lodash';
 export class PluginSteps {
   private host: string;
   private result: any;
+  private nodeId: string;
 
   @given(/A running Kuzzle instance at "([^"]*)"/)
   public async givenRunningKuzzleInstance(host: string) {
       const response = await fetch(`http://${host}`);
       assert(response.status === 200);
+      this.nodeId = response.headers.get('X-Kuzzle-Node');
       this.host = host;
   }
 
@@ -59,15 +61,16 @@ export class PluginSteps {
     assert(typeof this.result === 'object');
   }
 
-  @then(/The HTTP response should be a Prometheus formatted metrics/)
-  public async thenTheResponseShouldContainA() {
+  @then(/The HTTP response should be a Prometheus formatted metrics containing:/)
+  public async thenTheResponseShouldContainA(table: any) {
     assert(this.result !== null);
     this.result = await this.result.text();
     assert(typeof this.result === 'string');
 
-    assert(this.result.startsWith('# HELP'));
-    assert(this.result.includes('kuzzle_api_concurrent_requests 1'))
-    assert(this.result.includes('kuzzle_network_connections{protocol="http/1.1"} 1'))
+    const matches = table.rowsHash();
+    for (const metric in matches) {
+      assert(this.result.includes(`${metric}{nodeId="${this.nodeId}"}${matches[metric] !== '' ? ' ' + matches[metric] : ''}`));
+    }
+    assert(this.result.includes(`kuzzle_network_connections{protocol="http/1.1",nodeId="${this.nodeId}"} 1`));
   }
-
 }

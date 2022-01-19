@@ -73,12 +73,6 @@ export type PrometheusPluginConfiguration = {
      */
     prefix?: string;
   };
-  /**
-   * Labels to add to the metrics
-   * NOTE: not intended to be used by the user
-   * @default {}
-   */
-  labels?: {[key: string]: string};
 }
 
 /**
@@ -136,7 +130,7 @@ export class PrometheusPlugin extends Plugin {
     };
 
     this.hooks = {
-      'request:on*': this.recordRequest.bind(this),
+      'request:onSuccess': this.recordRequest.bind(this),
     };
 
     this.metricService = new MetricService(this.config);

@@ -2,7 +2,9 @@ Feature: Prometheus metrics fetching
   Scenario: Fetching Prometheus formatted metrics from server:metrics with the format parameter set to "prometheus"
     Given A running Kuzzle instance at "localhost:7512"
     When I send a HTTP request to "/_metrics?format=prometheus"
-    Then The HTTP response should be a Prometheus formatted metrics
+    Then The HTTP response should be a Prometheus formatted metrics containing:
+      | kuzzle_api_concurrent_requests    | 1 |
+      | kuzzle_process_start_time_seconds |   |
 
   Scenario: Trying to fetch Prometheus formatted metrics from server:metrics without the format parameter
     Given A running Kuzzle instance at "localhost:7512"
