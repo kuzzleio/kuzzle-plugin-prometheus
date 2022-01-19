@@ -114,6 +114,8 @@ services:
       prometheus:
         condition: service_healthy
     volumes:
-      - "./config/grafana.yml:/etc/grafana/provisioning/datasources/datasource.yaml"
+      - "./config/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasource.yaml"
+      - "./config/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yaml"
+      - "./config/grafana/demo.json:/var/lib/grafana/dashboards/demo.json"
     ports:
       - "3000:3000"
