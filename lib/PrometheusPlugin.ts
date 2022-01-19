@@ -131,6 +131,7 @@ export class PrometheusPlugin extends Plugin {
 
     this.hooks = {
       'request:onSuccess': this.recordRequest.bind(this),
+      'request:onError': this.recordRequest.bind(this),
     };
 
     this.metricService = new MetricService(this.config);
