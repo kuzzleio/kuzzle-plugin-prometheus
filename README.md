@@ -243,7 +243,7 @@ $ docker-compose up
 ```
 
 This will start a demonstration stack composed with:
-* A scalable Kuzzle cluster using the Docker Compose option `--scale kuzzle=<number-of-replicas>` proxified by a Traefik router
+* A Kuzzle server proxified by a Traefik router
 * A Prometheus container configured to scrap metrics.
 * A Grafana container.
 
@@ -251,9 +251,14 @@ Once started, go to `http://localhost:3000` and log in with the default Grafana 
 * username: `admin`
 * password: `admin`
 
-When successfully logged in you can import demonstration dashboards from the `dashboards` folder.
-To do so, hover on the `+` icon in the left sidebar, and click on `Import`. Then click on `Upload .json File` and choose the dashboard of your choice. Set up the targeted Prometheus to `Prometheus` and you're done.
 Make several requests using Kuzzle's HTTP API or SDKs, or by using the Admin Console.
+
+> NOTE: You can also increase the number of Kuzzle nodes to test a cluster configuration.
+> Use the Docker Compose `--scale` option to increase the number of replicas:
+> ```
+> docker-compose up -d --scale kuzzle=<number-of-replicas>
+> ```
+> Notice that you need to update the `config/prometheus.yml` file to reflect the new number of nodes and restart the prometheus container using `docker restart <prometheus-container-id>`
 
 # Migrations
 
