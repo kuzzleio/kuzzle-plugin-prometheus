@@ -10,4 +10,7 @@ scrape_configs:
     params:
       format: ['prometheus']
     static_configs:
-      - targets: ['kuzzle:7512'] # the address of an application that exposes metrics for prometheus
+      - targets: 
+        - 'kuzzle-plugin-prometheus-kuzzle-1:7512' # the address of an application that exposes metrics for prometheus
+        - 'kuzzle-plugin-prometheus-kuzzle-2:7512'
+        - 'kuzzle-plugin-prometheus-kuzzle-3:7512'
