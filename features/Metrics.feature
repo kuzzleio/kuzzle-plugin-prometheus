@@ -4,7 +4,7 @@ Feature: Prometheus metrics fetching
     When I send a HTTP request to "/_metrics?format=prometheus"
     Then The HTTP response should be a Prometheus formatted metrics containing:
       | kuzzle_api_concurrent_requests    | 1 |
-      | kuzzle_process_start_time_seconds |   |
+      | process_start_time_seconds |   |
 
   Scenario: Trying to fetch Prometheus formatted metrics from server:metrics without the format parameter
     Given A running Kuzzle instance at "localhost:7512"
