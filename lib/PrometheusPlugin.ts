@@ -145,7 +145,8 @@ export class PrometheusPlugin extends Plugin {
    */
   async pipeFormatMetrics (request: KuzzleRequest): Promise<KuzzleRequest> {
     if ( request.getString('format', 'invalid') === 'prometheus' 
-      && request.context.connection.protocol === 'http') {
+      && request.context.connection.protocol === 'http'
+    ) {
       // coreMetrics need to be updated with Kuzzle core values before the metrics are sent to the client
       this.metricService.updateCoreMetrics(request.response.result);
       request.response.configure({
