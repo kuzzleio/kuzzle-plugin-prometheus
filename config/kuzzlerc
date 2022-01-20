@@ -3,7 +3,7 @@
     "prometheus": {
       "default": {
         "enabled": true,
-        "prefix": "kuzzle_",
+        "prefix": "",
         "eventLoopMonitoringPrecision": 10,
         "gcDurationBuckets": [0.001, 0.01, 0.1, 1, 2, 5]
       },

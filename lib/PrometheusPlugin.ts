@@ -105,7 +105,8 @@ export class PrometheusPlugin extends Plugin {
     this.config = {
       default: {
         enabled: true,
-        prefix: 'kuzzle_',
+        // Because this are standard metrics and official dashboards do not use prefix on it
+        prefix: '',
         eventLoopMonitoringPrecision: 10,
         gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
       },

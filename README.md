@@ -86,9 +86,7 @@ app.start()
     app.log.info('Application started');
   })
   .catch(console.error);
-
 ```
-
 
 ### Configuration
 
@@ -104,7 +102,7 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
     "prometheus": {
       "default": {
         "enabled": true,
-        "prefix": "kuzzle_",
+        "prefix": "",
         "eventLoopMonitoringPrecision": 10,
         "gcDurationBuckets": [0.001, 0.01, 0.1, 1, 2, 5]
       },
@@ -119,7 +117,7 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
 
 * `default`: Default Node.js metrics retrieved by [the Prom Client library](https://github.com/siimon/prom-client/tree/master/lib/metrics)
   * `enabled`: Enable/Disable the default Node.js metrics (default: `true`)
-  * `prefix`: String to use to prefix metrics name (default: `kuzzle_`)
+  * `prefix`: String to use to prefix metrics name (default: an empty string to avoid conflicts when using official Grafana dashboards)
   * `eventLoopMonitoringPrecision`: Node.js Event Loop sampling rate in milliseconds. Must be greater than zero (default: `10`)
   * `gcDurationBuckets`: Custom Prometheus buckets for Node.js GC duration histogram in seconds (default: `[0.001, 0.01, 0.1, 1, 2, 5]`)
 * `core`: Kuzzle Core metrics directly extract from the `server:metrics` API action or from plugin inner logic.
@@ -143,6 +141,8 @@ scrape_configs:
 
 ```
 
+> :warning: The Kuzzle user used to fetch metrics from Prometheus server must be allowed to request the `server:metrics` API action
+> This example use the default `anonymous` user to do so
 
 ### Local development
 
