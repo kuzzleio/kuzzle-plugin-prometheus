@@ -1,0 +1,11 @@
+name: Functional Tests
+description: Run Functional Tests
+runs:
+  using: "composite"
+  steps:
+    - name: Run Docker Compose stack
+      run: docker compose up -d
+      shell: bash
+    - name: Run tests
+      run: npm run test:functional
+      shell: bash
