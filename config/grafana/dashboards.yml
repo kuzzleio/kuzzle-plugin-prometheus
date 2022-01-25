@@ -9,9 +9,3 @@ providers:
   updateIntervalSeconds: 10 
   options:
     path: /var/lib/grafana/dashboards
-    
-datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://localhost:9090

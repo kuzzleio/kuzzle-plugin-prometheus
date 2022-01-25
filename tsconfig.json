@@ -8,12 +8,14 @@
     "sourceMap": true,
     "baseUrl": ".",
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "allowJs": false
   },
   "rootDir": "lib/",
   "include": [
     "lib/**/*.ts",
-    "features/**/*.ts",
+    "features/**/*.steps.ts",
     "index.ts"
   ],
   "exclude": [

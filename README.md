@@ -16,10 +16,28 @@
   </a>
 </p>
 
+- [About](#about)
+  - [Kuzzle Prometheus Plugin](#kuzzle-prometheus-plugin)
+  - [Kuzzle](#kuzzle)
+  - [Compatibility matrice](#compatibility-matrice)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Plugin](#plugin)
+  - [Prometheus](#prometheus)
+    - [With only one Kuzzle node](#with-only-one-kuzzle-node)
+    - [With an authentified user](#with-an-authentified-user)
+    - [With multiple Kuzzle nodes and using Docker Compose](#with-multiple-kuzzle-nodes-and-using-docker-compose)
+  - [Dashboards](#dashboards)
+    - [Features](#features)
+    - [Screenshots](#screenshots)
+- [Local development](#local-development)
+- [Migrations](#migrations)
+  - [From version 3.x to 4.x](#from-version-3x-to-4x)
+    - [Migration steps](#migration-steps)
 
-## About
+# About
 
-### Kuzzle Prometheus Plugin
+## Kuzzle Prometheus Plugin
 
 This is the official Prometheus monitoring plugin for the free and open-source backend Kuzzle.
 It provides you features such as:
@@ -28,7 +46,7 @@ It provides you features such as:
 * Event based monitoring using [Kuzzle Events](https://docs.kuzzle.io/core/1/plugins/guides/events/intro/).
 * System metrics (CPU, RAM, I/O...).
 
-### Kuzzle
+## Kuzzle
 
 Kuzzle is an open-source backend that includes a scalable server, a multiprotocol API,
 an administration console and a set of plugins that provide advanced functionalities like real-time pub/sub, blazing fast search and geofencing.
@@ -38,22 +56,16 @@ an administration console and a set of plugins that provide advanced functionali
 * :books: __[Documentation](https://docs.kuzzle.io)__
 * :email: __[Gitter](https://gitter.im/kuzzleio/kuzzle)__
 
-### Compatibility matrice
+## Compatibility matrice
 
 | Kuzzle Version | Plugin Version |
 | -------------- | -------------- |
 | 1.10.x         | 1.x.x          | 
 | 2.x.x          | 2.x.x          |
 | 3.x.x          | >= 2.11.x      |
+| 4.x.x          | >= 2.16.0      |
 
-## Local development
-
-You can use the [docker-composer.yml](docker/docker-compose.yml) file provided in this repository to start a Kuzzle stack with this plugin pre-installed.  
-
-```bash
-docker-compose up
-```
-### Installation
+# Installation
 
 To install this plugin on your Kuzzle stack (for each of your Kuzzle nodes),
 you will first need a Kuzzle Application like so. (see [Getting Started](/core/2/guides/getting-started))
@@ -92,48 +104,47 @@ app.start()
     app.log.info('Application started');
   })
   .catch(console.error);
-
 ```
 
-
-### Configuration
+# Configuration
 
 You can find sample configuration files for this plugin and the Prometheus scraping job in the `demo` folder.
 
-#### Plugin
+## Plugin
 
 This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
 
 ```json
-  "plugins": {
-    "kuzzle-plugin-prometheus": {
-      "collectSystemMetrics": true,
-      "systemMetricsInterval": 5000,
-      "labels": {
-        "common": [
-          "nodeHost",
-          "nodeMAC",
-          "nodeIP"
-        ],
-        "kuzzle": [
-          "controller",
-          "action",
-          "event",
-          "protocol",
-          "status"
-        ]
+ {
+ "plugins": {
+    "prometheus": {
+      "default": {
+        "enabled": true,
+        "prefix": "",
+        "eventLoopMonitoringPrecision": 10,
+        "gcDurationBuckets": [0.001, 0.01, 0.1, 1, 2, 5]
+      },
+      "core": {
+        "monitorRequestDuration": true,
+        "prefix": "kuzzle_"
       }
     }
   }
+}
 ```
 
-* `collectSystemMetrics`: If set to true (default), collects system metrics.
-* `systemMetricsInterval`: Time interval in __milliseconds__ between two system metrics polling.
-* `labels`:
-  * `common`: An array of labels added to every metrics, defaults to `['nodeHost', 'nodeMAC', 'nodeIP']`
-  * `kuzzle`: An array of Kuzzle metrics to collect, defaults to `['controller', 'action', 'event', 'protocol', 'status']`
+* `default`: Default Node.js metrics retrieved by [the Prom Client library](https://github.com/siimon/prom-client/tree/master/lib/metrics)
+  * `enabled`: Enable/Disable the default Node.js metrics (default: `true`)
+  * `prefix`: String to use to prefix metrics name (default: an empty string to avoid conflicts when using official Grafana dashboards)
+  * `eventLoopMonitoringPrecision`: Node.js Event Loop sampling rate in milliseconds. Must be greater than zero (default: `10`)
+  * `gcDurationBuckets`: Custom Prometheus buckets for Node.js GC duration histogram in seconds (default: `[0.001, 0.01, 0.1, 1, 2, 5]`)
+* `core`: Kuzzle Core metrics directly extract from the `server:metrics` API action or from plugin inner logic.
+  * `monitorRequestDuration`: Enable/Disable request duration sampling (default: `true`)
+  * `prefix`: String to use to prefix metrics name (default: `kuzzle_`) 
 
-#### Prometheus
+## Prometheus
+
+### With only one Kuzzle node
 
 ```yaml
 global:
@@ -142,22 +153,97 @@ global:
 
 scrape_configs:
   - job_name: 'kuzzle'
-    metrics_path: /_/prometheus/metrics
+    metrics_path: /_metrics
+    params:
+      format: ['prometheus']
     static_configs:
-      - targets: ['kuzzleEndpoint:7512'] # 
+      - targets: ['kuzzle:7512'] # the address of an application that exposes metrics for prometheus
 ```
 
+### With an authentified user
+If you use an other user than `anonymous` to expose the `server:metrics` API action, you will need to create a Kuzzle API Key (see [API Keys](https://docs.kuzzle.io/core/2/guides/advanced/api-keys/)) and use it to authentify the Prometheus scaper:
 
-### Demonstration
+```yaml
+global:
+  scrape_interval:     10s # Set the scrape interval to every 10 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
 
-If you want to simply have a look to a sample Grafana dashboard run the demonstration stack:
+scrape_configs:
+  - job_name: 'kuzzle'
+    metrics_path: /_metrics
+    params:
+      format: ['prometheus']
+    authorization:
+      type: 'Bearer'
+      credentials: 'my-api-key'
+    static_configs:
+      - targets: ['kuzzle:7512'] # the address of an application that exposes metrics for prometheus
+```
+
+### With multiple Kuzzle nodes and using Docker Compose
+If you use Docker Compose you'll need to provide the IP/Docker DNS name of each Kuzzle node as `targets`:
+
+```yaml
+global:
+  scrape_interval:     10s # Set the scrape interval to every 10 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+
+scrape_configs:
+  - job_name: 'kuzzle'
+    metrics_path: /_metrics
+    params:
+      format: ['prometheus']
+    static_configs:
+      - targets: 
+        - 'kuzzle-plugin-prometheus-kuzzle-1:7512' 
+        - 'kuzzle-plugin-prometheus-kuzzle-2:7512'
+        - 'kuzzle-plugin-prometheus-kuzzle-3:7512'
+```
+
+## Dashboards
+
+### Features
+
+You could find two dashboards in the `config/grafana/dashboards` folder:
+- `kuzzle.json`: a dashboard with all the metrics exposed by the `server:metrics` API action with a `nodeId` filter and including:
+  - Active connections
+  - Active Realtime subscriptions
+  - Concurrent requests
+  - Pending requests
+  - Request per second
+  - Request duration
+  - Internal Errors
+
+- `nodejs.json`: Node.js metrics dashboard with a `nodeId` filter and including:
+  - Process CPU Usage
+  - Process Memory Usage
+  - Process Restarts
+  - Event Loop Latency
+  - Heap Usage
+
+You can import them both using the Grafana API, Web UI or the provisionning system (see the `docker-compose.yml` file).
+
+### Screenshots
+<p align=center>
+<b>Kuzzle dashboard</b>
+<img width="1994" alt="image" src="https://user-images.githubusercontent.com/7868838/150335493-413808e8-d65a-4de9-a01f-34634c751e45.png">
+</p>
+<p align=center>
+<b>Node.js dashboard</b>
+<img width="1973" alt="image" src="https://user-images.githubusercontent.com/7868838/150334423-5763ac48-f6ea-444f-ab78-2f776a9925a6.png">
+</p>
+
+
+# Local development
+
+You can run a local development stack using Docker Compose
 
 ```
-$ docker-compose -f demo/docker-compose.yml up
+$ docker-compose up
 ```
 
 This will start a demonstration stack composed with:
-* A three nodes Kuzzle cluster behind an Nginx load balancer.
+* A Kuzzle server proxified by a Traefik router
 * A Prometheus container configured to scrap metrics.
 * A Grafana container.
 
@@ -165,12 +251,84 @@ Once started, go to `http://localhost:3000` and log in with the default Grafana 
 * username: `admin`
 * password: `admin`
 
-When successfully logged in you can import demonstration dashboards from the `dashboards` folder.
-To do so, hover on the `+` icon in the left sidebar, and click on `Import`. Then click on `Upload .json File` and choose the dashboard of your choice. Set up the targeted Prometheus to `Prometheus` and you're done.
 Make several requests using Kuzzle's HTTP API or SDKs, or by using the Admin Console.
 
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/7868838/60284159-2969cb80-990b-11e9-92bd-1e6156df0c2e.png"/>
-  <img src="https://user-images.githubusercontent.com/7868838/60284165-2bcc2580-990b-11e9-89fb-3d0307265ea9.png"/>
-</p>
+> NOTE: You can also increase the number of Kuzzle nodes to test a cluster configuration.
+> Use the Docker Compose `--scale` option to increase the number of replicas:
+> ```
+> docker-compose up -d --scale kuzzle=<number-of-replicas>
+> ```
+> Notice that you need to update the `config/prometheus.yml` file to reflect the new number of nodes and restart the prometheus container using `docker restart <prometheus-container-id>`
 
+# Migrations
+
+## From version 3.x to 4.x
+
+This new version 4.0.0 introduce numerous changes in the way metrics are collected and reported:
+- The plugin now uses the `server:metrics` API action to retrieve metrics from Kuzzle Core. Calling the `server:metrics` API action with the `format` parameter set to `prometheus` will return metrics in the Prometheus format.
+- The configuration of the plugin is now more flexible (see [Configuration](#configuration) section for more details):
+  - More control on the default Node.js metrics (set the Event Loop sample precision to custom value or adapt the Garbage Collector Prometheus bucket rates to fit your usecase).
+  - You can set different prefixes for Kuzzle Core metrics and Node.js metrics.
+  - The `nodeIP`, `nodeMAC` and `nodeHost` labels have beem removed in favor of the `nodeId` label.
+  - You can now disable the request recording job.
+- Most of the metric names have been changed to be more consistent with Kuzzle Core metrics.
+
+### Migration steps
+
+<details>
+  <summary>
+    Allow the user used by Prometheus to access <code>server:metrics</code> API action
+  </summary>
+  <p>
+    Add the following rule to your user role to allow the user <code>anonymous</code> to access the <code>server:metrics</code> API action:
+  </p>
+  <pre>
+{
+  "controllers": {
+    // Your others controllers rules
+    "server": {
+      "actions": {
+        "metrics": true,
+        // ...
+      }
+    }
+  }
+}
+  </pre>
+</details>
+
+<details>
+  <summary>
+    Update the plugin configuration
+  </summary> 
+  <p>
+    Here is the new default configuration file:
+  </p>
+  <pre>
+ {
+ "plugins": {
+    "prometheus": {
+      "default": {
+        "enabled": true,
+        "prefix": "",
+        "eventLoopMonitoringPrecision": 10,
+        "gcDurationBuckets": [0.001, 0.01, 0.1, 1, 2, 5]
+      },
+      "core": {
+        "monitorRequestDuration": true,
+        "prefix": "kuzzle_"
+      }
+    }
+  }
+}
+  </pre>
+</details>
+
+<details>
+  <summary>
+    Update your dashboards
+  </summary>
+  <p>
+    If you have previously imported the example Grafana dashboard, you will have to update it to use the new metrics names or use the new ones located in <code>config/grafana/dashboards</code>.
+  </p>
+</details>
