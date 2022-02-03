@@ -56,14 +56,14 @@ an administration console and a set of plugins that provide advanced functionali
 * :books: __[Documentation](https://docs.kuzzle.io)__
 * :email: __[Gitter](https://gitter.im/kuzzleio/kuzzle)__
 
-## Compatibility matrice
+## Compatibility matrix
 
 | Kuzzle Version | Plugin Version |
 | -------------- | -------------- |
 | 1.10.x         | 1.x.x          | 
 | 2.x.x          | 2.x.x          |
-| 3.x.x          | >= 2.11.x      |
-| 4.x.x          | >= 2.16.0      |
+| >= 2.11.x      | 3.x.x          |
+| >= 2.16.0      | 4.x.x          |
 
 # Installation
 
