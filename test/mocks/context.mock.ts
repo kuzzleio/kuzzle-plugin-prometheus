@@ -17,5 +17,10 @@ export class ContextMock {
       warn: sinon.stub(),
       error: sinon.stub()
     };
+    this.accessors = {
+      sdk: {
+        query: sinon.stub(),
+      },
+    };
   }
 }

@@ -149,4 +149,54 @@ describe('PrometheusPlugin', () => {
       });
     });
   });
+
+  describe('#metrics', () => {
+    it('should format the metrics and send them to the client as Prometheus format', async () => {
+      // We need to override global Kuzzle getter to manipulate the request response
+      Reflect.defineProperty(global, 'kuzzle', {
+        get () {
+          return {
+            id: 'kuzzle',
+          };
+        },
+      });
+
+      plugin.init(undefined, context);
+      const request = new KuzzleRequest({
+        controller: 'prometheus',
+        action: 'metrics',
+      }, {protocol: 'http'});
+
+      const getMetricsStub = sandbox.stub(plugin.metricService, 'getMetrics').returns('fake metrics');
+      const getPrometheusContentTypeStub = sandbox.stub(plugin.metricService, 'getPrometheusContentType').returns('text/plain');
+      const updateCoreMetricsStub = sandbox.stub(plugin.metricService, 'updateCoreMetrics').returns();
+      plugin.context.accessors.sdk.query.returns({ result: 'fake metrics' });
+
+      const formattedRequest = await plugin.metrics(request);
+
+      expect(plugin.context.accessors.sdk.query.calledOnce).to.be.true;
+      expect(getMetricsStub.calledOnce).to.be.true;
+      expect(getPrometheusContentTypeStub.calledOnce).to.be.true;
+      expect(updateCoreMetricsStub.calledOnce).to.be.true;
+      expect(formattedRequest).to.contains('fake metrics');
+    });
+
+    it('should not format the metrics if protocol is not HTTP', async () => {
+      plugin.init(undefined, context);
+      const request = new KuzzleRequest({
+        controller: 'prometheus',
+        action: 'metrics',
+      }, {protocol: 'foo'});
+
+      const getMetricsSpy = sandbox.spy(plugin.metricService, 'getMetrics');
+      const getPrometheusContentTypeSpy = sandbox.spy(plugin.metricService, 'getPrometheusContentType');
+      const updateCoreMetricsSpy = sandbox.spy(plugin.metricService, 'updateCoreMetrics');
+
+      await plugin.pipeFormatMetrics(request);
+
+      expect(getMetricsSpy.called).to.be.false;
+      expect(getPrometheusContentTypeSpy.called).to.be.false;
+      expect(updateCoreMetricsSpy.called).to.be.false;
+    });
+  });
 });
