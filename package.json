@@ -8,7 +8,6 @@
   "scripts": {
     "npm:docker": "docker-compose run kuzzle npm",
     "install:docker": "npm run npm:docker install kuzzle",
-    "postinstall": "npm ci && npm run build",
     "dev:docker": "docker-compose up",
     "services": "npx kourou app:start-services",
     "prod": "node application/app.js",
