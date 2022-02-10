@@ -1,4 +1,4 @@
-Feature: Prometheus metrics fetching
+Feature: Prometheus metrics fetching using server:metrics
   Scenario: Fetching Prometheus formatted metrics from server:metrics with the format parameter set to "prometheus"
     Given A running Kuzzle instance at "localhost:7512"
     When I send a HTTP request to "/_metrics?format=prometheus"

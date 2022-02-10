@@ -51,7 +51,9 @@ export class PluginSteps {
   public async thenTheResponseShouldBeAJSONObjectWithAProperty(status: string, property: string) {
     const json = JSON.parse(this.result);
     assert(json.status === parseInt(status));
-    assert(_.get(json, property) !== undefined);
+    if (property !== null) {
+      assert(_.get(json, property) !== undefined);
+    }
   }
 
   @then(/The HTTP response should be a JSON object/)
