@@ -29,7 +29,10 @@ describe('PrometheusPlugin', () => {
         },
         core: {
           prefix: 'kuzzle_custom_',
-        }
+        },
+        labels: {
+          environment: 'test',
+        },
       };
 
       plugin.init(customConfig, context);
@@ -43,7 +46,11 @@ describe('PrometheusPlugin', () => {
         core: {
           monitorRequestDuration: true,
           prefix: 'kuzzle_custom_',
-        }
+        },
+        labels: {
+          nodeId: plugin.context.nodeId,
+          environment: 'test',
+        },
       });
     });
 

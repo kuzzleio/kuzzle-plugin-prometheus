@@ -20,7 +20,11 @@ describe('MetricService', () => {
       core: {
         monitorRequestDuration: true,
         prefix: 'kuzzle_',
-      }
+      },
+      labels: {
+        nodeId: 'kuzzle',
+        environment: 'test',
+      },
     };
     sandbox = sinon.createSandbox();
   });
@@ -30,15 +34,6 @@ describe('MetricService', () => {
   });
 
   describe('#constructor', () => {
-    // We need to override global Kuzzle getter to manipulate the request response
-    Reflect.defineProperty(global, 'kuzzle', {
-      get () {
-        return {
-          id: 'kuzzle',
-        };
-      },
-    });
-
     it('should at least record core metrics if we disable everything', () => {
       config.default.enabled = false;
       config.core.monitorRequestDuration = false;
@@ -47,8 +42,9 @@ describe('MetricService', () => {
 
       expect(Object.keys(metricService['registries']).length).to.equal(1);
       expect(metricService['registries']['core']).to.be.an('object');
-      expect(metricService['defaultLabels']).to.be.an('object');
-      expect(metricService['defaultLabels']['nodeId']).to.equal('kuzzle');
+      expect(metricService['labels']).to.be.an('object');
+      expect(metricService['labels']['nodeId']).to.equal('kuzzle');
+      expect(metricService['labels']['environment']).to.equal('test');
     });
 
     it('should create a dedicated Prometheus registry for requests duration when enabled', () => {

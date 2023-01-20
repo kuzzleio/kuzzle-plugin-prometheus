@@ -24,6 +24,7 @@ import {
   Plugin,
   PluginContext,
   KuzzleRequest,
+  JSONObject,
 } from 'kuzzle';
 
 import _ from 'lodash';
@@ -73,6 +74,18 @@ export type PrometheusPluginConfiguration = {
      */
     prefix?: string;
   };
+
+  /**
+   * Custom labels to add to all metrics (useful for multi Kuzzle instances)
+   * @default {}
+   * @example
+   * {
+   *  instance: 'my-instance-name'
+   *  region: 'eu-west-1'
+   *  environment: 'production'
+   * }
+   */
+  labels?: JSONObject;
 }
 
 /**
@@ -113,6 +126,9 @@ export class PrometheusPlugin extends Plugin {
       core: {
         monitorRequestDuration: true,
         prefix: 'kuzzle_',
+      },
+      labels: {
+        nodeId: this.context.nodeId,
       },
     };
   }
