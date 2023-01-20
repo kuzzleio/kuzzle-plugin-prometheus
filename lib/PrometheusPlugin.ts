@@ -128,7 +128,7 @@ export class PrometheusPlugin extends Plugin {
         prefix: 'kuzzle_',
       },
       labels: {
-        nodeId: this.context.nodeId,
+        nodeId: this.context.accessors.nodeId,
       },
     };
   }
