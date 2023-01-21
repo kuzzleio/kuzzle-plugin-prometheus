@@ -128,7 +128,8 @@ export class PrometheusPlugin extends Plugin {
         prefix: 'kuzzle_',
       },
       labels: {
-        nodeId: this.context.accessors.nodeId,
+        // TODO: remove this.context.accessors.nodeId when Kuzzle Plugin Prometheus v5 is released
+        nodeId: global.kuzzle.nodeId,
       },
     };
   }

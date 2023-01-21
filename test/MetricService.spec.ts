@@ -32,8 +32,16 @@ describe('MetricService', () => {
   afterEach(() => {
     sandbox.restore();
   });
-
+  
   describe('#constructor', () => {
+    Reflect.defineProperty(global, 'kuzzle', {
+      get() {
+        return {
+          id: 'kuzzle',
+        }
+      }
+    });
+  
     it('should at least record core metrics if we disable everything', () => {
       config.default.enabled = false;
       config.core.monitorRequestDuration = false;
@@ -92,7 +100,7 @@ describe('MetricService', () => {
       const metricService = new MetricService(config);
       metricService.recordResponseTime(42, { action: 'foo', controller: 'bar', status: 200, protocol: 'http' });
       expect(await metricService['registries']['requestDuration'].getSingleMetricAsString('kuzzle_api_request_duration_ms'))
-        .to.contain('kuzzle_api_request_duration_ms_sum{action="foo",controller="bar",status="200",protocol="http",nodeId="kuzzle"} 42');
+        .to.contain('kuzzle_api_request_duration_ms_sum{action="foo",controller="bar",status="200",protocol="http",nodeId="kuzzle",environment="test"} 42');
     });
   });
 
