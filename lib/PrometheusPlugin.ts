@@ -127,10 +127,7 @@ export class PrometheusPlugin extends Plugin {
         monitorRequestDuration: true,
         prefix: 'kuzzle_',
       },
-      labels: {
-        // TODO: remove this.context.accessors.nodeId when Kuzzle Plugin Prometheus v5 is released
-        nodeId: global.kuzzle.nodeId,
-      },
+      labels: {},
     };
   }
 
@@ -140,8 +137,10 @@ export class PrometheusPlugin extends Plugin {
    * @param {PluginContext}       context - Kuzzle plugin context
    */
   async init (config: PrometheusPluginConfiguration, context: PluginContext) {
-    this.config = _.merge(this.config, config);
     this.context = context;
+    this.config = _.merge(this.config, config);
+    // TODO: remove this.context.accessors.nodeId when Kuzzle Plugin Prometheus v5 is released
+    this.config.labels.nodeId = this.context.accessors.nodeId;
 
     this.pipes = {
       'server:afterMetrics': async (request: KuzzleRequest) => this.pipeFormatMetrics(request),

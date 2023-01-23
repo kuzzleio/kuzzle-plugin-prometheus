@@ -92,9 +92,9 @@ services:
     container_name: kuzzle_elasticsearch
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9200"]
-      interval: 2s
+      interval: 5s
       timeout: 2s
-      retries: 10
+      retries: 15
     ports:
       - "9200:9200"
     ulimits:

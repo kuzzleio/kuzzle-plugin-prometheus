@@ -20,7 +20,7 @@ describe('PrometheusPlugin', () => {
   });
 
   describe('#init', () => {
-    it('should instantiate Prometheus using provided configuration and fill blank settings with defaults', () => {
+    it('should instantiate Prometheus using provided configuration and fill blank settings with defaults', async () => {
       const customConfig : PrometheusPluginConfiguration = {
         default: {
           enabled: false,
@@ -35,7 +35,8 @@ describe('PrometheusPlugin', () => {
         },
       };
 
-      plugin.init(customConfig, context);
+      await plugin.init(customConfig, context);
+
       expect(plugin.config).to.be.eql({
         default: {
           enabled: false,
@@ -48,7 +49,7 @@ describe('PrometheusPlugin', () => {
           prefix: 'kuzzle_custom_',
         },
         labels: {
-          nodeId: plugin.context.nodeId,
+          nodeId: context.accessors.nodeId,
           environment: 'test',
         },
       });
