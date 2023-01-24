@@ -10,7 +10,8 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "allowJs": false
+    "allowJs": false,
+    "skipLibCheck": true,
   },
   "rootDir": "lib/",
   "include": [
