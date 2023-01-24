@@ -140,7 +140,7 @@ export class PrometheusPlugin extends Plugin {
     this.context = context;
     this.config = _.merge(this.config, config);
     // TODO: remove this.context.accessors.nodeId when Kuzzle Plugin Prometheus v5 is released
-    this.config.labels.nodeId = this.context.accessors.nodeId;
+    this.config.labels.nodeId = global.kuzzle.nodeId;
 
     this.pipes = {
       'server:afterMetrics': async (request: KuzzleRequest) => this.pipeFormatMetrics(request),
