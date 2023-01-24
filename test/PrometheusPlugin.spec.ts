@@ -49,7 +49,7 @@ describe('PrometheusPlugin', () => {
           prefix: 'kuzzle_custom_',
         },
         labels: {
-          nodeId: context.accessors.nodeId,
+          nodeId: 'kuzzle-node-id',
           environment: 'test',
         },
       });
