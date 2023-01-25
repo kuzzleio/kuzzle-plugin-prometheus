@@ -11,3 +11,7 @@ lib/**/*.js.map
 index.d.ts
 index.js.map
 index.js
+
+features/step_definitions/**/*.js
+features/step_definitions/**/*.d.ts
+features/step_definitions/**/*.js.map
