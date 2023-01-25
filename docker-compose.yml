@@ -34,6 +34,7 @@ services:
     command: bash -c "npm run dev"
     volumes:
       - ".:/var/app"
+      - "./config/kuzzlerc:/var/app/.kuzzlerc"
     cap_add:
       - SYS_PTRACE
     ulimits:
