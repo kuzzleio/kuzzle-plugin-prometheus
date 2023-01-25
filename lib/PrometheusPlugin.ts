@@ -109,7 +109,7 @@ export class PrometheusPlugin extends Plugin {
 
   constructor () {
     super({
-      kuzzleVersion: '>=2.16.0 <3'
+      kuzzleVersion: '>=2.16.9 <3'
     });
 
     /**
@@ -139,8 +139,7 @@ export class PrometheusPlugin extends Plugin {
   async init (config: PrometheusPluginConfiguration, context: PluginContext) {
     this.context = context;
     this.config = _.merge(this.config, config);
-    // TODO: remove this.context.accessors.nodeId when Kuzzle Plugin Prometheus v5 is released
-    this.config.labels.nodeId = global.kuzzle.id;
+    this.config.labels.nodeId = this.context.accessors.nodeId;
 
     this.pipes = {
       'server:afterMetrics': async (request: KuzzleRequest) => this.pipeFormatMetrics(request),

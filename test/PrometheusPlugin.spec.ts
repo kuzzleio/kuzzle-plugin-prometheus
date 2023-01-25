@@ -21,15 +21,6 @@ describe('PrometheusPlugin', () => {
 
   describe('#init', () => {
     it('should instantiate Prometheus using provided configuration and fill blank settings with defaults', async () => {
-      // We need to override global Kuzzle getter to manipulate the request response
-      Reflect.defineProperty(global, 'kuzzle', {
-        get () {
-          return {
-            id: 'kuzzle',
-          };
-        },
-      });
-
       const customConfig : PrometheusPluginConfiguration = {
         default: {
           enabled: false,
@@ -58,7 +49,7 @@ describe('PrometheusPlugin', () => {
           prefix: 'kuzzle_custom_',
         },
         labels: {
-          nodeId: global.kuzzle.id,
+          nodeId: context.accessors.nodeId,
           environment: 'test',
         },
       });
