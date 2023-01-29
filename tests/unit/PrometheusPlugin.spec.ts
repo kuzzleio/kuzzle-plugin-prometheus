@@ -1,5 +1,5 @@
-import { PrometheusPlugin, PrometheusPluginConfiguration } from '../lib/PrometheusPlugin';
-import { MetricService } from '../lib/services/MetricService';
+import { PrometheusPlugin, PrometheusPluginConfiguration } from '../../lib/PrometheusPlugin';
+import { MetricService } from '../../lib/services/MetricService';
 import { ContextMock } from './mocks/context.mock';
 import { expect } from 'chai';
 import 'mocha';
