@@ -4,6 +4,6 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   roots: [
-    'features',
+    'tests/functional',
   ]
 };

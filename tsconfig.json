@@ -16,7 +16,6 @@
   "rootDir": "lib/",
   "include": [
     "lib/**/*.ts",
-    "features/*.spec.ts",
     "index.ts"
   ],
   "exclude": [
