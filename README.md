@@ -63,7 +63,7 @@ an administration console and a set of plugins that provide advanced functionali
 | 1.10.x         | 1.x.x          | 
 | 2.x.x          | 2.x.x          |
 | 3.x.x          | >= 2.11.x      |
-| 4.x.x          | >= 2.16.0      |
+| 4.x.x          | >= 2.16.9      |
 
 # Installation
 
@@ -127,6 +127,10 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
       "core": {
         "monitorRequestDuration": true,
         "prefix": "kuzzle_"
+      },
+      "labels": {
+        "project": "mySuperProject",
+        "environment": "development"
       }
     }
   }
@@ -141,6 +145,7 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
 * `core`: Kuzzle Core metrics directly extract from the `server:metrics` API action or from plugin inner logic.
   * `monitorRequestDuration`: Enable/Disable request duration sampling (default: `true`)
   * `prefix`: String to use to prefix metrics name (default: `kuzzle_`) 
+* `labels`: Additional labels to apply on all the different metrics (default: `{}`)
 
 ## Prometheus
 

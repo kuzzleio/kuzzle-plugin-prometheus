@@ -1,4 +1,4 @@
- {
+{
  "plugins": {
     "prometheus": {
       "default": {
@@ -10,6 +10,10 @@
       "core": {
         "monitorRequestDuration": true,
         "prefix": "kuzzle_"
+      },
+      "labels": {
+        "environment": "dev",
+        "project": "prometheus-plugin"
       }
     }
   }
