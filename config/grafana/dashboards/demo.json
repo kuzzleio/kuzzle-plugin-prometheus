@@ -22,7 +22,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1642671164685,
+  "iteration": 1643633313636,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -90,105 +90,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
+        "h": 11,
+        "w": 12,
         "x": 0,
-        "y": 0
-      },
-      "id": 30,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "hidden",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
-          },
-          "exemplar": true,
-          "expr": "rate(kuzzle_api_request_duration_ms_count{status=~\"5.+\",nodeId=~\"$nodeId\"}[$__rate_interval])",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "title": "Status code 500",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-RdYlGr"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 5,
-            "gradientMode": "hue",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "smooth",
-            "lineStyle": {
-              "dash": [
-                0,
-                3,
-                3
-              ],
-              "fill": "dot"
-            },
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": true,
-            "stacking": {
-              "group": "A",
-              "mode": "normal"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
         "y": 0
       },
       "id": 28,
@@ -213,7 +117,7 @@
             "uid": "Prometheus"
           },
           "exemplar": true,
-          "expr": "rate(kuzzle_api_request_duration_ms_count{status=~\"5.+\",nodeId=~\"$nodeId\"}[$__rate_interval])",
+          "expr": "sum by(nodeId) (rate(kuzzle_api_request_duration_ms_count{status=~\"5.+\",nodeId=~\"$nodeId\"}[$__rate_interval]) * 50)",
           "interval": "",
           "legendFormat": "{{nodeId}}",
           "refId": "A"
@@ -286,9 +190,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
+        "h": 11,
+        "w": 12,
+        "x": 12,
         "y": 0
       },
       "id": 32,
@@ -313,7 +217,7 @@
             "uid": "Prometheus"
           },
           "exemplar": true,
-          "expr": "rate(kuzzle_api_request_duration_ms_count{status=~\"5.+\",nodeId=~\"$nodeId\"}[$__rate_interval])",
+          "expr": "sum by(action, controller) (rate(kuzzle_api_request_duration_ms_count{status=~\"5.+\",nodeId=~\"$nodeId\"}[$__rate_interval]) * 50)",
           "interval": "",
           "legendFormat": "{{controller}} - {{action}}",
           "refId": "A"
@@ -389,7 +293,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 11
       },
       "id": 22,
       "options": {
@@ -413,7 +317,7 @@
             "uid": "Prometheus"
           },
           "exemplar": true,
-          "expr": "kuzzle_network_connections{nodeId=~\"$nodeId\"}",
+          "expr": "sum by(nodeId) (kuzzle_network_connections{nodeId=~\"$nodeId\"})",
           "interval": "",
           "legendFormat": "{{nodeId}}",
           "refId": "A"
@@ -491,7 +395,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 11
       },
       "id": 18,
       "options": {
@@ -591,7 +495,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 20
+        "y": 23
       },
       "id": 16,
       "options": {
@@ -691,7 +595,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 20
+        "y": 23
       },
       "id": 24,
       "options": {
@@ -791,7 +695,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 20
+        "y": 23
       },
       "id": 26,
       "options": {
@@ -815,7 +719,7 @@
             "uid": "Prometheus"
           },
           "exemplar": true,
-          "expr": "kuzzle_realtime_subscriptions{nodeId=~\"$nodeId\"}",
+          "expr": "sum by(nodeId) (kuzzle_realtime_subscriptions{nodeId=~\"$nodeId\"})",
           "interval": "",
           "legendFormat": "{{nodeId}}",
           "refId": "A"
@@ -893,7 +797,7 @@
         "h": 13,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 31
       },
       "id": 10,
       "interval": "3s",
@@ -996,7 +900,7 @@
         "h": 13,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 31
       },
       "hideTimeOverride": false,
       "id": 4,
@@ -1042,7 +946,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 44
       },
       "id": 14,
       "panels": [],
@@ -1117,7 +1021,7 @@
         "h": 13,
         "w": 12,
         "x": 0,
-        "y": 42
+        "y": 45
       },
       "id": 20,
       "options": {
@@ -1219,7 +1123,7 @@
         "h": 13,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 45
       },
       "hideTimeOverride": false,
       "id": 2,
@@ -1272,7 +1176,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],

@@ -150,6 +150,17 @@ export class PrometheusPlugin extends Plugin {
       'request:onError': this.recordRequest.bind(this),
     };
 
+    this.api = {
+      prometheus: {
+        actions: {
+          metrics: {
+            handler: (request: KuzzleRequest) => this.metrics(request),
+            http: [{ verb: 'get', path: 'metrics' }],
+          },
+        },
+      }
+    }
+
     this.metricService = new MetricService(this.config);
   }
 
@@ -190,5 +201,30 @@ export class PrometheusPlugin extends Plugin {
         status: request.status
       }
     );
+  }
+
+  /**
+   * Return the metrics in Prometheus format
+   * NOTE: This is an HTTP route for Prometheus installations that do not support HTTP arguments
+   * @param {KuzzleRequest} request - Kuzzle request
+   * @returns {Promise<string>}
+   */
+  async metrics (request: KuzzleRequest): Promise<string> {
+    if (request.context.connection.protocol === 'http') {
+      const responsePayload = await this.context.accessors.sdk.query({
+        controller: 'server',
+        action: 'metrics',
+      });
+      this.metricService.updateCoreMetrics(responsePayload.result);
+
+      request.response.configure({
+        headers: {
+          'Content-Type': this.metricService.getPrometheusContentType()
+        },
+        format: 'raw',
+      });
+
+      return await this.metricService.getMetrics();
+    }
   }
 }

@@ -19,7 +19,7 @@
 - [About](#about)
   - [Kuzzle Prometheus Plugin](#kuzzle-prometheus-plugin)
   - [Kuzzle](#kuzzle)
-  - [Compatibility matrice](#compatibility-matrice)
+  - [Compatibility matrix](#compatibility-matrix)
 - [Installation](#installation)
 - [Configuration](#configuration)
   - [Plugin](#plugin)
@@ -27,6 +27,7 @@
     - [With only one Kuzzle node](#with-only-one-kuzzle-node)
     - [With an authentified user](#with-an-authentified-user)
     - [With multiple Kuzzle nodes and using Docker Compose](#with-multiple-kuzzle-nodes-and-using-docker-compose)
+    - [Using Kubernetes annotations](#using-kubernetes-annotations)
   - [Dashboards](#dashboards)
     - [Features](#features)
     - [Screenshots](#screenshots)
@@ -56,7 +57,7 @@ an administration console and a set of plugins that provide advanced functionali
 * :books: __[Documentation](https://docs.kuzzle.io)__
 * :email: __[Gitter](https://gitter.im/kuzzleio/kuzzle)__
 
-## Compatibility matrice
+## Compatibility matrix
 
 | Kuzzle Version | Plugin Version |
 | -------------- | -------------- |
@@ -203,6 +204,21 @@ scrape_configs:
         - 'kuzzle-plugin-prometheus-kuzzle-1:7512' 
         - 'kuzzle-plugin-prometheus-kuzzle-2:7512'
         - 'kuzzle-plugin-prometheus-kuzzle-3:7512'
+```
+
+### Using Kubernetes annotations
+
+If your Prometheus inside a Kubernetes cluster, you must use the helper HTTP route `/_/metrics` since Prometheus `params` configuration is not supported.
+Your Pods annotations should look like this:
+
+```yaml
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: /_/metrics
+    prometheus.io/port: "7512"
+spec:
+...
 ```
 
 ## Dashboards

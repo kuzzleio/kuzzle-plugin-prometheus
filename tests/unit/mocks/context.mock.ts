@@ -19,7 +19,10 @@ export class ContextMock {
     };
 
     this.accessors = {
-      nodeId: 'kuzzle-node-id'
+      nodeId: 'kuzzle-node-id',
+      sdk: {
+        query: sinon.stub(),
+      },
     };
   }
 }
