@@ -85,16 +85,13 @@ export class MetricService {
   /**
    * Labels to add to the metric registries
    */
-  private defaultLabels: { [key: string]: string };
+  private labels: { [key: string]: string };
 
   /**
    * @param {PrometheusPluginConfiguration} config - The plugin configuration
    */
   constructor (config: PrometheusPluginConfiguration) {
-    this.defaultLabels = {
-      // TODO: Retrieve the Kuzzle Node id from the context when it will be available in the Kuzzle core
-      nodeId: global.kuzzle.id,
-    };
+    this.labels = config.labels;
 
     this.registries = {
       core: new Registry(),
@@ -106,13 +103,13 @@ export class MetricService {
           concurrentRequests: new Gauge({ 
             name: `${config.core.prefix}api_concurrent_requests`, 
             help: 'Number of concurrent requests', 
-            labelNames: Object.keys(this.defaultLabels),
+            labelNames: Object.keys(this.labels),
             registers: [this.registries.core] 
           }),
           pendingRequests: new Gauge({ 
             name: `${config.core.prefix}api_pending_requests`, 
             help: 'Number of pending requests', 
-            labelNames: Object.keys(this.defaultLabels),
+            labelNames: Object.keys(this.labels),
             registers: [this.registries.core] 
           }),
         },
@@ -120,7 +117,7 @@ export class MetricService {
           connections: new Gauge({ 
             name: `${config.core.prefix}network_connections`,
             help: 'Number of connections', 
-            labelNames: ['protocol', ...Object.keys(this.defaultLabels)], 
+            labelNames: ['protocol', ...Object.keys(this.labels)], 
             registers: [this.registries.core] 
           }),
         },
@@ -128,13 +125,13 @@ export class MetricService {
           rooms: new Gauge({
             name: `${config.core.prefix}realtime_rooms`, 
             help: 'Number of rooms', 
-            labelNames: Object.keys(this.defaultLabels),
+            labelNames: Object.keys(this.labels),
             registers: [this.registries.core] 
           }),
           subscriptions: new Gauge({
             name: `${config.core.prefix}realtime_subscriptions`,
             help: 'Number of subscriptions', 
-            labelNames: Object.keys(this.defaultLabels),
+            labelNames: Object.keys(this.labels),
             registers: [this.registries.core] 
           }),
         },
@@ -148,7 +145,7 @@ export class MetricService {
       this.metrics.requestDuration = new Histogram({
         name: `${config.core.prefix}api_request_duration_ms`,
         help: 'Duration of Kuzzle requests in ms',
-        labelNames: ['action', 'controller', 'protocol', 'status', ...Object.keys(this.defaultLabels)],
+        labelNames: ['action', 'controller', 'protocol', 'status', ...Object.keys(this.labels)],
         registers: [this.registries.requestDuration],
         buckets: [0.10, 5, 15, 50, 100, 200, 300, 400, 500]
       });
@@ -159,7 +156,7 @@ export class MetricService {
       collectDefaultMetrics({
         register: this.registries.default,
         prefix: config.default.prefix,
-        labels: this.defaultLabels,
+        labels: this.labels,
         eventLoopMonitoringPrecision: config.default.eventLoopMonitoringPrecision,
         gcDurationBuckets: config.default.gcDurationBuckets,
       });
@@ -181,13 +178,13 @@ export class MetricService {
         }
 
         if (typeof jsonMetrics[component][metric] === 'number') {
-          this.metrics.core[component][metric].set(this.defaultLabels, jsonMetrics[component][metric]);
+          this.metrics.core[component][metric].set(this.labels, jsonMetrics[component][metric]);
         }
 
         // Only for network.connections metric since we label it using protocol name
         if (typeof jsonMetrics[component][metric] === 'object') {
           for (const protocol of Object.keys(jsonMetrics[component][metric])) {
-            this.metrics.core[component][metric].set({ protocol, ...this.defaultLabels }, jsonMetrics[component][metric][protocol]);
+            this.metrics.core[component][metric].set({ protocol, ...this.labels }, jsonMetrics[component][metric][protocol]);
           }
         }
       }
@@ -216,6 +213,6 @@ export class MetricService {
    * @param {{[key: string]: string | number}}  labels  - Labels to add to the metric
    */
   public recordResponseTime (time: number, labels: {[key: string]: string | number}): void {
-    this.metrics.requestDuration.labels({ ...labels, ...this.defaultLabels }).observe(time);
+    this.metrics.requestDuration.labels({ ...labels, ...this.labels }).observe(time);
   }
 }

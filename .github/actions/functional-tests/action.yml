@@ -6,6 +6,10 @@ runs:
     - name: Run Docker Compose stack
       run: docker compose up -d
       shell: bash
+    - name: Print logs from Docker Compose stack
+      if: ${{ failure() }}
+      run: docker compose logs
+      shell: bash
     - name: Run tests
       run: npm run test:functional
       shell: bash

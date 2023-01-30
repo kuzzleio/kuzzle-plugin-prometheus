@@ -1,5 +1,5 @@
-import { PrometheusPlugin, PrometheusPluginConfiguration } from '../lib/PrometheusPlugin';
-import { MetricService } from '../lib/services/MetricService';
+import { PrometheusPlugin, PrometheusPluginConfiguration } from '../../lib/PrometheusPlugin';
+import { MetricService } from '../../lib/services/MetricService';
 import { ContextMock } from './mocks/context.mock';
 import { expect } from 'chai';
 import 'mocha';
@@ -20,7 +20,7 @@ describe('PrometheusPlugin', () => {
   });
 
   describe('#init', () => {
-    it('should instantiate Prometheus using provided configuration and fill blank settings with defaults', () => {
+    it('should instantiate Prometheus using provided configuration and fill blank settings with defaults', async () => {
       const customConfig : PrometheusPluginConfiguration = {
         default: {
           enabled: false,
@@ -29,10 +29,14 @@ describe('PrometheusPlugin', () => {
         },
         core: {
           prefix: 'kuzzle_custom_',
-        }
+        },
+        labels: {
+          environment: 'test',
+        },
       };
 
-      plugin.init(customConfig, context);
+      await plugin.init(customConfig, context);
+
       expect(plugin.config).to.be.eql({
         default: {
           enabled: false,
@@ -43,7 +47,11 @@ describe('PrometheusPlugin', () => {
         core: {
           monitorRequestDuration: true,
           prefix: 'kuzzle_custom_',
-        }
+        },
+        labels: {
+          nodeId: context.accessors.nodeId,
+          environment: 'test',
+        },
       });
     });
 
