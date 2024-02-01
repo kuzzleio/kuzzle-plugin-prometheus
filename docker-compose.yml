@@ -23,14 +23,14 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   kuzzle-installer:
-    image: kuzzleio/kuzzle-runner
+    image: kuzzleio/kuzzle-runner:18
     container_name: kuzzle-installer
-    command: bash -c "npm install"
+    command: bash -c "npm ci"
     volumes:
       - .:/var/app
 
   kuzzle:
-    image: kuzzleio/kuzzle-runner
+    image: kuzzleio/kuzzle-runner:18
     command: bash -c "npm run dev"
     volumes:
       - ".:/var/app"
