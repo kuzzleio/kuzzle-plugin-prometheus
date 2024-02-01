@@ -8,7 +8,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
 
   unit-tests:
     name: Unit Tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
@@ -52,7 +52,7 @@ jobs:
 
   functional-tests:
     name: Functional Tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     timeout-minutes: 30
     needs: ['unit-tests', lint]
     steps:
@@ -75,7 +75,7 @@ jobs:
 
   npm-deploy:
     name: Publish Package to NPM.js
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: [functional-tests]
     steps:
       - uses: actions/checkout@v2
