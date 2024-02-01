@@ -1,4 +1,7 @@
 {
+  "extension": [
+    "ts"
+  ],
   "reporter": "dot",
   "recursive": true,
   "slow": 2000,
