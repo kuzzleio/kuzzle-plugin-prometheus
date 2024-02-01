@@ -1,8 +1,10 @@
 {
+  "$schema": "https://json.schemastore.org/mocharc",
+  "extension": ["ts"],
+  "loader": "ts-node/esm",
   "reporter": "dot",
   "recursive": true,
   "slow": 2000,
   "timeout": 10000,
-  "require": ["ts-node/register"],
   "spec": "./tests/unit/*.spec.ts"
 }
