@@ -46,6 +46,7 @@ describe('PrometheusPlugin', () => {
         },
         core: {
           monitorRequestDuration: true,
+          requestDurationBuckets: [0.10,5,15,50,100,200,300,400,500],
           prefix: 'kuzzle_custom_',
         },
         labels: {
