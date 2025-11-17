@@ -127,6 +127,7 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
       },
       "core": {
         "monitorRequestDuration": true,
+        "requestDurationBuckets": [0.10,5,15,50,100,200,300,400,500],
         "prefix": "kuzzle_"
       },
       "labels": {
@@ -145,6 +146,7 @@ This plugin is configurable using the `kuzzlerc` Kuzzle configuration file.
   * `gcDurationBuckets`: Custom Prometheus buckets for Node.js GC duration histogram in seconds (default: `[0.001, 0.01, 0.1, 1, 2, 5]`)
 * `core`: Kuzzle Core metrics directly extract from the `server:metrics` API action or from plugin inner logic.
   * `monitorRequestDuration`: Enable/Disable request duration sampling (default: `true`)
+  * `requestDurationBuckets`: Custom Prometheus buckets for request duration histogram in milliseconds (default: `[0.10,5,15,50,100,200,300,400,500]`)
   * `prefix`: String to use to prefix metrics name (default: `kuzzle_`) 
 * `labels`: Additional labels to apply on all the different metrics (default: `{}`)
 
@@ -333,7 +335,8 @@ This new version 4.0.0 introduce numerous changes in the way metrics are collect
         "enabled": true,
         "prefix": "",
         "eventLoopMonitoringPrecision": 10,
-        "gcDurationBuckets": [0.001, 0.01, 0.1, 1, 2, 5]
+        "gcDurationBuckets": [0.001, 0.01, 0.1, 1, 2, 5],
+        "requestDurationBuckets": [0.10,5,15,50,100,200,300,400,500]
       },
       "core": {
         "monitorRequestDuration": true,

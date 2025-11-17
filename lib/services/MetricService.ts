@@ -147,7 +147,7 @@ export class MetricService {
         help: 'Duration of Kuzzle requests in ms',
         labelNames: ['action', 'controller', 'protocol', 'status', ...Object.keys(this.labels)],
         registers: [this.registries.requestDuration],
-        buckets: [0.10, 5, 15, 50, 100, 200, 300, 400, 500]
+        buckets: config.core.requestDurationBuckets,
       });
     }
 

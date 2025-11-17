@@ -44,6 +44,12 @@ export type PrometheusPluginConfiguration = {
     monitorRequestDuration?: boolean;
 
     /**
+     * The custom buckets for request duration histogram in milliseconds
+     * @default [0.10,5,15,50,100,200,300,400,500]
+     */
+    requestDurationBuckets?: number[];
+
+    /**
      * String to prefix core metrics with
      * @default 'kuzzle_'
      */
@@ -125,6 +131,7 @@ export class PrometheusPlugin extends Plugin {
       },
       core: {
         monitorRequestDuration: true,
+        requestDurationBuckets: [0.10,5,15,50,100,200,300,400,500],
         prefix: 'kuzzle_',
       },
       labels: {},
