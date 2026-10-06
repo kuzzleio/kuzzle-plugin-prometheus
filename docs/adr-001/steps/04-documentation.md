@@ -2,7 +2,7 @@
 
 **Status:** 🟦 In progress
 **Dates:** started 2026-10-06
-**PR(s):** —
+**PR(s):** [#42](https://github.com/kuzzleio/kuzzle-plugin-prometheus/pull/42) (fixes)
 **ADR:** [ADR-0001](../ADR-0001-maintenance-baseline.md)
 
 ## Goal

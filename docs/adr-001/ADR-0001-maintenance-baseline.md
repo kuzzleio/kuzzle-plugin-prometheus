@@ -43,7 +43,8 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 - Step 02 done (#38): Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0 <3.0.0`; emitted JS unchanged.
 - Step 03 done (#40): semantic-release with npm trusted publishing; `5.0.0-beta.1` published from `5-dev` with provenance, no npm token.
 - Step 04 open: documentation overhaul.
-- **Next action:** inventory every configuration key, metric and deployment mode from the code, then write the README + `docs/` reference and the 4.x → 5.x upgrade guide (step 04).
+- Step 04: inventory done; two bugs it found fixed in #42.
+- **Next action:** merge #42, then write the README + `docs/` reference and the 4.x → 5.x upgrade guide from the step 04 inventory.
 
 ## Steps
 
@@ -52,7 +53,7 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 | 01 | Node 20/22/24 toolchain and CI (engines, test matrix, runners, actions) | ✅ Done | #37 | [detail](steps/01-node-toolchain-ci.md) |
 | 02 | Dependency refresh (prom-client, Kuzzle peer range, dev tooling, cleanup) | ✅ Done | #38 | [detail](steps/02-dependency-refresh.md) |
 | 03 | semantic-release + npm OIDC trusted publishing | ✅ Done | #40 | [detail](steps/03-semantic-release-oidc.md) |
-| 04 | Documentation overhaul (README + `docs/` reference) | 🟦 In progress | — | [detail](steps/04-documentation.md) |
+| 04 | Documentation overhaul (README + `docs/` reference) | 🟦 In progress | #42 | [detail](steps/04-documentation.md) |
 
 Order: the CI must be green on the target runtimes before dependencies move (01 → 02); the release pipeline ships the result (03); the documentation describes the final state (04), though it may start earlier in parallel.
 
