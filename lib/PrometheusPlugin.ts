@@ -141,10 +141,13 @@ export class PrometheusPlugin extends Plugin {
         this.pipeFormatMetrics(request),
     };
 
-    this.hooks = {
-      "request:onSuccess": this.recordRequest.bind(this),
-      "request:onError": this.recordRequest.bind(this),
-    };
+    // The request duration histogram only exists when this option is on
+    this.hooks = this.config.core.monitorRequestDuration
+      ? {
+          "request:onSuccess": this.recordRequest.bind(this),
+          "request:onError": this.recordRequest.bind(this),
+        }
+      : {};
 
     this.api = {
       prometheus: {
