@@ -1,8 +1,8 @@
 # Step 01 — TypeScript `strict` on the current code
 
-**Status:** 🟦 In progress — PR to open
-**Dates:** 2026-10-06 → …
-**PR(s):** —
+**Status:** ✅ Done — merged into `5-dev` (#53), frozen
+**Dates:** 2026-10-06 → 2026-10-06
+**PR(s):** [#53](https://github.com/kuzzleio/kuzzle-plugin-prometheus/pull/53)
 **ADR:** [ADR-0002](../ADR-0002-generic-prometheus-module.md)
 
 ## Goal

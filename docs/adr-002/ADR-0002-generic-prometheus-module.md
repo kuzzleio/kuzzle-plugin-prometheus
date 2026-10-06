@@ -57,15 +57,16 @@ State observed on 2026-10-06:
 
 ## Cold start
 
-- Decision recorded on 2026-10-06. Step 01 is open: the code compiles in `strict` and all tests pass locally.
-- **Next action:** merge step 01, then create `kuzzleio/kuzzle-prometheus` (step 02).
+- Decision recorded on 2026-10-06. Step 01 done: the plugin compiles in `strict` (#53).
+- Step 02 open: `kuzzleio/kuzzle-prometheus` exists (public, Apache-2.0, empty).
+- **Next action:** bootstrap `kuzzle-prometheus` with the ADR-0001 baseline (TypeScript, Node 22/24 CI, semantic-release, OIDC publishing).
 
 ## Steps
 
 | # | Step | Status | PR(s) | Detail |
 | --- | --- | --- | --- | --- |
-| 01 | TypeScript `strict` on the current code | 🟦 In progress | — | [detail](steps/01-typescript-strict.md) |
-| 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | ⬜ To do | — | — |
+| 01 | TypeScript `strict` on the current code | ✅ Done | #53 | [detail](steps/01-typescript-strict.md) |
+| 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | 🟦 In progress | — | [detail](steps/02-kuzzle-prometheus-repository.md) |
 | 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | ⬜ To do | — | — |
 | 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | ⬜ To do | — | — |
 | 05 | PaaS: pod discovery in Alloy, `kuzzle` chart path fix, first Kuzzle alert rules in Cockpit | ⬜ To do | — | — |
@@ -82,6 +83,7 @@ Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so t
 - 2026-10-06 — Typed wrapper for custom metrics; common labels `project` / `environment` / `service`; pull only.
 - 2026-10-06 — Business metrics live in their products; frontends out of scope.
 - 2026-10-06 — Enabled by default in `registerKIoTP`, opt-out with `plugins.prometheus.enabled: false`.
+- 2026-10-06 — `kuzzleio/kuzzle-prometheus` created (public, Apache-2.0, default branch `master`).
 - 2026-10-06 — Configurable request buckets are redone in the module; the 4.x branch `feat/add-request-duration-bucket-config` is a reference only.
 
 ## Open points
