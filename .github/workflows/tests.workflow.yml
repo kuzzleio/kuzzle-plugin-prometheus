@@ -1,0 +1,51 @@
+name: Tests
+
+# Reusable: the same checks gate pull requests and every push to a dev or
+# release branch. Node 20, 22 and 24 are the supported runtimes (ADR-0001);
+# lint does not depend on the runtime, so it runs once, on 24.
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - uses: ./.github/actions/lint
+
+  unit-tests:
+    name: Unit tests - Node ${{ matrix.node-version }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["20", "22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - uses: ./.github/actions/unit-tests
+
+  functional-tests:
+    name: Functional tests - Node ${{ matrix.node-version }}
+    runs-on: ubuntu-24.04
+    needs: [lint, unit-tests]
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["20", "22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: ./.github/actions/functional-tests
+        with:
+          node-version: ${{ matrix.node-version }}

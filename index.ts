@@ -1,1 +1,1 @@
-export * from './lib/PrometheusPlugin';
+export * from "./lib/PrometheusPlugin";

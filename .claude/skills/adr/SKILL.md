@@ -1,0 +1,129 @@
+---
+name: adr
+description: Structure, split and maintain Architecture Decision Records (ADR) in the kuzzle-plugin-prometheus repo — a hub file (decision + cold-start + step table + central decision register) plus one file per milestone/step under docs/adr-<n>/steps/, frozen once shipped, with their current state mirrored in docs/adr-state.json. Use when creating a new ADR, splitting or shrinking a large ADR, opening/closing a step, or when a wrap-up must update an ADR's structure.
+---
+
+# kuzzle-plugin-prometheus — ADR structure
+
+An ADR in this repo is **not** a frozen one-shot decision record: it is a **living document** that tracks an effort end to end. Left unstructured it fuses three documents of different natures and bloats every session. This skill keeps them separated.
+
+Ported from `kuzzleio/kuzzle` (`kuzzle-adr` skill, itself ported from paas-console). Their reference implementation is Kuzzle's `docs/adr-003/`: match its shape. This repo's own first ADR is [`docs/adr-001/`](../../../docs/adr-001/ADR-0001-maintenance-baseline.md).
+
+## The three natures to separate
+
+| Nature | Volume | Life | Where |
+| --- | --- | --- | --- |
+| **Architecture decision** (context / decision / consequences) | short | stable | **hub** |
+| **Cold-start** (current state, next action) | tiny | living | **hub** |
+| **Execution trace** (what was done, local decisions, gotchas, PRs) | large, grows every session | living while the step is open, **frozen** after | **one file per step** |
+
+**Golden rule:** the *living surface* = the hub + the open step file(s). Everything else is archive. A cold-start or a wrap-up only re-reads those two.
+
+## Layout & naming
+
+```
+docs/adr-<n>/
+  ADR-000X-<slug>.md           ← the HUB (the only file read in full)
+  <companion>.md               ← companion docs / assets (relative links)
+  journal.md                   ← optional: narrative evicted verbatim (write-once)
+  steps/
+    00-<slug>.md               ← one step = one file
+    01-<slug>.md
+    ...
+```
+
+- **Location**: ADRs live under `docs/adr-<n>/`. The folder is zero-padded to three digits (`docs/adr-001/`); the hub file is `ADR-000X-<slug>.md`.
+- **ADR number**: by order of *record* creation, never renumbered (never break #PR / memory / commit refs). A decision may carry a higher number than one it chronologically precedes — note it in the hub when so.
+- **Step files**: two-digit numeric prefix (`00-`, `01-`, …) = reading order; short kebab-case slug. Any domain numbering (a sprint, a phase) lives in the **slug**, never in the prefix. `00-` typically archives a rejected approach (the ADR's "rejected alternatives").
+- **Assets / companions**: descriptive name (not prefixed by `ADR-000X`), always referenced by **relative link** from the file that renders them.
+- **`journal.md` — the pressure valve.** When a cold start or a register has swallowed a session-by-session journal, evict that prose **verbatim** into `journal.md` and leave a pointer, rather than delete it. Write-once: never fed going forward (new narrative belongs to the open step), never read by a cold start.
+
+## The HUB — `ADR-000X-<slug>.md`
+
+In order:
+
+1. **Title + meta**: `# ADR-000X: <title>`, then `**Status:**`, `**Date:**`, `**Deciders:**`, `**Related documents:**`.
+2. **Decision**: Context → Decision → Consequences. Short. This is the actual ADR.
+3. **Target architecture** *(optional)*: schema + stable reference description (not a journal).
+4. **Cold start**: current state in a few bullets + an explicit **next action**. **Rewritten** at each pass, never appended to: yesterday's state is either still true (keep it) or history (it belongs to the step file).
+5. **Step table** — the spine. One row per step with a link to its file:
+
+   | # | Step | Status | PR(s) | Detail |
+   | --- | --- | --- | --- | --- |
+   | 01 | … | ✅ Done | #NNN | [detail](steps/01-….md) |
+
+6. **Decision register**: **dated** list, **one line per decision** — the canonical "what we decided" view. Each line may link to the step file that details it. A register entry that grows into a paragraph has swallowed a step's narrative: move the body to the step file, keep the line.
+7. **Open points** + **References**.
+
+An ADR that runs long enough to accumulate review findings keeps a **lessons index** (`lessons.md`): one row per *generalisable* lesson, its source finding, and **what enforces it** — a gate, a line in the standards a contributor reads, or nothing. The un-enforced rows are the backlog of what to gate next.
+
+The hub **never** holds a step's detailed narrative nor a session-by-session journal — that lives in the step files.
+
+### Structured extract — `docs/adr-state.json`
+
+The hub is the narrative source of truth, but it is expensive to read. Each ADR's **current** state is mirrored in [`docs/adr-state.json`](../../../docs/adr-state.json), which feeds the digest injected at every session start (`SessionStart` hook → `node .ci/scripts/adr-state.ts --digest`). Update it in the same pass as the hub: a stale entry silently misleads every future session. It holds **state, never history**; `node .ci/scripts/adr-state.ts --check` (CI job `adr-state`) enforces:
+
+| Field | Content | Limit |
+| --- | --- | --- |
+| `snapshot`, `latestVersion` | date of the last state change; npm `latest` | — |
+| `adrs[].id`, `hub`, `title` | number, hub path, the hub's title | `title` ≤ 80 |
+| `adrs[].status` | `proposed` · `accepted` · `active` (a step is open) · `closed` · `abandoned`; closed/abandoned must match the hub's `**Status:**` | enum |
+| `adrs[].statusLabel` | emoji + short label | ≤ 40 |
+| `adrs[].openStep` | path of **the** open step, or `null`; its `**Status:**` must be open (⬜/🟦); required when `active` | — |
+| `adrs[].nextAction` | **one** imperative action, or `null` — never what was just done | ≤ 300, one line |
+| `adrs[].blockers[]` | a gate and what lifts it | ≤ 4 × 200 |
+| `adrs[].openPoints[]` | the open points that matter; **no ✅ / struck-through entry**: what is done is told in the hub or the step, then removed here | ≤ 6 × 200 |
+
+Whole file ≤ 8 KB, digest ≤ 2 500 chars. If something does not fit, it belongs in the hub, not in abbreviations. **Public repository:** private projects (client names, private plugins) never go in this file.
+
+## Budgets — what keeps this structure from regrowing
+
+On Kuzzle and paas-console, freshly compacted hubs were back past 100 KB within days: every pass appended a dated report and nothing bounded it. Here [`docs/doc-budgets.json`](../../../docs/doc-budgets.json) does, checked by `node .ci/scripts/check-doc-budgets.ts` on every PR (job `doc-budgets`, blocking) and by a non-blocking `PostToolUse` hook (`.claude/settings.json`) right after an edit. Roles: `living` (re-read at every resume → bounded), `archive` (write-once → exempt, but flagged when it grows in a PR), `exempt` (generated, legal, or product docs).
+
+| File | Budget | When it overflows |
+| --- | --- | --- |
+| hub `ADR-000X-*.md` | 40 KB | move step narrative to its file; evict a journal already written **verbatim** to `journal.md` with a pointer |
+| **open** step (`⬜`/`🟦`) | 60 KB | **sub-split** (below) |
+| other ADR annexes (`docs/adr-<n>/*.md`) | 40 KB | evict what is settled to `journal.md` or the frozen step that produced it |
+| closed step (`✅`/`🧊`/`🚫`), `journal*.md`, **every file of a Closed/Abandoned ADR** | exempt (archive) | never reopened, never fed |
+
+A budget is raised only by a reasoned edit of `doc-budgets.json` (say why in the commit), never to let a journal through. Do not compress into abbreviations either: if it does not fit, it belongs somewhere else.
+
+**Sub-split rule.** When an open step nears 60 KB, keep `steps/NN-<slug>.md` as the step's chapeau (goal, status, a table of its parts with links, local decisions) and move each part's narrative to `steps/NN-<slug>/<part>.md`, each with its own `**Status:**` line. A part that is done is frozen like any step and stops counting.
+
+The `**Status:**` line of a step file (first lines) is **machine-read**: its first emoji decides open (`⬜`, `🟦` → bounded) or closed (`✅`, `🧊`, `🚫` → archive). Keep the emoji first; put the detail after it.
+
+## A STEP file — `steps/NN-<slug>.md`
+
+Granularity: **one milestone/step = one file**, grouping its sub-tasks. Sub-split **only** when a step gets heavy — and always before it passes its 60 KB budget.
+
+Content: **Title + status + dates + PR(s)** (+ back-link to the hub) · **Goal** · **What was done** · **Local decisions / gotchas** (the one-line version bubbles up to the hub register) · **Validation**.
+
+## Step lifecycle
+
+1. **Open**: create `steps/NN-<slug>.md` when the step **starts**; add its row to the hub table (`⬜ To do` / `🟦 In progress`); set `openStep` and `status: active` in `adr-state.json`.
+2. **During**: only the step file, the hub's cold start and the ADR's `adr-state.json` entry move.
+3. **Close** (done / released): **freeze** the step file (archive — do not reopen). Update only its hub-table row (✅ + PR), the cold start, the hub register if a structural decision came out, and `adr-state.json`.
+
+## Closing an ADR
+
+When the last step closes, **freeze the whole ADR**: hub status `Closed`, every step ✅/🧊/🚫, a cold start that says there is nothing to resume, `status: closed` in `adr-state.json`. A step must not outlive its ADR as a "parallel track": what is still open goes to a GitHub issue, and the step closes with a pointer to it. Rewrite the cold start, the register and the open points to their final, short form, and evict the long versions **verbatim** to the ADR's `journal.md`.
+
+## Normalized statuses
+
+- **ADR (hub)**: `Proposed` · `Accepted` · `Accepted — implemented` · `Closed` · `Abandoned`.
+- **Step (table row)**: `⬜ To do` · `🟦 In progress` · `✅ Done` · `🧊 Frozen/Archive` · `🚫 Abandoned`.
+
+## Tooling
+
+```sh
+node .ci/scripts/adr-state.ts --check     # schema + consistency with the hubs + digest size
+node .ci/scripts/adr-state.ts --digest    # what the SessionStart hook prints
+node .ci/scripts/check-doc-budgets.ts     # size budgets of every tracked .md
+```
+
+Both scripts use Node builtins only and run through Node's type stripping (Node ≥ 22.18 / 23.6): keep their syntax erasable, and they need no `npm ci`.
+
+## Language
+
+Prose in **English**, like the rest of this public repository (code, comments, docs, commits, PRs).
