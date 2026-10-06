@@ -1,7 +1,7 @@
 # Step 03 — semantic-release + npm OIDC trusted publishing
 
-**Status:** 🟦 In progress
-**Dates:** started 2026-10-06
+**Status:** ✅ Done — merged into `5-dev` (#40), `5.0.0-beta.1` published, frozen
+**Dates:** 2026-10-06 → 2026-10-06
 **PR(s):** [#40](https://github.com/kuzzleio/kuzzle-plugin-prometheus/pull/40)
 **ADR:** [ADR-0001](../ADR-0001-maintenance-baseline.md)
 
@@ -45,6 +45,7 @@ Scope: `.releaserc.json`, the release workflow, the removal of the manual `npm p
 - **`checkout` with `fetch-depth: 0` and `persist-credentials: false`**: semantic-release needs the full history and tags, and must push with the App token, not the persisted `GITHUB_TOKEN`.
 - **A 4.x fix cannot ship before 5.0.0**: while `master` and `4-stable` share `v4.2.1` as latest release, semantic-release computes an empty range for `4-stable` and refuses `4.2.2` ("out of range"). Once `master` has published 5.0.0, it accepts it. `4-stable` also needs its own copy of `.releaserc.json` and the release workflow (GitHub runs the workflow file of the pushed branch), and a working CI: a backport PR when the first 4.x fix comes.
 - **Simulating releases locally**: `semantic-release --dry-run --no-ci` force-fetches every branch from the remote, so local merges and tags are discarded. Simulate against a local bare clone (`--repository-url file://…`).
+- **`actions/create-github-app-token@v3` deprecates `app-id`** for `client-id` (warning only); Kuzzle uses `app-id` too. Switching needs the App's client ID as an org variable.
 - The trusted publisher on npmjs.com is bound to the workflow file name: renaming `release.workflow.yml` breaks publication until the npm setting follows.
 
 ## Validation
@@ -61,4 +62,12 @@ Dry runs, 2026-10-06 (semantic-release 25.0.3, Node 24, existing tag `v4.2.1`):
 
 `actionlint`: clean.
 
-Remaining: the trusted publisher registration, then the first real prerelease from `5-dev` after the merge.
+CI on #40, 2026-10-06: all green. Trusted publisher registered on npmjs.com by an org admin the same day.
+
+First real release, 2026-10-06 ([run 37463080820](https://github.com/kuzzleio/kuzzle-plugin-prometheus/actions/runs/37463080820)), on the merge of #40 into `5-dev`:
+
+- OIDC token exchange accepted by npm; no npm token in the job.
+- `kuzzle-plugin-prometheus@5.0.0-beta.1` published on dist-tag `beta`, with a signed SLSA provenance attestation; `latest` stays `4.2.1`.
+- GitHub prerelease `v5.0.0-beta.1`, release commit `chore(release): 5.0.0-beta.1 [skip ci]` pushed by the App with `changelogs/CHANGELOG_5-dev.md`; PRs #37–#40 labelled `released on @beta`.
+
+Not exercised yet: a `latest` release from `master` (5.0.0, when `5-dev` merges at the end of ADR-0001) and a 4.x fix from `4-stable` (needs the backport).

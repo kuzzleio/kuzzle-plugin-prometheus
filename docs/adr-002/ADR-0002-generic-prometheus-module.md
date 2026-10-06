@@ -13,6 +13,7 @@
 
 - The plugin's metric collection and exposition logic (`lib/services/MetricService.ts`, `prom-client` registry, default and request metrics) is bound to the Kuzzle plugin API (`lib/PrometheusPlugin.ts`).
 - The IoT platform packages do not use this plugin by default today; monitoring is set up per project, if at all.
+- `prom-client` 15.1.3 is marked deprecated on npm ("replaced by `@prometheus-io/client`", seen 2026-10-06): the generic module should be built on its successor, or justify staying.
 - Other Kuzzle-team stacks are not Kuzzle plugins (standalone Node services, workers…) and have no shared way to expose Prometheus metrics.
 
 ### Goals
