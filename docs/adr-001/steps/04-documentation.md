@@ -1,7 +1,7 @@
 # Step 04 — Documentation overhaul
 
-**Status:** 🟦 In progress
-**Dates:** started 2026-10-06
+**Status:** ✅ Done — merged into `5-dev` (#42, #43), frozen
+**Dates:** 2026-10-06 → 2026-10-06
 **PR(s):** [#42](https://github.com/kuzzleio/kuzzle-plugin-prometheus/pull/42) (fixes), [#43](https://github.com/kuzzleio/kuzzle-plugin-prometheus/pull/43) (docs)
 **ADR:** [ADR-0001](../ADR-0001-maintenance-baseline.md)
 
@@ -67,3 +67,5 @@ Checked on the Compose stack (Kuzzle 2.59.0, Node 24), 2026-10-06:
 | environment variables: booleans, `*json:` arrays, labels | ✅ (array merge bug found and fixed) |
 | two nodes: each exposes only its own metrics and `nodeId` | ✅ |
 | Kuzzle refuses a plugin outside its manifest's `kuzzleVersion` | ✅ (Kuzzle code, `plugin.js`) |
+
+CI on #42 and #43: all green. Released as `5.0.0-beta.2` (#42) and `5.0.0-beta.3` (#43) on the `beta` channel, 2026-10-06.
