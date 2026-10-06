@@ -58,15 +58,15 @@ State observed on 2026-10-06:
 ## Cold start
 
 - Decision recorded on 2026-10-06. Step 01 done: the plugin compiles in `strict` (#53).
-- Step 02 open: `kuzzleio/kuzzle-prometheus` exists (public, Apache-2.0, empty).
-- **Next action:** bootstrap `kuzzle-prometheus` with the ADR-0001 baseline (TypeScript, Node 22/24 CI, semantic-release, OIDC publishing).
+- Step 02 open: `kuzzleio/kuzzle-prometheus` is bootstrapped (kuzzle-prometheus#1: entry points, TypeScript `strict`, Node 22/24 CI, release workflow). Nothing is published on npm yet.
+- **Next action:** set up npm publishing for `kuzzle-prometheus` (first manual publish, trusted publisher, bot App installed), close step 02, then open step 03.
 
 ## Steps
 
 | # | Step | Status | PR(s) | Detail |
 | --- | --- | --- | --- | --- |
 | 01 | TypeScript `strict` on the current code | ✅ Done | #53 | [detail](steps/01-typescript-strict.md) |
-| 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | 🟦 In progress | — | [detail](steps/02-kuzzle-prometheus-repository.md) |
+| 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | 🟦 In progress | kuzzle-prometheus#1 | [detail](steps/02-kuzzle-prometheus-repository.md) |
 | 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | ⬜ To do | — | — |
 | 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | ⬜ To do | — | — |
 | 05 | PaaS: pod discovery in Alloy, `kuzzle` chart path fix, first Kuzzle alert rules in Cockpit | ⬜ To do | — | — |

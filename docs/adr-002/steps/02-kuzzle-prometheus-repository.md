@@ -12,7 +12,7 @@
 ## What was done
 
 - 2026-10-06 — Repository created: public, Apache-2.0 license, default branch `master`.
-- 2026-10-06 — Bootstrap PR (kuzzle-prometheus#1):
+- 2026-10-06 — Bootstrap merged into `master` (kuzzle-prometheus#1, `837cde1`):
   - entry points `src/index.ts` (`.`) and `src/kuzzle/index.ts` (`./kuzzle`), exported through `exports` and `typesVersions`; Kuzzle is an optional peer dependency;
   - TypeScript `strict`, ESLint (`eslint-plugin-kuzzle`), Vitest, with the toolchain versions of this repository;
   - CI: lint and types once on Node 24, unit tests on Node 22 and 24;

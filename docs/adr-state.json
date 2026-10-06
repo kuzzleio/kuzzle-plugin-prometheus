@@ -21,7 +21,7 @@
       "status": "active",
       "statusLabel": "🟦 Step 02 · new repository",
       "openStep": "docs/adr-002/steps/02-kuzzle-prometheus-repository.md",
-      "nextAction": "Bootstrap kuzzleio/kuzzle-prometheus with the ADR-0001 baseline: TypeScript, Node 22/24 CI, semantic-release, npm OIDC trusted publishing.",
+      "nextAction": "Set up npm publishing for kuzzle-prometheus (first manual publish, trusted publisher on release.workflow.yml, bot App installed), close step 02, then open step 03 (module extraction).",
       "blockers": [],
       "openPoints": [
         "Kuzzle Helm chart metrics path (/_/metrics) vs the plugin route: confirm before the PaaS step."
