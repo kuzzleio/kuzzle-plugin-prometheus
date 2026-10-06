@@ -3,7 +3,6 @@ name: Dev branches push checks
 on:
   push:
     branches:
-      - 5-dev
       - 4-dev
 
 jobs:

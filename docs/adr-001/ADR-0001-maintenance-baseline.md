@@ -41,8 +41,8 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 - ADR accepted on 2026-10-06 (5.0.0, `5-dev` → `master`, `4-stable` for 4.x, docs in the repo). Branches `5-dev` and `4-stable` exist.
 - Step 01 done (#37): installs, builds and passes every test on Node 20/22/24, CI matrix in place.
 - Step 02 done (#38): Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0 <3.0.0`; emitted JS unchanged.
-- Step 03 open: semantic-release + npm OIDC trusted publishing.
-- **Next action:** write the release configuration and workflow of step 03 (`.releaserc.json` on `semantic-release-config-kuzzle`, `id-token: write`), and get an npm org admin to register the trusted publisher.
+- Step 03: release config and workflow written, dry runs give `5.0.0-beta.1` on `5-dev` and `5.0.0` on `master` after the merge.
+- **Next action:** get an npm org admin to register the trusted publisher (`release.workflow.yml`), then merge the step 03 PR into `5-dev` and check that `5.0.0-beta.1` is published.
 
 ## Steps
 
@@ -66,6 +66,7 @@ Order: the CI must be green on the target runtimes before dependencies move (01 
 - 2026-10-06 — The baseline ships as **5.0.0** (Node 18 dropped, Kuzzle peer range declared), with an upgrade guide.
 - 2026-10-06 — Branch model, one dev/stable pair per major: `5-dev` is the integration branch (PR base, prereleases), `master` releases `latest` (5.x); `4-stable` and `4-dev` (both cut from `master` at 4.2.1) keep the 4.x line for maintenance. Supersedes the `master` + `beta` model first chosen the same day.
 - 2026-10-06 — Documentation lives in the repository: `README.md` for getting started, the full reference in `.md` files under `docs/`; no `doc/<major>/` tree on docs.kuzzle.io.
+- 2026-10-06 — Release channels: `master` → `latest`; `5-dev` → `5.x.y-beta.N` on dist-tag `beta`; `4-stable` → 4.x fixes on dist-tag `release-4.x` (maintenance range `4.x`). `4-dev` does not release. The release commit is pushed with the Kuzzle GitHub App token ([step 03](steps/03-semantic-release-oidc.md)).
 
 ## Open points
 
@@ -73,8 +74,7 @@ Order: the CI must be green on the target runtimes before dependencies move (01 
 - **TypeScript `strict`** is off (7 errors): to enable in ADR-0002.
 - **Kuzzle's `engines` is too loose** (`>=20.0.0`, while 2.59 fails on < 20.19): to report on `kuzzleio/kuzzle`.
 - **Trusted publisher setup** on npmjs.com (repository `kuzzleio/kuzzle-plugin-prometheus`, workflow file name) needs an npm org admin.
-
-- **4.x maintenance releases**: whether `4-stable` publishes 4.x patches (semantic-release maintenance branch, range `4.x`) is settled in step 03.
+- **4.x releases need a backport**: `4-stable` releases only once its own copy of `.releaserc.json` and the release workflow exist, and not before `master` has published 5.0.0 (semantic-release refuses 4.2.2 while both branches share 4.2.1 as latest release).
 
 ## References
 
