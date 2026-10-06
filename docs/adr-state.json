@@ -10,11 +10,11 @@
       "status": "active",
       "statusLabel": "🔵 Active · step 03 in progress",
       "openStep": "docs/adr-001/steps/03-semantic-release-oidc.md",
-      "nextAction": "Write step 03's .releaserc.json (semantic-release-config-kuzzle) and release workflow with id-token: write, drop the NPM_TOKEN publish job, then dry-run.",
-      "blockers": [],
-      "openPoints": [
-        "npm trusted publisher must be configured on npmjs.com by an org admin before step 03 can publish"
-      ]
+      "nextAction": "Get an npm org admin to register the trusted publisher (release.workflow.yml) on npmjs.com, then merge #40 (step 03) into 5-dev and check that 5.0.0-beta.1 is published.",
+      "blockers": [
+        "npm trusted publisher for kuzzle-plugin-prometheus must be registered on npmjs.com by an npm org admin before the step 03 PR merges"
+      ],
+      "openPoints": []
     },
     {
       "id": "0002",

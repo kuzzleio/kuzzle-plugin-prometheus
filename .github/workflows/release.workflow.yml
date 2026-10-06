@@ -1,0 +1,79 @@
+name: Release
+
+# Publishes a version from every push to a release branch (see .releaserc.json):
+#   master    → latest 5.x, npm dist-tag `latest`
+#   5-dev     → 5.x prereleases (`5.0.0-beta.N`), npm dist-tag `beta`
+#   4-stable  → 4.x maintenance fixes, npm dist-tag `release-4.x`
+# A branch releases only if its own copy of this file and of .releaserc.json
+# exists: 4-stable needs them backported first.
+#
+# npm authenticates the publish with this workflow's OIDC token (trusted
+# publishing): no npm token is involved. The trusted publisher registered on
+# npmjs.com names this file, `release.workflow.yml`: renaming it breaks the
+# publication until the npm setting is updated too.
+
+on:
+  push:
+    branches:
+      - master
+      - 5-dev
+      - 4-stable
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Tests
+    uses: ./.github/workflows/tests.workflow.yml
+
+  release:
+    name: semantic-release
+    runs-on: ubuntu-24.04
+    needs: [tests]
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # The release commit and tag are pushed with the GitHub App token
+          # below, not with the default GITHUB_TOKEN.
+          persist-credentials: false
+
+      # No `registry-url`: it writes an .npmrc that reads NODE_AUTH_TOKEN, and
+      # its placeholder token would be sent instead of the OIDC exchange.
+      # Node 24 ships npm >= 11.5.1, required for trusted publishing.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - run: npm ci
+
+      # semantic-release 25 requires Node >= 22.14: installed here only, so
+      # that the development install stays valid on Node 20.
+      - name: Install semantic-release
+        run: npm install --no-save semantic-release-config-kuzzle@1.7.3
+
+      - run: npm run build
+
+      - uses: actions/create-github-app-token@v3
+        id: app-token
+        with:
+          app-id: ${{ vars.KUZZLE_BOT_APP_ID }}
+          private-key: ${{ secrets.KUZZLE_BOT_PRIVATE_KEY }}
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          SEMANTIC_RELEASE_NPM_PUBLISH: "true"
+          SEMANTIC_RELEASE_SLACK_WEBHOOK: ${{ secrets.SEMANTIC_RELEASE_SLACK_WEBHOOK }}
+        run: npx semantic-release
