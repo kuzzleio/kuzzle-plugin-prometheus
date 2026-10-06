@@ -100,7 +100,7 @@ export class PrometheusPlugin extends Plugin {
   /**
    * Service to manage, update and format Prometheus metrics
    */
-  private metricService: MetricService;
+  private metricService!: MetricService;
 
   constructor() {
     super({
@@ -138,7 +138,10 @@ export class PrometheusPlugin extends Plugin {
     this.config = _.mergeWith(this.config, config, (_default, value) =>
       Array.isArray(value) ? value : undefined,
     );
-    this.config.labels.nodeId = this.context.accessors.nodeId;
+    this.config.labels = {
+      ...this.config.labels,
+      nodeId: this.context.accessors.nodeId,
+    };
 
     this.pipes = {
       "server:afterMetrics": async (request: KuzzleRequest) =>
@@ -196,9 +199,10 @@ export class PrometheusPlugin extends Plugin {
    */
   recordRequest(request: KuzzleRequest): void {
     this.metricService.recordResponseTime(Date.now() - request.timestamp, {
-      action: request.input.action,
-      controller: request.input.controller,
-      protocol: request.context.connection.protocol,
+      // String(): a null value is exported as "null", as prom-client did
+      action: String(request.input.action),
+      controller: String(request.input.controller),
+      protocol: String(request.context.connection.protocol),
       status: request.status,
     });
   }
@@ -207,9 +211,9 @@ export class PrometheusPlugin extends Plugin {
    * Return the metrics in Prometheus format
    * NOTE: This is an HTTP route for Prometheus installations that do not support HTTP arguments
    * @param {KuzzleRequest} request - Kuzzle request
-   * @returns {Promise<string>}
+   * @returns {Promise<string | undefined>}
    */
-  async metrics(request: KuzzleRequest): Promise<string> {
+  async metrics(request: KuzzleRequest): Promise<string | undefined> {
     if (request.context.connection.protocol === "http") {
       const responsePayload = await this.context.accessors.sdk.query({
         controller: "server",

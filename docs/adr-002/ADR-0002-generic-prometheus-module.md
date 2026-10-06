@@ -57,14 +57,14 @@ State observed on 2026-10-06:
 
 ## Cold start
 
-- Decision recorded on 2026-10-06. No step is open yet.
-- **Next action:** open step 01 (TypeScript `strict` on the current code), then create `kuzzleio/kuzzle-prometheus` (step 02).
+- Decision recorded on 2026-10-06. Step 01 is open: the code compiles in `strict` and all tests pass locally.
+- **Next action:** merge step 01, then create `kuzzleio/kuzzle-prometheus` (step 02).
 
 ## Steps
 
 | # | Step | Status | PR(s) | Detail |
 | --- | --- | --- | --- | --- |
-| 01 | TypeScript `strict` on the current code (7 errors) | ⬜ To do | — | — |
+| 01 | TypeScript `strict` on the current code | 🟦 In progress | — | [detail](steps/01-typescript-strict.md) |
 | 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | ⬜ To do | — | — |
 | 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | ⬜ To do | — | — |
 | 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | ⬜ To do | — | — |

@@ -18,10 +18,10 @@
       "id": "0002",
       "hub": "docs/adr-002/ADR-0002-generic-prometheus-module.md",
       "title": "Generic Prometheus module, and the Kuzzle plugin built on it",
-      "status": "accepted",
-      "statusLabel": "🟢 Accepted · no step open",
-      "openStep": null,
-      "nextAction": "Open step 01: enable TypeScript strict on the current code (7 errors), then create the kuzzle-prometheus repository (step 02).",
+      "status": "active",
+      "statusLabel": "🟦 Step 01 · TypeScript strict",
+      "openStep": "docs/adr-002/steps/01-typescript-strict.md",
+      "nextAction": "Merge step 01 (TypeScript strict), then create the kuzzleio/kuzzle-prometheus repository (step 02).",
       "blockers": [],
       "openPoints": [
         "Kuzzle Helm chart metrics path (/_/metrics) vs the plugin route: confirm before the PaaS step."
