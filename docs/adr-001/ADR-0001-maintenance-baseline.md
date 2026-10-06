@@ -68,6 +68,7 @@ Order: the CI must be green on the target runtimes before dependencies move (01 
 - 2026-10-06 — Branch model, one dev/stable pair per major: `5-dev` is the integration branch (PR base, prereleases), `master` releases `latest` (5.x); `4-stable` and `4-dev` (both cut from `master` at 4.2.1) keep the 4.x line for maintenance. Supersedes the `master` + `beta` model first chosen the same day.
 - 2026-10-06 — Documentation lives in the repository: `README.md` for getting started, the full reference in `.md` files under `docs/`; no `doc/<major>/` tree on docs.kuzzle.io.
 - 2026-10-06 — Release channels: `master` → `latest`; `5-dev` → `5.x.y-beta.N` on dist-tag `beta`; `4-stable` → 4.x fixes on dist-tag `release-4.x` (maintenance range `4.x`). `4-dev` does not release. The release commit is pushed with the Kuzzle GitHub App token ([step 03](steps/03-semantic-release-oidc.md)).
+- 2026-10-06 — Exception to "no runtime behaviour change": bugs found while documenting are fixed (request hooks with `monitorRequestDuration: false`, manifest `kuzzleVersion`); new features, such as configurable request buckets, go to ADR-0002 ([step 04](steps/04-documentation.md)).
 
 ## Open points
 
