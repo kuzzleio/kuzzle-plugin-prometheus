@@ -19,9 +19,9 @@
       "hub": "docs/adr-002/ADR-0002-generic-prometheus-module.md",
       "title": "Generic Prometheus module, and the Kuzzle plugin built on it",
       "status": "active",
-      "statusLabel": "🟦 Step 01 · TypeScript strict",
-      "openStep": "docs/adr-002/steps/01-typescript-strict.md",
-      "nextAction": "Merge step 01 (TypeScript strict), then create the kuzzleio/kuzzle-prometheus repository (step 02).",
+      "statusLabel": "🟦 Step 02 · new repository",
+      "openStep": "docs/adr-002/steps/02-kuzzle-prometheus-repository.md",
+      "nextAction": "Set up npm publishing for kuzzle-prometheus (first manual publish, trusted publisher on release.workflow.yml, bot App installed), close step 02, then open step 03 (module extraction).",
       "blockers": [],
       "openPoints": [
         "Kuzzle Helm chart metrics path (/_/metrics) vs the plugin route: confirm before the PaaS step."
