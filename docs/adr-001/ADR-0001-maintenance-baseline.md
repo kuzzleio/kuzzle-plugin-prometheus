@@ -39,15 +39,16 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 ## Cold start
 
 - ADR accepted on 2026-10-06 (5.0.0, `5-dev` → `master`, `4-stable` for 4.x, docs in the repo). Branches `5-dev` and `4-stable` exist.
-- Step 01 open: PR #37 to `5-dev`, CI green on 20/22/24.
-- **Next action:** merge #37, freeze step 01, then open step 02 (dependency refresh).
+- Step 01 done (#37): installs, builds and passes every test on Node 20/22/24, CI matrix in place.
+- Step 02 open: dependencies refreshed (Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0`); emitted JS unchanged.
+- **Next action:** open the step 02 PR to `5-dev` and get its CI green.
 
 ## Steps
 
 | # | Step | Status | PR(s) | Detail |
 | --- | --- | --- | --- | --- |
-| 01 | Node 20/22/24 toolchain and CI (engines, test matrix, runners, actions) | 🟦 In progress | #37 | [detail](steps/01-node-toolchain-ci.md) |
-| 02 | Dependency refresh (prom-client, Kuzzle peer range, dev tooling, cleanup) | ⬜ To do | — | — |
+| 01 | Node 20/22/24 toolchain and CI (engines, test matrix, runners, actions) | ✅ Done | #37 | [detail](steps/01-node-toolchain-ci.md) |
+| 02 | Dependency refresh (prom-client, Kuzzle peer range, dev tooling, cleanup) | 🟦 In progress | — | [detail](steps/02-dependency-refresh.md) |
 | 03 | semantic-release + npm OIDC trusted publishing | ⬜ To do | — | — |
 | 04 | Documentation overhaul (README + `docs/` reference) | ⬜ To do | — | — |
 
@@ -59,6 +60,8 @@ Order: the CI must be green on the target runtimes before dependencies move (01 
 - 2026-10-06 — Releases move to semantic-release (`semantic-release-config-kuzzle`) with npm OIDC trusted publishing; no npm token in the repo secrets.
 - 2026-10-06 — This ADR changes no runtime behaviour; functional work goes to ADR-0002.
 - 2026-10-06 — Node floor is 20.19 / 22.12: Kuzzle 2.59 needs `require(esm)` ([step 01](steps/01-node-toolchain-ci.md)).
+- 2026-10-06 — Kuzzle is a peer dependency, `>=2.59.0 <3.0.0`: the only tested version ([step 02](steps/02-dependency-refresh.md)).
+- 2026-10-06 — Tests run on Vitest (unit and functional), lint on ESLint 10 + `eslint-plugin-kuzzle` 2 with Kuzzle's Prettier style ([step 02](steps/02-dependency-refresh.md)).
 - 2026-10-06 — The baseline ships as **5.0.0** (Node 18 dropped, Kuzzle peer range declared), with an upgrade guide.
 - 2026-10-06 — Branch model, one dev/stable pair per major: `5-dev` is the integration branch (PR base, prereleases), `master` releases `latest` (5.x); `4-stable` and `4-dev` (both cut from `master` at 4.2.1) keep the 4.x line for maintenance. Supersedes the `master` + `beta` model first chosen the same day.
 - 2026-10-06 — Documentation lives in the repository: `README.md` for getting started, the full reference in `.md` files under `docs/`; no `doc/<major>/` tree on docs.kuzzle.io.
@@ -66,6 +69,7 @@ Order: the CI must be green on the target runtimes before dependencies move (01 
 ## Open points
 
 - **Node 20** is EOL since April 2026: kept because Kuzzle still supports it; to drop when Kuzzle does.
+- **TypeScript `strict`** is off (7 errors): to enable in ADR-0002.
 - **Kuzzle's `engines` is too loose** (`>=20.0.0`, while 2.59 fails on < 20.19): to report on `kuzzleio/kuzzle`.
 - **Trusted publisher setup** on npmjs.com (repository `kuzzleio/kuzzle-plugin-prometheus`, workflow file name) needs an npm org admin.
 

@@ -8,9 +8,9 @@
       "hub": "docs/adr-001/ADR-0001-maintenance-baseline.md",
       "title": "Maintenance baseline: Node 20/22/24, dependencies, release pipeline, docs",
       "status": "active",
-      "statusLabel": "🔵 Active · step 01 in progress",
-      "openStep": "docs/adr-001/steps/01-node-toolchain-ci.md",
-      "nextAction": "Merge #37 into 5-dev, freeze step 01, then open step 02: dependency refresh (prom-client, Kuzzle peer range, dev tooling).",
+      "statusLabel": "🔵 Active · step 02 in progress",
+      "openStep": "docs/adr-001/steps/02-dependency-refresh.md",
+      "nextAction": "Open the step 02 PR to 5-dev (dependency refresh: Vitest, ESLint 10, TypeScript 6, Kuzzle peer >=2.59) and get its CI green.",
       "blockers": [],
       "openPoints": [
         "npm trusted publisher must be configured on npmjs.com by an org admin before step 03 can publish"
