@@ -1,6 +1,6 @@
 # ADR-0001: Maintenance baseline — Node.js 20/22/24, dependencies, release pipeline, documentation
 
-**Status:** Accepted
+**Status:** Closed — 5.0.0 released on 2026-10-06
 **Date:** 2026-10-06
 **Deciders:** Ricky (Kuzzle team)
 **Related documents:** [ADR-0002 — generic Prometheus module](../adr-002/ADR-0002-generic-prometheus-module.md) (the work this baseline prepares)
@@ -38,13 +38,8 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 
 ## Cold start
 
-- ADR accepted on 2026-10-06 (5.0.0, `5-dev` → `master`, `4-stable` for 4.x, docs in the repo). Branches `5-dev` and `4-stable` exist.
-- Step 01 done (#37): installs, builds and passes every test on Node 20/22/24, CI matrix in place.
-- Step 02 done (#38): Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0 <3.0.0`; emitted JS unchanged.
-- Step 03 done (#40): semantic-release with npm trusted publishing; `5.0.0-beta.1` published from `5-dev` with provenance, no npm token.
-- Step 04 done (#42, #43): README + `docs/` reference, checked on a live stack; three bugs found on the way fixed. `5.0.0-beta.3` is the release candidate.
-- Step 05 done: `5.0.0-beta.3` checked in a project made from `template-kuzzle-project` (upgrade from 4.2.1, identical metrics, production image, documented configs and permissions).
-- **Next action:** merge `5-dev` into `master` (publishes 5.0.0 as `latest`), merge `master` back into `5-dev`, then close this ADR.
+- **Closed on 2026-10-06**: 5.0.0 is npm `latest` (#45), `5-dev` fast-forwarded to the release commit. Nothing to resume here; the work continues in [ADR-0002](../adr-002/ADR-0002-generic-prometheus-module.md).
+- What was still open went to GitHub issues (see Open points). The last living cold start and open points are kept in the [journal](journal.md).
 
 ## Steps
 
@@ -71,14 +66,18 @@ Order: the CI must be green on the target runtimes before dependencies move (01 
 - 2026-10-06 — Documentation lives in the repository: `README.md` for getting started, the full reference in `.md` files under `docs/`; no `doc/<major>/` tree on docs.kuzzle.io.
 - 2026-10-06 — Release channels: `master` → `latest`; `5-dev` → `5.x.y-beta.N` on dist-tag `beta`; `4-stable` → 4.x fixes on dist-tag `release-4.x` (maintenance range `4.x`). `4-dev` does not release. The release commit is pushed with the Kuzzle GitHub App token ([step 03](steps/03-semantic-release-oidc.md)).
 - 2026-10-06 — Exception to "no runtime behaviour change": bugs found while documenting are fixed (request hooks with `monitorRequestDuration: false`, manifest `kuzzleVersion`); new features, such as configurable request buckets, go to ADR-0002 ([step 04](steps/04-documentation.md)).
+- 2026-10-06 — 5.0.0 released as `latest` from `master` (#45). The Release run is red only because GitHub answered 500 to its comment on #45, after the npm publish and the GitHub release succeeded: not re-run.
 
 ## Open points
 
-- **Node 20** is EOL since April 2026: kept because Kuzzle still supports it; to drop when Kuzzle does.
-- **TypeScript `strict`** is off (7 errors): to enable in ADR-0002.
-- **Kuzzle's `engines` is too loose** (`>=20.0.0`, while 2.59 fails on < 20.19): to report on `kuzzleio/kuzzle`.
-- **`NPM_TOKEN`** is no longer used by this repository: to revoke (or remove from its scope) once no other repo depends on it.
-- **4.x releases need a backport**: `4-stable` releases only once its own copy of `.releaserc.json` and the release workflow exist, and not before `master` has published 5.0.0 (semantic-release refuses 4.2.2 while both branches share 4.2.1 as latest release).
+Handed off when the ADR closed:
+
+- 4.x releases: backport the release pipeline to `4-stable` — #46.
+- Revoke `NPM_TOKEN` — #47.
+- Report Kuzzle's too-loose `engines` upstream — #48.
+- Drop Node 20 when Kuzzle does — #49.
+- Move `template-kuzzle-project` to Kuzzle 2.59 + plugin 5 — #50.
+- TypeScript `strict` (7 errors) — in [ADR-0002](../adr-002/ADR-0002-generic-prometheus-module.md).
 
 ## References
 

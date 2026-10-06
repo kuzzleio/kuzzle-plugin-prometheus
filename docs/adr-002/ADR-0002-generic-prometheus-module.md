@@ -5,7 +5,7 @@
 **Deciders:** Ricky (Kuzzle team)
 **Related documents:** [ADR-0001 — maintenance baseline](../adr-001/ADR-0001-maintenance-baseline.md) (prerequisite)
 
-> **Premises only.** This ADR records the goal so it is not lost while ADR-0001 runs. Context, options and decision are to be written when ADR-0001 closes.
+> **Premises only.** This ADR records the goal. ADR-0001 closed on 2026-10-06 (5.0.0 released): context, options and decision are now to be written.
 
 ## Decision
 
@@ -29,12 +29,13 @@
 - What exactly is generic (registry, `/metrics` handler, cluster aggregation, label conventions) and what stays Kuzzle-specific?
 - Compatibility: metric names and configuration keys documented by ADR-0001 must stay stable for existing dashboards — or a migration guide ships with a major.
 - How the IoT platform enables it by default, and how a project opts out.
+- TypeScript `strict` is off (7 errors), handed over by ADR-0001: enable it before or while extracting the module.
 - Configurable request duration buckets: the unmerged branch `feat/add-request-duration-bucket-config` (last commit 2025-11-17) implements them on the 4.x code; reuse or redo it.
 
 ## Cold start
 
-- Premises written on 2026-10-06. Nothing to do until ADR-0001 closes.
-- **Next action:** none — waits for ADR-0001.
+- Premises written on 2026-10-06. ADR-0001 closed the same day: the base is 5.0.0 (`master` → `latest`, `5-dev` for prereleases), documented in `docs/`, whose metric names and config keys are the contract to preserve.
+- **Next action:** write the context, options and decision, settling the "Questions to settle" with the deciders, then define the steps.
 
 ## Steps
 
@@ -43,6 +44,7 @@ No step defined yet.
 ## Decision register
 
 - 2026-10-06 — Goal recorded: generic module + plugin built on it + default in the IoT platform; design deferred until ADR-0001 is closed.
+- 2026-10-06 — ADR-0001 closed (5.0.0 released): design work unblocked.
 
 ## Open points
 
