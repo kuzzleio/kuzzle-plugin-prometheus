@@ -65,6 +65,12 @@ describe("PrometheusPlugin", () => {
       expect(plugin["metricService"]).toBeInstanceOf(MetricService);
     });
 
+    it("should replace the default GC buckets instead of merging them", async () => {
+      await plugin.init({ default: { gcDurationBuckets: [0.5, 3] } }, context);
+
+      expect(plugin.config.default.gcDurationBuckets).toEqual([0.5, 3]);
+    });
+
     it("should not register the request hooks when request duration monitoring is disabled", async () => {
       await plugin.init({ core: { monitorRequestDuration: false } }, context);
 
