@@ -10,7 +10,7 @@
       "status": "active",
       "statusLabel": "🔵 Active · step 02 in progress",
       "openStep": "docs/adr-001/steps/02-dependency-refresh.md",
-      "nextAction": "Get the CI of #38 (step 02, dependency refresh) green, then merge it into 5-dev.",
+      "nextAction": "Merge #38 (step 02, CI green) into 5-dev, then freeze step 02 and open step 03 (semantic-release + npm OIDC trusted publishing).",
       "blockers": [],
       "openPoints": [
         "npm trusted publisher must be configured on npmjs.com by an org admin before step 03 can publish"

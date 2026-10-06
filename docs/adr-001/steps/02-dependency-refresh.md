@@ -47,3 +47,5 @@ Local, 2026-10-06:
 | `npm run test:lint` (0 errors, 40 `sort-keys` warnings) | — | — | ✅ |
 | emitted JS identical to `5-dev` | — | — | ✅ |
 | functional tests (4, Vitest), Docker stack on that Node, `npm run dev` on tsx | ✅ | ✅ | ✅ |
+
+CI on #38, 2026-10-06: all green — lint, unit and functional tests on 20/22/24, `adr-state`, `doc-budgets`.

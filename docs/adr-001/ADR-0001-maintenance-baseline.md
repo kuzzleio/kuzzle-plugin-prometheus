@@ -41,7 +41,7 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 - ADR accepted on 2026-10-06 (5.0.0, `5-dev` → `master`, `4-stable` for 4.x, docs in the repo). Branches `5-dev` and `4-stable` exist.
 - Step 01 done (#37): installs, builds and passes every test on Node 20/22/24, CI matrix in place.
 - Step 02 open: dependencies refreshed (Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0`); emitted JS unchanged.
-- **Next action:** get the CI of #38 (step 02) green, then merge it into `5-dev`.
+- **Next action:** merge #38 (step 02, CI green) into `5-dev`, then freeze step 02 and open step 03 (semantic-release + npm OIDC).
 
 ## Steps
 
