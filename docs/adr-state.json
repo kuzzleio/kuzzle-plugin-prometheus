@@ -10,7 +10,7 @@
       "status": "active",
       "statusLabel": "🔵 Active · step 01 in progress",
       "openStep": "docs/adr-001/steps/01-node-toolchain-ci.md",
-      "nextAction": "Open the step 01 PR to 5-dev (Node 20/22/24 toolchain and CI) and get its CI matrix green.",
+      "nextAction": "Merge #37 into 5-dev, freeze step 01, then open step 02: dependency refresh (prom-client, Kuzzle peer range, dev tooling).",
       "blockers": [],
       "openPoints": [
         "npm trusted publisher must be configured on npmjs.com by an org admin before step 03 can publish"

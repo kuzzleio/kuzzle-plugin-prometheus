@@ -39,14 +39,14 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 ## Cold start
 
 - ADR accepted on 2026-10-06 (5.0.0, `5-dev` → `master`, `4-stable` for 4.x, docs in the repo). Branches `5-dev` and `4-stable` exist.
-- Step 01 open: everything installs, builds and passes lint, unit and functional tests on 20/22/24 locally; the CI matrix is written.
-- **Next action:** open the step 01 PR to `5-dev` and get its CI green.
+- Step 01 open: PR #37 to `5-dev`, CI green on 20/22/24.
+- **Next action:** merge #37, freeze step 01, then open step 02 (dependency refresh).
 
 ## Steps
 
 | # | Step | Status | PR(s) | Detail |
 | --- | --- | --- | --- | --- |
-| 01 | Node 20/22/24 toolchain and CI (engines, test matrix, runners, actions) | 🟦 In progress | — | [detail](steps/01-node-toolchain-ci.md) |
+| 01 | Node 20/22/24 toolchain and CI (engines, test matrix, runners, actions) | 🟦 In progress | #37 | [detail](steps/01-node-toolchain-ci.md) |
 | 02 | Dependency refresh (prom-client, Kuzzle peer range, dev tooling, cleanup) | ⬜ To do | — | — |
 | 03 | semantic-release + npm OIDC trusted publishing | ⬜ To do | — | — |
 | 04 | Documentation overhaul (README + `docs/` reference) | ⬜ To do | — | — |

@@ -1,8 +1,8 @@
 # Step 01 — Node 20/22/24 toolchain and CI
 
-**Status:** 🟦 In progress — local validation done, waiting for the PR's CI
+**Status:** 🟦 In progress — CI green, waiting for review and merge
 **Dates:** started 2026-10-06
-**PR(s):** —
+**PR(s):** [#37](https://github.com/kuzzleio/kuzzle-plugin-prometheus/pull/37)
 **ADR:** [ADR-0001](../ADR-0001-maintenance-baseline.md)
 
 ## Goal
@@ -39,4 +39,6 @@ Local, 2026-10-06:
 | unit tests (15) | ✅ | ✅ | ✅ |
 | functional tests (4), Docker stack on that Node | ✅ | ✅ | ✅ |
 
-Remaining: CI green on the PR to `5-dev`.
+CI on #37, 2026-10-06: all green — lint, unit and functional tests on 20/22/24, `adr-state`, `doc-budgets`.
+
+Remaining: review and merge into `5-dev`, then freeze this step.
