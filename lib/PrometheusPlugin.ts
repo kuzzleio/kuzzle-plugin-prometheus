@@ -104,7 +104,7 @@ export class PrometheusPlugin extends Plugin {
 
   constructor() {
     super({
-      kuzzleVersion: ">=2.16.9 <3",
+      kuzzleVersion: ">=2.59.0 <3",
     });
 
     /**
