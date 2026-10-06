@@ -3,6 +3,40 @@ name: Pull request checks
 on: [pull_request]
 
 jobs:
+  # docs/adr-state.json is the structured extract of the ADR hubs that feeds
+  # the Claude Code session-start digest. It holds the current state only,
+  # under a schema, and must not contradict the hubs it points to. Node only,
+  # through Node's type stripping: no `npm ci`.
+  adr-state:
+    name: ADR state schema
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Schema and consistency of docs/adr-state.json
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON .ci/scripts/adr-state.ts --check
+
+  # Size budgets of the repository's own living documentation (ADR hubs, open
+  # steps, README, skills). Rules: docs/doc-budgets.json.
+  doc-budgets:
+    name: Documentation budgets
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The base branch's history tells a write-once archive that grew in
+          # this PR apart from one that was already that size.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Size budgets of the documentation
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON .ci/scripts/check-doc-budgets.ts --base "origin/$BASE_REF"
+
   lint:
     name: Lint
     runs-on: ubuntu-20.04
