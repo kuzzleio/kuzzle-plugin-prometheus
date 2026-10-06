@@ -1,7 +1,7 @@
 # Step 01 — Node 20/22/24 toolchain and CI
 
-**Status:** 🟦 In progress — CI green, waiting for review and merge
-**Dates:** started 2026-10-06
+**Status:** ✅ Done — merged into `5-dev` (#37), frozen
+**Dates:** 2026-10-06 → 2026-10-06
 **PR(s):** [#37](https://github.com/kuzzleio/kuzzle-plugin-prometheus/pull/37)
 **ADR:** [ADR-0001](../ADR-0001-maintenance-baseline.md)
 
@@ -41,4 +41,4 @@ Local, 2026-10-06:
 
 CI on #37, 2026-10-06: all green — lint, unit and functional tests on 20/22/24, `adr-state`, `doc-budgets`.
 
-Remaining: review and merge into `5-dev`, then freeze this step.
+Merged into `5-dev` on 2026-10-06.

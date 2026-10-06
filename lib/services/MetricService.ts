@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-import { JSONObject } from 'kuzzle';
-import { Gauge, Registry, collectDefaultMetrics, Histogram } from 'prom-client';
-import { PrometheusPluginConfiguration } from '../PrometheusPlugin';
+import { JSONObject } from "kuzzle";
+import { Gauge, Registry, collectDefaultMetrics, Histogram } from "prom-client";
+import { PrometheusPluginConfiguration } from "../PrometheusPlugin";
 
 /**
  * Core metrics type definition
@@ -38,13 +38,13 @@ export type CoreMetrics = {
      * Number of requests waiting to be processed
      */
     pendingRequests: Gauge<string>;
-  },
+  };
   network: {
     /**
      * Number of active connections per protocol using labels
      */
     connections: Gauge<string>;
-  },
+  };
   realtime: {
     /**
      * Number of active realtime rooms
@@ -56,10 +56,9 @@ export type CoreMetrics = {
      * Number of active realtime subscriptions
      * @see https://docs.kuzzle.io/core/2/guides/main-concepts/realtime-engine
      */
-    subscriptions: Gauge<string>
-  }
+    subscriptions: Gauge<string>;
+  };
 };
-
 
 /**
  * MetricService is a service to handle metrics from the Kuzzle API and the application.
@@ -72,7 +71,7 @@ export class MetricService {
    * @property {CoreMetrics} core            - The core metrics to register.
    * @property {Histogram}   requestDuration - The application metrics to register.
    */
-  private metrics: { core: CoreMetrics, requestDuration?: Histogram<string> };
+  private metrics: { core: CoreMetrics; requestDuration?: Histogram<string> };
 
   /**
    * The Prometheus registries used to register metrics and format them
@@ -80,7 +79,11 @@ export class MetricService {
    * @property {Registry} default           - The default metrics registry (if enabled)
    * @property {Registry} requestDuration   - The default metrics registry (if enabled)
    */
-  private registries: { core: Registry, default?: Registry, requestDuration?: Registry };
+  private registries: {
+    core: Registry;
+    default?: Registry;
+    requestDuration?: Registry;
+  };
 
   /**
    * Labels to add to the metric registries
@@ -90,49 +93,49 @@ export class MetricService {
   /**
    * @param {PrometheusPluginConfiguration} config - The plugin configuration
    */
-  constructor (config: PrometheusPluginConfiguration) {
+  constructor(config: PrometheusPluginConfiguration) {
     this.labels = config.labels;
 
     this.registries = {
       core: new Registry(),
     };
-    
+
     this.metrics = {
       core: {
         api: {
-          concurrentRequests: new Gauge({ 
-            name: `${config.core.prefix}api_concurrent_requests`, 
-            help: 'Number of concurrent requests', 
+          concurrentRequests: new Gauge({
+            name: `${config.core.prefix}api_concurrent_requests`,
+            help: "Number of concurrent requests",
             labelNames: Object.keys(this.labels),
-            registers: [this.registries.core] 
+            registers: [this.registries.core],
           }),
-          pendingRequests: new Gauge({ 
-            name: `${config.core.prefix}api_pending_requests`, 
-            help: 'Number of pending requests', 
+          pendingRequests: new Gauge({
+            name: `${config.core.prefix}api_pending_requests`,
+            help: "Number of pending requests",
             labelNames: Object.keys(this.labels),
-            registers: [this.registries.core] 
+            registers: [this.registries.core],
           }),
         },
         network: {
-          connections: new Gauge({ 
+          connections: new Gauge({
             name: `${config.core.prefix}network_connections`,
-            help: 'Number of connections', 
-            labelNames: ['protocol', ...Object.keys(this.labels)], 
-            registers: [this.registries.core] 
+            help: "Number of connections",
+            labelNames: ["protocol", ...Object.keys(this.labels)],
+            registers: [this.registries.core],
           }),
         },
         realtime: {
           rooms: new Gauge({
-            name: `${config.core.prefix}realtime_rooms`, 
-            help: 'Number of rooms', 
+            name: `${config.core.prefix}realtime_rooms`,
+            help: "Number of rooms",
             labelNames: Object.keys(this.labels),
-            registers: [this.registries.core] 
+            registers: [this.registries.core],
           }),
           subscriptions: new Gauge({
             name: `${config.core.prefix}realtime_subscriptions`,
-            help: 'Number of subscriptions', 
+            help: "Number of subscriptions",
             labelNames: Object.keys(this.labels),
-            registers: [this.registries.core] 
+            registers: [this.registries.core],
           }),
         },
       },
@@ -144,10 +147,16 @@ export class MetricService {
       this.registries.requestDuration = new Registry();
       this.metrics.requestDuration = new Histogram({
         name: `${config.core.prefix}api_request_duration_ms`,
-        help: 'Duration of Kuzzle requests in ms',
-        labelNames: ['action', 'controller', 'protocol', 'status', ...Object.keys(this.labels)],
+        help: "Duration of Kuzzle requests in ms",
+        labelNames: [
+          "action",
+          "controller",
+          "protocol",
+          "status",
+          ...Object.keys(this.labels),
+        ],
         registers: [this.registries.requestDuration],
-        buckets: [0.10, 5, 15, 50, 100, 200, 300, 400, 500]
+        buckets: [0.1, 5, 15, 50, 100, 200, 300, 400, 500],
       });
     }
 
@@ -157,7 +166,8 @@ export class MetricService {
         register: this.registries.default,
         prefix: config.default.prefix,
         labels: this.labels,
-        eventLoopMonitoringPrecision: config.default.eventLoopMonitoringPrecision,
+        eventLoopMonitoringPrecision:
+          config.default.eventLoopMonitoringPrecision,
         gcDurationBuckets: config.default.gcDurationBuckets,
       });
     }
@@ -167,24 +177,30 @@ export class MetricService {
    * Update the Prometheus coreMetrics with from the server:metrics JSON response
    * @param {JSONObject} jsonMetrics - The server:metrics JSON response
    */
-  public updateCoreMetrics (jsonMetrics: JSONObject): void {
+  public updateCoreMetrics(jsonMetrics: JSONObject): void {
     // Past metrics are oudated, so we need to reset them
     this.registries.core.resetMetrics();
 
     for (const component of Object.keys(jsonMetrics)) {
       for (const metric of Object.keys(jsonMetrics[component])) {
-        if (typeof this.metrics.core[component][metric] === 'undefined') {
+        if (typeof this.metrics.core[component][metric] === "undefined") {
           continue;
         }
 
-        if (typeof jsonMetrics[component][metric] === 'number') {
-          this.metrics.core[component][metric].set(this.labels, jsonMetrics[component][metric]);
+        if (typeof jsonMetrics[component][metric] === "number") {
+          this.metrics.core[component][metric].set(
+            this.labels,
+            jsonMetrics[component][metric],
+          );
         }
 
         // Only for network.connections metric since we label it using protocol name
-        if (typeof jsonMetrics[component][metric] === 'object') {
+        if (typeof jsonMetrics[component][metric] === "object") {
           for (const protocol of Object.keys(jsonMetrics[component][metric])) {
-            this.metrics.core[component][metric].set({ protocol, ...this.labels }, jsonMetrics[component][metric][protocol]);
+            this.metrics.core[component][metric].set(
+              { protocol, ...this.labels },
+              jsonMetrics[component][metric][protocol],
+            );
           }
         }
       }
@@ -195,7 +211,7 @@ export class MetricService {
    * Merge all the Prometheus registries into one and returns metrics as Prometheus text format
    * @returns {string} All the regitries metrics formatted as a Prometheus text
    */
-  public getMetrics (): Promise<string> {
+  public getMetrics(): Promise<string> {
     return Registry.merge(Object.values(this.registries)).metrics();
   }
 
@@ -203,7 +219,7 @@ export class MetricService {
    * Returns the content type used to export metrics to Prometheus
    * @returns {string} The content type used to export metrics to Prometheus
    */
-  public getPrometheusContentType (): string {
+  public getPrometheusContentType(): string {
     return this.registries.core.contentType;
   }
 
@@ -212,7 +228,12 @@ export class MetricService {
    * @param {number}                            time    - Time in ms
    * @param {{[key: string]: string | number}}  labels  - Labels to add to the metric
    */
-  public recordResponseTime (time: number, labels: {[key: string]: string | number}): void {
-    this.metrics.requestDuration.labels({ ...labels, ...this.labels }).observe(time);
+  public recordResponseTime(
+    time: number,
+    labels: { [key: string]: string | number },
+  ): void {
+    this.metrics.requestDuration
+      .labels({ ...labels, ...this.labels })
+      .observe(time);
   }
 }

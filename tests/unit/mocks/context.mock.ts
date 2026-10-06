@@ -1,4 +1,4 @@
-import sinon from 'sinon';
+import { vi } from "vitest";
 
 export class ContextMock {
   accessors: any;
@@ -10,18 +10,17 @@ export class ContextMock {
   kerror: any;
   secrets: any;
 
-
   constructor() {
     this.log = {
-      info: sinon.stub(),
-      warn: sinon.stub(),
-      error: sinon.stub()
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
     };
 
     this.accessors = {
-      nodeId: 'kuzzle-node-id',
+      nodeId: "kuzzle-node-id",
       sdk: {
-        query: sinon.stub(),
+        query: vi.fn(),
       },
     };
   }
