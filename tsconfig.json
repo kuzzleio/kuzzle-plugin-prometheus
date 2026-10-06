@@ -12,7 +12,7 @@
     "experimentalDecorators": true,
     "allowJs": false,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "useDefineForClassFields": false,
     "types": ["node"]
   },

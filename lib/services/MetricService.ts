@@ -94,7 +94,7 @@ export class MetricService {
    * @param {PrometheusPluginConfiguration} config - The plugin configuration
    */
   constructor(config: PrometheusPluginConfiguration) {
-    this.labels = config.labels;
+    this.labels = (config.labels ?? {}) as { [key: string]: string };
 
     this.registries = {
       core: new Registry(),
@@ -181,23 +181,25 @@ export class MetricService {
     // Past metrics are oudated, so we need to reset them
     this.registries.core.resetMetrics();
 
+    const core = this.metrics.core as unknown as {
+      [component: string]: { [metric: string]: Gauge<string> } | undefined;
+    };
+
     for (const component of Object.keys(jsonMetrics)) {
       for (const metric of Object.keys(jsonMetrics[component])) {
-        if (typeof this.metrics.core[component][metric] === "undefined") {
+        const gauge = core[component]?.[metric];
+        if (typeof gauge === "undefined") {
           continue;
         }
 
         if (typeof jsonMetrics[component][metric] === "number") {
-          this.metrics.core[component][metric].set(
-            this.labels,
-            jsonMetrics[component][metric],
-          );
+          gauge.set(this.labels, jsonMetrics[component][metric]);
         }
 
         // Only for network.connections metric since we label it using protocol name
         if (typeof jsonMetrics[component][metric] === "object") {
           for (const protocol of Object.keys(jsonMetrics[component][metric])) {
-            this.metrics.core[component][metric].set(
+            gauge.set(
               { protocol, ...this.labels },
               jsonMetrics[component][metric][protocol],
             );
@@ -233,7 +235,7 @@ export class MetricService {
     labels: { [key: string]: string | number },
   ): void {
     this.metrics.requestDuration
-      .labels({ ...labels, ...this.labels })
+      ?.labels({ ...labels, ...this.labels })
       .observe(time);
   }
 }
