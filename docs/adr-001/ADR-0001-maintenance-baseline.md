@@ -41,8 +41,9 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 - ADR accepted on 2026-10-06 (5.0.0, `5-dev` → `master`, `4-stable` for 4.x, docs in the repo). Branches `5-dev` and `4-stable` exist.
 - Step 01 done (#37): installs, builds and passes every test on Node 20/22/24, CI matrix in place.
 - Step 02 done (#38): Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0 <3.0.0`; emitted JS unchanged.
-- Step 03: release config and workflow written, dry runs give `5.0.0-beta.1` on `5-dev` and `5.0.0` on `master` after the merge.
-- **Next action:** get an npm org admin to register the trusted publisher (`release.workflow.yml`), then merge #40 (step 03) into `5-dev` and check that `5.0.0-beta.1` is published.
+- Step 03 done (#40): semantic-release with npm trusted publishing; `5.0.0-beta.1` published from `5-dev` with provenance, no npm token.
+- Step 04 open: documentation overhaul.
+- **Next action:** inventory every configuration key, metric and deployment mode from the code, then write the README + `docs/` reference and the 4.x → 5.x upgrade guide (step 04).
 
 ## Steps
 
@@ -50,8 +51,8 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 | --- | --- | --- | --- | --- |
 | 01 | Node 20/22/24 toolchain and CI (engines, test matrix, runners, actions) | ✅ Done | #37 | [detail](steps/01-node-toolchain-ci.md) |
 | 02 | Dependency refresh (prom-client, Kuzzle peer range, dev tooling, cleanup) | ✅ Done | #38 | [detail](steps/02-dependency-refresh.md) |
-| 03 | semantic-release + npm OIDC trusted publishing | 🟦 In progress | #40 | [detail](steps/03-semantic-release-oidc.md) |
-| 04 | Documentation overhaul (README + `docs/` reference) | ⬜ To do | — | — |
+| 03 | semantic-release + npm OIDC trusted publishing | ✅ Done | #40 | [detail](steps/03-semantic-release-oidc.md) |
+| 04 | Documentation overhaul (README + `docs/` reference) | 🟦 In progress | — | [detail](steps/04-documentation.md) |
 
 Order: the CI must be green on the target runtimes before dependencies move (01 → 02); the release pipeline ships the result (03); the documentation describes the final state (04), though it may start earlier in parallel.
 
@@ -73,7 +74,7 @@ Order: the CI must be green on the target runtimes before dependencies move (01 
 - **Node 20** is EOL since April 2026: kept because Kuzzle still supports it; to drop when Kuzzle does.
 - **TypeScript `strict`** is off (7 errors): to enable in ADR-0002.
 - **Kuzzle's `engines` is too loose** (`>=20.0.0`, while 2.59 fails on < 20.19): to report on `kuzzleio/kuzzle`.
-- **Trusted publisher setup** on npmjs.com (repository `kuzzleio/kuzzle-plugin-prometheus`, workflow file name) needs an npm org admin.
+- **`NPM_TOKEN`** is no longer used by this repository: to revoke (or remove from its scope) once no other repo depends on it.
 - **4.x releases need a backport**: `4-stable` releases only once its own copy of `.releaserc.json` and the release workflow exist, and not before `master` has published 5.0.0 (semantic-release refuses 4.2.2 while both branches share 4.2.1 as latest release).
 
 ## References
