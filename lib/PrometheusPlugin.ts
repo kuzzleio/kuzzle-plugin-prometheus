@@ -133,7 +133,11 @@ export class PrometheusPlugin extends Plugin {
    */
   async init(config: PrometheusPluginConfiguration, context: PluginContext) {
     this.context = context;
-    this.config = _.merge(this.config, config);
+    // Arrays replace the defaults: merged index by index, a shorter
+    // gcDurationBuckets would keep the tail of the default buckets
+    this.config = _.mergeWith(this.config, config, (_default, value) =>
+      Array.isArray(value) ? value : undefined,
+    );
     this.config.labels.nodeId = this.context.accessors.nodeId;
 
     this.pipes = {
