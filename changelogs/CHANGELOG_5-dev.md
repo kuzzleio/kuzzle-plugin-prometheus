@@ -1,3 +1,9 @@
+## [5.0.0-beta.3](https://github.com/kuzzleio/kuzzle-plugin-prometheus/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2026-10-06)
+
+### Bug Fixes
+
+* replace the default GC buckets instead of merging them index by index ([7af7ebd](https://github.com/kuzzleio/kuzzle-plugin-prometheus/commit/7af7ebd73686abb797f4fa0103cacfca65dd5207))
+
 ## [5.0.0-beta.2](https://github.com/kuzzleio/kuzzle-plugin-prometheus/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2026-10-06)
 
 ### Bug Fixes
