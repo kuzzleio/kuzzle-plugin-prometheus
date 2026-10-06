@@ -18,12 +18,14 @@
       "id": "0002",
       "hub": "docs/adr-002/ADR-0002-generic-prometheus-module.md",
       "title": "Generic Prometheus module, and the Kuzzle plugin built on it",
-      "status": "proposed",
-      "statusLabel": "⚪ Premises only · unblocked",
+      "status": "accepted",
+      "statusLabel": "🟢 Accepted · no step open",
       "openStep": null,
-      "nextAction": "Write ADR-0002's context, options and decision (settle the questions with the deciders), then define its steps.",
+      "nextAction": "Open step 01: enable TypeScript strict on the current code (7 errors), then create the kuzzle-prometheus repository (step 02).",
       "blockers": [],
-      "openPoints": []
+      "openPoints": [
+        "Kuzzle Helm chart metrics path (/_/metrics) vs the plugin route: confirm before the PaaS step."
+      ]
     }
   ]
 }
