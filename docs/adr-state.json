@@ -8,9 +8,9 @@
       "hub": "docs/adr-001/ADR-0001-maintenance-baseline.md",
       "title": "Maintenance baseline: Node 20/22/24, dependencies, release pipeline, docs",
       "status": "active",
-      "statusLabel": "🔵 Active · step 02 in progress",
-      "openStep": "docs/adr-001/steps/02-dependency-refresh.md",
-      "nextAction": "Merge #38 (step 02, CI green) into 5-dev, then freeze step 02 and open step 03 (semantic-release + npm OIDC trusted publishing).",
+      "statusLabel": "🔵 Active · step 03 in progress",
+      "openStep": "docs/adr-001/steps/03-semantic-release-oidc.md",
+      "nextAction": "Write step 03's .releaserc.json (semantic-release-config-kuzzle) and release workflow with id-token: write, drop the NPM_TOKEN publish job, then dry-run.",
       "blockers": [],
       "openPoints": [
         "npm trusted publisher must be configured on npmjs.com by an org admin before step 03 can publish"

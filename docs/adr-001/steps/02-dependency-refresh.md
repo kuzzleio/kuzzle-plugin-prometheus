@@ -1,7 +1,7 @@
 # Step 02 — Dependency refresh
 
-**Status:** 🟦 In progress
-**Dates:** started 2026-10-06
+**Status:** ✅ Done — merged into `5-dev` (#38), frozen
+**Dates:** 2026-10-06 → 2026-10-06
 **PR(s):** [#38](https://github.com/kuzzleio/kuzzle-plugin-prometheus/pull/38)
 **ADR:** [ADR-0001](../ADR-0001-maintenance-baseline.md)
 
@@ -35,6 +35,7 @@ Every dependency is current, used, and declared where it belongs: runtime depend
 - **`target: es2022` emits class fields as definitions**: the plugin's `config;` field then overwrote, with `undefined`, the value Kuzzle's `Plugin` constructor sets (TS2612). `"useDefineForClassFields": false` keeps the old semantics. Checked: the emitted `index.js` / `lib/**/*.js` / `.d.ts` are identical to `5-dev`'s, source maps aside.
 - **Functional tests locally on macOS**: the `kuzzle-installer` service leaves Linux binaries in the mounted `node_modules`, and Vitest's native `rolldown` binding then fails on the host. Run them in the container (`docker compose exec kuzzle npx vitest run --project functional`) or `npm ci` again on the host. CI runs on Linux and is not affected.
 - **Vite resolves `.js` before `.ts`**: with a build present, `lib/*.js` sits next to the sources and a test loaded both (two `MetricService` classes, `instanceof` failing). `resolve.extensions` puts `.ts` first, and each Vitest project needs `extends: true` to inherit it.
+- **`tsc --build` writes `tsconfig.tsbuildinfo`** at the repository root: it slipped into #38, and is untracked and ignored (`*.tsbuildinfo`) in the PR that froze this step. The npm `files` whitelist kept it out of the package.
 
 ## Validation
 
@@ -49,3 +50,5 @@ Local, 2026-10-06:
 | functional tests (4, Vitest), Docker stack on that Node, `npm run dev` on tsx | ✅ | ✅ | ✅ |
 
 CI on #38, 2026-10-06: all green — lint, unit and functional tests on 20/22/24, `adr-state`, `doc-budgets`.
+
+Merged into `5-dev` on 2026-10-06.

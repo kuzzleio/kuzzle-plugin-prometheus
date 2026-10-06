@@ -40,16 +40,17 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 
 - ADR accepted on 2026-10-06 (5.0.0, `5-dev` → `master`, `4-stable` for 4.x, docs in the repo). Branches `5-dev` and `4-stable` exist.
 - Step 01 done (#37): installs, builds and passes every test on Node 20/22/24, CI matrix in place.
-- Step 02 open: dependencies refreshed (Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0`); emitted JS unchanged.
-- **Next action:** merge #38 (step 02, CI green) into `5-dev`, then freeze step 02 and open step 03 (semantic-release + npm OIDC).
+- Step 02 done (#38): Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0 <3.0.0`; emitted JS unchanged.
+- Step 03 open: semantic-release + npm OIDC trusted publishing.
+- **Next action:** write the release configuration and workflow of step 03 (`.releaserc.json` on `semantic-release-config-kuzzle`, `id-token: write`), and get an npm org admin to register the trusted publisher.
 
 ## Steps
 
 | # | Step | Status | PR(s) | Detail |
 | --- | --- | --- | --- | --- |
 | 01 | Node 20/22/24 toolchain and CI (engines, test matrix, runners, actions) | ✅ Done | #37 | [detail](steps/01-node-toolchain-ci.md) |
-| 02 | Dependency refresh (prom-client, Kuzzle peer range, dev tooling, cleanup) | 🟦 In progress | #38 | [detail](steps/02-dependency-refresh.md) |
-| 03 | semantic-release + npm OIDC trusted publishing | ⬜ To do | — | — |
+| 02 | Dependency refresh (prom-client, Kuzzle peer range, dev tooling, cleanup) | ✅ Done | #38 | [detail](steps/02-dependency-refresh.md) |
+| 03 | semantic-release + npm OIDC trusted publishing | 🟦 In progress | — | [detail](steps/03-semantic-release-oidc.md) |
 | 04 | Documentation overhaul (README + `docs/` reference) | ⬜ To do | — | — |
 
 Order: the CI must be green on the target runtimes before dependencies move (01 → 02); the release pipeline ships the result (03); the documentation describes the final state (04), though it may start earlier in parallel.
