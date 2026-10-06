@@ -23,6 +23,7 @@
 - **Tooling follows this repository, layout follows `kuzzle-logger`.** `kuzzle-logger` still runs Node 20, ESLint 9 and an npm token; the ADR-0001 baseline is the reference.
 - **Nothing is released yet**: the bootstrap is a `chore:` commit. The skeleton only exports the common label names.
 - **Before the first `feat`/`fix` on `master`**: register the npm trusted publisher for `kuzzle-prometheus` (it needs the package to exist on npm, hence a first manual publish), and check that the Kuzzle bot GitHub App is installed on the repository. The org-level secrets (`KUZZLE_BOT_PRIVATE_KEY`, `SEMANTIC_RELEASE_SLACK_WEBHOOK`) and variable (`KUZZLE_BOT_APP_ID`) are visible to all repositories.
+- **The Release workflow fails on `master` until npm is set up** ([run 37532194800](https://github.com/kuzzleio/kuzzle-prometheus/actions/runs/37532194800), after the bootstrap merge). `@semantic-release/npm` checks the npm credentials even when no release is due, and the OIDC exchange answers `404 package not found`, so the run ends with `ENONPMTOKEN`. The bot token worked. The `fail` step could not open its failure issue either (`Label "semantic-release" … invalid`): check the bot App's issue and label permissions on this repository.
 - `vitest.config.ts` stays out of `tsconfig.json`: the package is CommonJS, and `vitest/config` is ESM only.
 
 ## Validation
