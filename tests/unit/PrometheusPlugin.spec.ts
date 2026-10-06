@@ -64,6 +64,13 @@ describe("PrometheusPlugin", () => {
       // This is a trick to test TS class private properties and avoid the private guard on it
       expect(plugin["metricService"]).toBeInstanceOf(MetricService);
     });
+
+    it("should not register the request hooks when request duration monitoring is disabled", async () => {
+      await plugin.init({ core: { monitorRequestDuration: false } }, context);
+
+      expect(plugin.hooks).toEqual({});
+      expect(plugin.pipes["server:afterMetrics"]).toBeTypeOf("function");
+    });
   });
 
   describe("#pipeFormatMetrics", () => {

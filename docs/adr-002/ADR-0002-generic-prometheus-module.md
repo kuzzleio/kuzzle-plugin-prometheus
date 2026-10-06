@@ -29,6 +29,7 @@
 - What exactly is generic (registry, `/metrics` handler, cluster aggregation, label conventions) and what stays Kuzzle-specific?
 - Compatibility: metric names and configuration keys documented by ADR-0001 must stay stable for existing dashboards — or a migration guide ships with a major.
 - How the IoT platform enables it by default, and how a project opts out.
+- Configurable request duration buckets: the unmerged branch `feat/add-request-duration-bucket-config` (last commit 2025-11-17) implements them on the 4.x code; reuse or redo it.
 
 ## Cold start
 

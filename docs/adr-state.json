@@ -10,7 +10,7 @@
       "status": "active",
       "statusLabel": "🔵 Active · step 04 in progress",
       "openStep": "docs/adr-001/steps/04-documentation.md",
-      "nextAction": "Step 04: inventory every config key, metric and deployment mode from lib/, then write the README + docs/ reference and the 4.x → 5.x upgrade guide.",
+      "nextAction": "Merge #42 (step 04 fixes), then write the README + docs/ reference (configuration, metrics, deployment, troubleshooting, development, upgrading) from the step 04 inventory.",
       "blockers": [],
       "openPoints": [
         "NPM_TOKEN is no longer used by this repo: revoke it once no other repo depends on it"

@@ -43,7 +43,8 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 - Step 02 done (#38): Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0 <3.0.0`; emitted JS unchanged.
 - Step 03 done (#40): semantic-release with npm trusted publishing; `5.0.0-beta.1` published from `5-dev` with provenance, no npm token.
 - Step 04 open: documentation overhaul.
-- **Next action:** inventory every configuration key, metric and deployment mode from the code, then write the README + `docs/` reference and the 4.x → 5.x upgrade guide (step 04).
+- Step 04: inventory done; two bugs it found fixed in #42.
+- **Next action:** merge #42, then write the README + `docs/` reference and the 4.x → 5.x upgrade guide from the step 04 inventory.
 
 ## Steps
 
@@ -52,7 +53,7 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 | 01 | Node 20/22/24 toolchain and CI (engines, test matrix, runners, actions) | ✅ Done | #37 | [detail](steps/01-node-toolchain-ci.md) |
 | 02 | Dependency refresh (prom-client, Kuzzle peer range, dev tooling, cleanup) | ✅ Done | #38 | [detail](steps/02-dependency-refresh.md) |
 | 03 | semantic-release + npm OIDC trusted publishing | ✅ Done | #40 | [detail](steps/03-semantic-release-oidc.md) |
-| 04 | Documentation overhaul (README + `docs/` reference) | 🟦 In progress | — | [detail](steps/04-documentation.md) |
+| 04 | Documentation overhaul (README + `docs/` reference) | 🟦 In progress | #42 | [detail](steps/04-documentation.md) |
 
 Order: the CI must be green on the target runtimes before dependencies move (01 → 02); the release pipeline ships the result (03); the documentation describes the final state (04), though it may start earlier in parallel.
 
@@ -68,6 +69,7 @@ Order: the CI must be green on the target runtimes before dependencies move (01 
 - 2026-10-06 — Branch model, one dev/stable pair per major: `5-dev` is the integration branch (PR base, prereleases), `master` releases `latest` (5.x); `4-stable` and `4-dev` (both cut from `master` at 4.2.1) keep the 4.x line for maintenance. Supersedes the `master` + `beta` model first chosen the same day.
 - 2026-10-06 — Documentation lives in the repository: `README.md` for getting started, the full reference in `.md` files under `docs/`; no `doc/<major>/` tree on docs.kuzzle.io.
 - 2026-10-06 — Release channels: `master` → `latest`; `5-dev` → `5.x.y-beta.N` on dist-tag `beta`; `4-stable` → 4.x fixes on dist-tag `release-4.x` (maintenance range `4.x`). `4-dev` does not release. The release commit is pushed with the Kuzzle GitHub App token ([step 03](steps/03-semantic-release-oidc.md)).
+- 2026-10-06 — Exception to "no runtime behaviour change": bugs found while documenting are fixed (request hooks with `monitorRequestDuration: false`, manifest `kuzzleVersion`); new features, such as configurable request buckets, go to ADR-0002 ([step 04](steps/04-documentation.md)).
 
 ## Open points
 
