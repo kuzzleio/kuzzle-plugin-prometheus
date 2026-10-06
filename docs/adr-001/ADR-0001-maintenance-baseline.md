@@ -43,8 +43,8 @@ No change to the plugin's runtime behaviour or to its metrics is in scope: that 
 - Step 02 done (#38): Vitest, ESLint 10, TypeScript 6, Kuzzle peer `>=2.59.0 <3.0.0`; emitted JS unchanged.
 - Step 03 done (#40): semantic-release with npm trusted publishing; `5.0.0-beta.1` published from `5-dev` with provenance, no npm token.
 - Step 04 open: documentation overhaul.
-- Step 04: inventory done; two bugs it found fixed in #42.
-- **Next action:** merge #42, then write the README + `docs/` reference and the 4.x → 5.x upgrade guide from the step 04 inventory.
+- Step 04: inventory done; three bugs it found fixed (#42 and the docs PR); README + `docs/` reference written and checked on a live stack, in review.
+- **Next action:** merge the step 04 docs PR into `5-dev`, freeze step 04, then merge `5-dev` into `master` to release 5.0.0 and close this ADR.
 
 ## Steps
 

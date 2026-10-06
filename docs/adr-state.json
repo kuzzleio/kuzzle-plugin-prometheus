@@ -10,7 +10,7 @@
       "status": "active",
       "statusLabel": "🔵 Active · step 04 in progress",
       "openStep": "docs/adr-001/steps/04-documentation.md",
-      "nextAction": "Merge #42 (step 04 fixes), then write the README + docs/ reference (configuration, metrics, deployment, troubleshooting, development, upgrading) from the step 04 inventory.",
+      "nextAction": "Merge the step 04 docs PR into 5-dev, freeze step 04, then merge 5-dev into master to release 5.0.0 and close ADR-0001.",
       "blockers": [],
       "openPoints": [
         "NPM_TOKEN is no longer used by this repo: revoke it once no other repo depends on it"
