@@ -1,15 +1,23 @@
 name: Functional Tests
-description: Run Functional Tests
+description: Run the functional tests against the Docker Compose stack
+inputs:
+  node-version:
+    description: Node.js major of the kuzzle-runner image running Kuzzle
+    required: true
 runs:
   using: "composite"
   steps:
     - name: Run Docker Compose stack
-      run: docker compose up -d
+      run: docker compose up -d --wait
+      shell: bash
+      env:
+        NODE_VERSION: ${{ inputs.node-version }}
+    - name: Run tests
+      run: npm run test:functional
       shell: bash
     - name: Print logs from Docker Compose stack
       if: ${{ failure() }}
       run: docker compose logs
       shell: bash
-    - name: Run tests
-      run: npm run test:functional
-      shell: bash
+      env:
+        NODE_VERSION: ${{ inputs.node-version }}

@@ -7,10 +7,10 @@
       "id": "0001",
       "hub": "docs/adr-001/ADR-0001-maintenance-baseline.md",
       "title": "Maintenance baseline: Node 20/22/24, dependencies, release pipeline, docs",
-      "status": "accepted",
-      "statusLabel": "🟡 Accepted · no step started",
-      "openStep": null,
-      "nextAction": "Open step 01: Node 20/22/24 toolchain and CI (engines, test matrix on 20/22/24, ubuntu-24.04 runners, actions v4).",
+      "status": "active",
+      "statusLabel": "🔵 Active · step 01 in progress",
+      "openStep": "docs/adr-001/steps/01-node-toolchain-ci.md",
+      "nextAction": "Open the step 01 PR to 5-dev (Node 20/22/24 toolchain and CI) and get its CI matrix green.",
       "blockers": [],
       "openPoints": [
         "npm trusted publisher must be configured on npmjs.com by an org admin before step 03 can publish"
