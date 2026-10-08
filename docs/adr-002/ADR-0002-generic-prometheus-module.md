@@ -34,7 +34,7 @@ State observed on 2026-10-06:
 ### Decision
 
 1. **A new package, `kuzzle-prometheus`**, in a new repository `kuzzleio/kuzzle-prometheus` (as `kuzzle-logger`), with two entry points:
-   - `kuzzle-prometheus`: framework-agnostic. Registry, Node default metrics, `/metrics` HTTP handler, cluster aggregation, common labels, naming conventions. No dependency on Kuzzle.
+   - `kuzzle-prometheus`: framework-agnostic. Registry, Node default metrics, `/metrics` HTTP handler, common labels, naming conventions. No dependency on Kuzzle.
    - `kuzzle-prometheus/kuzzle`: the Kuzzle plugin (hooks, pipes, controller, Kuzzle metrics). Kuzzle is an optional peer dependency.
 2. **The plugin owns a module instance** and exposes it to the application, so that an app and its plugins declare their metrics on the same registry as the plugin.
 3. **Custom metrics go through a typed wrapper**: `counter`, `gauge` and `histogram`, typed on their labels. The wrapper applies the prefix and the common labels, and rejects label sets beyond a cardinality limit.
@@ -57,9 +57,7 @@ State observed on 2026-10-06:
 
 ## Cold start
 
-- Decision recorded on 2026-10-06. Step 01 done: the plugin compiles in `strict` (#53).
-- Step 02 done: `kuzzleio/kuzzle-prometheus` is bootstrapped (kuzzle-prometheus#1) and publishes to npm through OIDC trusted publishing (placeholder `0.0.0-bootstrap.0`; the first `feat` releases 1.0.0).
-- Step 03 done: the module and the plugin live in `kuzzle-prometheus` (`1.0.0-beta.1` on npm `beta`); this repository re-exports it (`5.1.0-beta.1`, #56) and keeps only the integration guide. Both betas validated on the demo stack.
+- Steps 01–03 done: the module and the plugin live in `kuzzle-prometheus` (`1.0.0-beta.3` on npm `beta`; npm `latest` is still the empty `0.0.0-bootstrap.0`); this repository re-exports it and keeps only the integration guide.
 - Step 04 open: pilot on the HTTP/TCP gateway, the first real service on the module.
 - Gateway migrated in a **draft** PR on its repository (kept as draft until the production versions), on `kuzzle-prometheus@1.0.0-beta.2` (gauge `collect` added for it): `/metrics` unchanged but for the common labels.
 - Ingestor and worker both validated end to end on the beta.
@@ -88,7 +86,7 @@ Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so t
 - 2026-10-06 — Business metrics live in their products; frontends out of scope.
 - 2026-10-06 — Enabled by default in `registerKIoTP`, opt-out with `plugins.prometheus.enabled: false`.
 - 2026-10-06 — `kuzzleio/kuzzle-prometheus` created (public, Apache-2.0, default branch `master`).
-- 2026-10-06 — Configurable request buckets are redone in the module; the 4.x branch `feat/add-request-duration-bucket-config` is a reference only.
+- 2026-10-06 — Configurable request buckets are redone in the module; the 4.x branch `feat/add-request-duration-bucket-config` (#36) is a reference only.
 - 2026-10-08 — `kuzzle-prometheus` publishes through npm OIDC trusted publishing, after a manual placeholder publish (`0.0.0-bootstrap.0`) ([step 02](steps/02-kuzzle-prometheus-repository.md)).
 - 2026-10-08 — `kuzzle-prometheus` releases betas from `1-dev`; `master` (1.0.0) after the beta is validated ([step 03](steps/03-module-extraction.md)).
 - 2026-10-08 — Documentation first, shipped in the package, with guides for agents: `docs/agents.md` (integrating) and `AGENTS.md` (contributing).
@@ -97,11 +95,15 @@ Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so t
 - 2026-10-08 — Plugin route is `GET /_/metrics`: the `kuzzle` chart's default path already matches, nothing to fix in step 05.
 - 2026-10-08 — Reference documentation lives in `kuzzle-prometheus`; this repository keeps an integration guide for a Kuzzle stack.
 - 2026-10-08 — No cluster aggregation in the module until a service needs it.
+- 2026-10-08 — Node 20 dropped in 5.1, a minor (supersedes #49's "in a major"): 5.x has no user, and Kuzzle 2.59 on Node 20 stays on 5.0.x.
+- 2026-10-08 — `plugin.metrics(request)` becomes `plugin.serveMetrics(request)` (`plugin.metrics` is now the application `Metrics`): kept in 5.1, documented in `docs/upgrading.md`.
 - 2026-10-08 — Step 03 closed on the demo stack validation; real-application validation through the gateway pilot (module), the plugin's before the `master` release ([step 03](steps/03-module-extraction.md)).
 
 ## Open points
 
-- Links from this repository to the `kuzzle-prometheus` docs point to its `1-dev` branch: switch them to `master` when 1.0.0 is released.
+- Cross-repository links point to dev branches: here to `kuzzle-prometheus`'s `1-dev` (switch at 1.0.0), there to this repository's `5-dev` (`README.md`, `docs/kuzzle.md`; switch at 5.1.0).
+- The plugin depends on `kuzzle-prometheus@1.0.0-beta.3` exactly: move it to `^1.0.0` once 1.0.0 is on `latest`, before merging `5-dev` into `master`.
+- At 1.0.0, remove the `bootstrap` dist-tag of `kuzzle-prometheus` and check that `latest` is 1.0.0.
 - The plugin beta is validated on the demo stack only: test it in a real Kuzzle application before releasing `kuzzle-prometheus` 1.0.0 and `kuzzle-plugin-prometheus` 5.1.0.
 
 ## References

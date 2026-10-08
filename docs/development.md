@@ -106,7 +106,7 @@ A release bumps `package.json`, writes `changelogs/CHANGELOG_<branch>.md`, pushe
 
 npm publication uses [trusted publishing](https://docs.npmjs.com/trusted-publishers): npm accepts the GitHub Actions OIDC token of `release.workflow.yml` and attaches a provenance attestation; there is no npm token. Renaming that workflow file breaks publication until the trusted publisher setting on npmjs.com is updated.
 
-`4-stable` releases only once it has its own copy of `.releaserc.json` and of the release workflow, and only after `master` has published 5.0.0.
+`4-stable` releases only once it has its own copy of `.releaserc.json` and of the release workflow.
 
 To preview the next version locally, without publishing (needs Node ≥ 22.14, from a checkout of a release branch, with push access to the repository):
 
