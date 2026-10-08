@@ -19,7 +19,7 @@ The HTTP/TCP ingestion gateway, a Node service outside Kuzzle, exposes its metri
 - 2026-10-08 — Step opened.
 - 2026-10-08 — Inventory: 18 metrics (ingestor, worker, one shared gauge), all compliant with the naming rules; labels `protocol`, `reason`, `result`, all bounded; `inc` / `dec` / `set` / `startTimer` used as the module offers them; histograms on the default buckets, which the module keeps. One gap: two gauges set at scrape time through `prom-client`'s `collect`.
 - 2026-10-08 — Module: gauge `collect` callback (kuzzle-prometheus#5, `1.0.0-beta.2`), sync or async, a failure logged without failing the scrape.
-- 2026-10-08 — Gateway migrated: its Fastify plugin creates the instance (`prefix: "gateway_"`, `service` per app) and serves `render()`; metrics declared on it with unchanged names; `prom-client` removed. PR opened on the gateway's repository, on `kuzzle-prometheus@1.0.0-beta.2`.
+- 2026-10-08 — Gateway migrated: its Fastify plugin creates the instance (`prefix: "gateway_"`, `service` per app) and serves `render()`; metrics declared on it with unchanged names; `prom-client` removed. Draft PR opened on the gateway's repository, on `kuzzle-prometheus@1.0.0-beta.2`: it stays a draft until the production versions (1.0.0, then without the `minimumReleaseAgeExclude` entry).
 
 ## Local decisions / gotchas
 

@@ -61,8 +61,8 @@ State observed on 2026-10-06:
 - Step 02 done: `kuzzleio/kuzzle-prometheus` is bootstrapped (kuzzle-prometheus#1) and publishes to npm through OIDC trusted publishing (placeholder `0.0.0-bootstrap.0`; the first `feat` releases 1.0.0).
 - Step 03 done: the module and the plugin live in `kuzzle-prometheus` (`1.0.0-beta.1` on npm `beta`); this repository re-exports it (`5.1.0-beta.1`, #56) and keeps only the integration guide. Both betas validated on the demo stack.
 - Step 04 open: pilot on the HTTP/TCP gateway, the first real service on the module.
-- Gateway migrated in a PR on its repository, on `kuzzle-prometheus@1.0.0-beta.2` (gauge `collect` added for it): `/metrics` unchanged but for the common labels.
-- **Next action:** get the gateway PR reviewed and merged, run the worker against a Kuzzle, then close step 04.
+- Gateway migrated in a **draft** PR on its repository (kept as draft until the production versions), on `kuzzle-prometheus@1.0.0-beta.2` (gauge `collect` added for it): `/metrics` unchanged but for the common labels.
+- **Next action:** run the gateway worker against a Kuzzle; the PR is finalised on `kuzzle-prometheus` 1.0.0.
 
 ## Steps
 
