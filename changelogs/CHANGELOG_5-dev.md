@@ -1,3 +1,9 @@
+## [5.1.0-beta.1](https://github.com/kuzzleio/kuzzle-plugin-prometheus/compare/v5.0.0...v5.1.0-beta.1) (2026-10-08)
+
+### Features
+
+* the plugin is now kuzzle-prometheus/kuzzle ([6963307](https://github.com/kuzzleio/kuzzle-plugin-prometheus/commit/6963307c3f50c7cf3cd4109a1749e626eff06a6c))
+
 ## [5.0.0-beta.3](https://github.com/kuzzleio/kuzzle-plugin-prometheus/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2026-10-06)
 
 ### Bug Fixes
