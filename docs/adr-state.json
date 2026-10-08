@@ -19,12 +19,13 @@
       "hub": "docs/adr-002/ADR-0002-generic-prometheus-module.md",
       "title": "Generic Prometheus module, and the Kuzzle plugin built on it",
       "status": "active",
-      "statusLabel": "🟦 Step 03 · module extraction",
-      "openStep": "docs/adr-002/steps/03-module-extraction.md",
-      "nextAction": "Merge the re-export PR (kuzzle-plugin-prometheus 5.1.0-beta), validate both betas in a Kuzzle application, then close step 03.",
+      "statusLabel": "🟦 Step 04 · gateway pilot",
+      "openStep": "docs/adr-002/steps/04-gateway-pilot.md",
+      "nextAction": "Inventory the HTTP/TCP gateway's metrics (names, types, labels) and check them against the module's naming rules before migrating it to kuzzle-prometheus.",
       "blockers": [],
       "openPoints": [
-        "Doc links to kuzzle-prometheus point to its 1-dev branch: switch them to master when 1.0.0 is released."
+        "Doc links to kuzzle-prometheus point to its 1-dev branch: switch them to master when 1.0.0 is released.",
+        "Plugin beta validated on the demo stack only: test it in a real Kuzzle application before releasing kuzzle-prometheus 1.0.0 and kuzzle-plugin-prometheus 5.1.0."
       ]
     }
   ]

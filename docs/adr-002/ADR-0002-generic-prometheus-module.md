@@ -59,8 +59,9 @@ State observed on 2026-10-06:
 
 - Decision recorded on 2026-10-06. Step 01 done: the plugin compiles in `strict` (#53).
 - Step 02 done: `kuzzleio/kuzzle-prometheus` is bootstrapped (kuzzle-prometheus#1) and publishes to npm through OIDC trusted publishing (placeholder `0.0.0-bootstrap.0`; the first `feat` releases 1.0.0).
-- Step 03 open: the module and the plugin are in `kuzzle-prometheus` (`1.0.0-beta.1` on npm `beta`); this repository re-exports it and keeps only the integration guide.
-- **Next action:** merge the re-export PR (publishes `kuzzle-plugin-prometheus` 5.1.0-beta), validate both betas in a Kuzzle application, then close step 03.
+- Step 03 done: the module and the plugin live in `kuzzle-prometheus` (`1.0.0-beta.1` on npm `beta`); this repository re-exports it (`5.1.0-beta.1`, #56) and keeps only the integration guide. Both betas validated on the demo stack.
+- Step 04 open: pilot on the HTTP/TCP gateway, the first real service on the module.
+- **Next action:** inventory the gateway's metrics (names, types, labels) and check them against the module's naming rules before migrating.
 
 ## Steps
 
@@ -68,8 +69,8 @@ State observed on 2026-10-06:
 | --- | --- | --- | --- | --- |
 | 01 | TypeScript `strict` on the current code | ✅ Done | #53 | [detail](steps/01-typescript-strict.md) |
 | 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | ✅ Done | kuzzle-prometheus#1 | [detail](steps/02-kuzzle-prometheus-repository.md) |
-| 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | 🟦 In progress | kuzzle-prometheus#2, #3, #4 | [detail](steps/03-module-extraction.md) |
-| 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | ⬜ To do | — | — |
+| 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | ✅ Done | kuzzle-prometheus#2, #3, #4, #56 | [detail](steps/03-module-extraction.md) |
+| 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | 🟦 In progress | — | [detail](steps/04-gateway-pilot.md) |
 | 05 | PaaS: pod discovery in Alloy, first Kuzzle alert rules in Cockpit | ⬜ To do | — | — |
 | 06 | IoT platform: plugin loaded by default in `registerKIoTP`, opt-out, templates updated | ⬜ To do | — | — |
 
@@ -94,10 +95,12 @@ Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so t
 - 2026-10-08 — Plugin route is `GET /_/metrics`: the `kuzzle` chart's default path already matches, nothing to fix in step 05.
 - 2026-10-08 — Reference documentation lives in `kuzzle-prometheus`; this repository keeps an integration guide for a Kuzzle stack.
 - 2026-10-08 — No cluster aggregation in the module until a service needs it.
+- 2026-10-08 — Step 03 closed on the demo stack validation; real-application validation through the gateway pilot (module), the plugin's before the `master` release ([step 03](steps/03-module-extraction.md)).
 
 ## Open points
 
 - Links from this repository to the `kuzzle-prometheus` docs point to its `1-dev` branch: switch them to `master` when 1.0.0 is released.
+- The plugin beta is validated on the demo stack only: test it in a real Kuzzle application before releasing `kuzzle-prometheus` 1.0.0 and `kuzzle-plugin-prometheus` 5.1.0.
 
 ## References
 
