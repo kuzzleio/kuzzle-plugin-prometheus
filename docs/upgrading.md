@@ -1,5 +1,31 @@
 # Upgrading
 
+## From 5.0 to 5.1
+
+The plugin's code moved to [`kuzzle-prometheus`](https://github.com/kuzzleio/kuzzle-prometheus) (its `kuzzle-prometheus/kuzzle` entry point); this package re-exports it. Metric names, routes, configuration keys and their defaults do not change.
+
+### What changes
+
+| | 5.0 | 5.1 |
+| --- | --- | --- |
+| Node.js | `^20.19.0`, `^22.12.0` or `^24.0.0` | `^22.12.0` or `^24.0.0` |
+| Prometheus client | `prom-client` 15.1.3 | `@prometheus-io/client` 0.16 (its successor), through `kuzzle-prometheus` |
+| Request duration buckets | fixed | `core.requestDurationBuckets` (same default) |
+| Application metrics | not supported | `plugin.metrics.counter()` / `gauge()` / `histogram()`, see [Kuzzle plugin → Application metrics](https://github.com/kuzzleio/kuzzle-prometheus/blob/1-dev/docs/kuzzle.md#application-metrics) |
+| Common labels | — | `labels.project` / `environment` / `service`, or the `KUZZLE_PROMETHEUS_*` variables |
+
+New series, which do not affect existing dashboards: `nodejs_eventloop_utilization_summary` and `nodejs_eventloop_utilization_histogram`, and `kuzzle_prometheus_label_sets_rejected_total` once an application metric drops label combinations.
+
+The order of the labels in the text output of the histograms changed (`nodeId` and your labels before `action`, `controller`…). Prometheus identifies a series by its label set: queries, dashboards and alerts are not affected; only a tool comparing raw text lines would be.
+
+### Steps
+
+1. **Node.js**: run Kuzzle on Node.js 22.12+ or 24. To stay on Node.js 20, pin `kuzzle-plugin-prometheus@~5.0`.
+2. **Plugin**: `npm install kuzzle-plugin-prometheus@^5.1`. The code registering the plugin and its configuration stay the same.
+3. **Check**: `curl "http://<node>:7512/_metrics?format=prometheus"` on each node returns the same metric names as before.
+
+New applications can depend on `kuzzle-prometheus` and import `PrometheusPlugin` from `kuzzle-prometheus/kuzzle`: it is the same class.
+
 ## From 4.x to 5.x
 
 Version 5.0.0 is a maintenance release. It is a major version because it raises the runtime requirements; the plugin's behaviour, metrics and configuration do not change.
@@ -44,7 +70,7 @@ To stay on 4.x for now, pin `kuzzle-plugin-prometheus@^4`. Future 4.x fixes, if 
 Version 4.0.0 changed how metrics are collected and reported:
 
 - The plugin uses Kuzzle's `server:metrics` API action to read Kuzzle's metrics. Calling it with `format=prometheus` returns them in the Prometheus format.
-- The configuration gives more control (see [Configuration](configuration.md)):
+- The configuration gives more control:
   - the event loop sampling precision and the garbage collection buckets of the Node.js metrics are configurable;
   - Kuzzle metrics and Node.js metrics have separate prefixes;
   - the `nodeIP`, `nodeMAC` and `nodeHost` labels are removed in favour of `nodeId`;

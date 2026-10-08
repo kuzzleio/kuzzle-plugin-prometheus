@@ -21,11 +21,10 @@
       "status": "active",
       "statusLabel": "🟦 Step 03 · module extraction",
       "openStep": "docs/adr-002/steps/03-module-extraction.md",
-      "nextAction": "Move MetricService and its tests into kuzzle-prometheus as the framework-agnostic `.` entry point, on @prometheus-io/client.",
+      "nextAction": "Merge the re-export PR (kuzzle-plugin-prometheus 5.1.0-beta), validate both betas in a Kuzzle application, then close step 03.",
       "blockers": [],
       "openPoints": [
-        "Kuzzle Helm chart metrics path (/_/metrics) vs the plugin route: confirm before the PaaS step.",
-        "kuzzle-prometheus bot App issue/label permissions unchecked: the Release failure issue could not be created."
+        "Doc links to kuzzle-prometheus point to its 1-dev branch: switch them to master when 1.0.0 is released."
       ]
     }
   ]
