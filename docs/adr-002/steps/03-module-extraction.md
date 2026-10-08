@@ -1,8 +1,8 @@
 # Step 03 — Extract the module into `kuzzle-prometheus`
 
-**Status:** 🟦 In progress
-**Dates:** 2026-10-08 → …
-**PR(s):** [kuzzle-prometheus#2](https://github.com/kuzzleio/kuzzle-prometheus/pull/2), [kuzzle-prometheus#3](https://github.com/kuzzleio/kuzzle-prometheus/pull/3), [kuzzle-prometheus#4](https://github.com/kuzzleio/kuzzle-prometheus/pull/4), this repository's re-export PR
+**Status:** ✅ Done
+**Dates:** 2026-10-08 → 2026-10-08
+**PR(s):** [kuzzle-prometheus#2](https://github.com/kuzzleio/kuzzle-prometheus/pull/2), [kuzzle-prometheus#3](https://github.com/kuzzleio/kuzzle-prometheus/pull/3), [kuzzle-prometheus#4](https://github.com/kuzzleio/kuzzle-prometheus/pull/4), [#56](https://github.com/kuzzleio/kuzzle-plugin-prometheus/pull/56)
 **ADR:** [ADR-0002](../ADR-0002-generic-prometheus-module.md)
 
 ## Goal
@@ -30,7 +30,8 @@
 - 2026-10-08 — Plugin `./kuzzle` (kuzzle-prometheus#3): `PrometheusPlugin` moved with its routes, metric names, configuration keys and defaults; `plugin.metrics` for application metrics (constructor options `prefix`, `maxLabelSets`); `core.requestDurationBuckets`; warnings through Kuzzle's logger; unit tests on the rendered text; functional tests against a real Kuzzle from `src/` (Docker Compose, CI on Node 22 and 24); docs `kuzzle.md`, `kuzzle-metrics.md`.
 - 2026-10-08 — `kuzzle-prometheus@1.0.0-beta.1` published on `beta` (#2 and #3 merged together, see gotchas), with provenance; the bot tagged, released, commented and labelled the PRs.
 - 2026-10-08 — Documentation split (kuzzle-prometheus#4 and this repository): the reference (configuration, metrics, troubleshooting) lives in `kuzzle-prometheus`; this repository keeps one [integration guide](../../kuzzle-stack.md) (rights, Prometheus, Kubernetes, Grafana, local stack) linking to it. `docs/configuration.md`, `metrics.md` and `troubleshooting.md` removed here; `deployment.md` became `kuzzle-stack.md`.
-- 2026-10-08 — This repository: `lib/` and its unit tests removed; `index.ts` re-exports `kuzzle-prometheus/kuzzle` (dependency `kuzzle-prometheus@1.0.0-beta.1`); `lodash` and `prom-client` dropped; Node `^22.12.0 || ^24.0.0`, CI matrices without Node 20; `upgrading.md` gains 5.0 → 5.1.
+- 2026-10-08 — This repository: `lib/` and its unit tests removed; `index.ts` re-exports `kuzzle-prometheus/kuzzle` (dependency `kuzzle-prometheus@1.0.0-beta.1`); `lodash` and `prom-client` dropped; Node `^22.12.0 || ^24.0.0`, CI matrices without Node 20; `upgrading.md` gains 5.0 → 5.1 (#56, published as `kuzzle-plugin-prometheus@5.1.0-beta.1` on `beta`).
+- 2026-10-08 — Both betas validated on this repository's Docker Compose stack (see Validation). Step closed; the test in a real application moves to step 04 (module) and stays an open point for the plugin.
 
 ## Local decisions / gotchas
 
@@ -50,3 +51,8 @@
 
 - `kuzzle-prometheus`: `npm test` (lint, types, 38 unit tests), functional tests 6/6 locally (Node 24) and in CI (Node 22, 24); `npm pack --dry-run` ships `dist/` and `docs/`.
 - `kuzzle-plugin-prometheus`: build, lint, unit tests 2/2, functional tests 4/4 against `kuzzle-prometheus@1.0.0-beta.1` (unchanged since 5.0), doc budgets.
+- Demo stack (3 Kuzzle 2.59.0 nodes with `kuzzle-plugin-prometheus@5.1.0-beta.1` → `kuzzle-prometheus@1.0.0-beta.1`, Prometheus, Grafana):
+  - `/_metrics?format=prometheus` and `/_/metrics` answer `200` in the Prometheus text format;
+  - Prometheus scrapes the 3 nodes, each exposing only its own series, with `project`, `environment` and `nodeId`; request counts per node and status match the traffic sent;
+  - an application counter declared on `plugin.metrics` (with `prefix`) is exposed with the same labels; with `maxLabelSets: 3`, extra combinations are dropped, counted in `kuzzle_prometheus_label_sets_rejected_total` and warned once per node in Kuzzle's logs;
+  - every panel query of both Grafana dashboards returns data.
