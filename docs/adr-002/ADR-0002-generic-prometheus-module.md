@@ -71,8 +71,8 @@ State observed on 2026-10-06:
 | 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | ✅ Done | kuzzle-prometheus#1 | [detail](steps/02-kuzzle-prometheus-repository.md) |
 | 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | ✅ Done | kuzzle-prometheus#2, #3, #4, #56 | [detail](steps/03-module-extraction.md) |
 | 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | 🟦 In progress | kuzzle-prometheus#5 | [detail](steps/04-gateway-pilot.md) |
-| 05 | PaaS: pod discovery in Alloy, first Kuzzle alert rules in Cockpit | ⬜ To do | — | — |
-| 06 | IoT platform: plugin loaded by default in `registerKIoTP`, opt-out, templates updated | ⬜ To do | — | — |
+| 05 | PaaS: pod discovery in Alloy, first Kuzzle alert rules in Cockpit | ⬜ To do | — | #62 |
+| 06 | IoT platform: plugin loaded by default in `registerKIoTP`, opt-out, templates updated | ⬜ To do | — | #63 (templates: #50) |
 
 Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so that the default only ships once the metrics are collected.
 
@@ -100,6 +100,8 @@ Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so t
 - 2026-10-08 — Step 03 closed on the demo stack validation; real-application validation through the gateway pilot (module), the plugin's before the `master` release ([step 03](steps/03-module-extraction.md)).
 
 ## Open points
+
+The release sequence below is tracked in kuzzle-prometheus#8.
 
 - Cross-repository links point to dev branches: here to `kuzzle-prometheus`'s `1-dev` (switch at 1.0.0), there to this repository's `5-dev` (`README.md`, `docs/kuzzle.md`; switch at 5.1.0).
 - The plugin depends on `kuzzle-prometheus@1.0.0-beta.3` exactly: move it to `^1.0.0` once 1.0.0 is on `latest`, before merging `5-dev` into `master`.
