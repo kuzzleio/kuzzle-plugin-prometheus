@@ -1,3 +1,10 @@
+## [5.1.0-beta.2](https://github.com/kuzzleio/kuzzle-plugin-prometheus/compare/v5.1.0-beta.1...v5.1.0-beta.2) (2026-10-08)
+
+### Bug Fixes
+
+* **deps:** kuzzle-prometheus 1.0.0-beta.2 ([e0e174d](https://github.com/kuzzleio/kuzzle-plugin-prometheus/commit/e0e174debbfe7849f81ca814fd18e98e1e199486))
+* **deps:** kuzzle-prometheus 1.0.0-beta.3 ([fa64c61](https://github.com/kuzzleio/kuzzle-plugin-prometheus/commit/fa64c61aa0babfb10bae1d5f4b417ead45e0cd09))
+
 ## [5.1.0-beta.1](https://github.com/kuzzleio/kuzzle-plugin-prometheus/compare/v5.0.0...v5.1.0-beta.1) (2026-10-08)
 
 ### Features

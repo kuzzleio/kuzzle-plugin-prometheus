@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-plugin-prometheus",
-  "version": "5.1.0-beta.1",
+  "version": "5.1.0-beta.2",
   "description": "Kuzzle plugin: monitoring Kuzzle using Prometheus",
   "author": {
     "name": "The Kuzzle Team <support@kuzzle.io>"
