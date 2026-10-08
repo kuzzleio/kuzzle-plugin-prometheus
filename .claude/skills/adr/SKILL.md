@@ -7,7 +7,7 @@ description: Structure, split and maintain Architecture Decision Records (ADR) i
 
 An ADR in this repo is **not** a frozen one-shot decision record: it is a **living document** that tracks an effort end to end. Left unstructured it fuses three documents of different natures and bloats every session. This skill keeps them separated.
 
-Ported from `kuzzleio/kuzzle` (`kuzzle-adr` skill, itself ported from paas-console). Their reference implementation is Kuzzle's `docs/adr-003/`: match its shape. This repo's own first ADR is [`docs/adr-001/`](../../../docs/adr-001/ADR-0001-maintenance-baseline.md).
+Ported from `kuzzleio/kuzzle` (`kuzzle-adr` skill, itself ported from another Kuzzle project). Their reference implementation is Kuzzle's `docs/adr-003/`: match its shape. This repo's own first ADR is [`docs/adr-001/`](../../../docs/adr-001/ADR-0001-maintenance-baseline.md).
 
 ## The three natures to separate
 
@@ -78,7 +78,7 @@ Whole file ≤ 8 KB, digest ≤ 2 500 chars. If something does not fit, it belon
 
 ## Budgets — what keeps this structure from regrowing
 
-On Kuzzle and paas-console, freshly compacted hubs were back past 100 KB within days: every pass appended a dated report and nothing bounded it. Here [`docs/doc-budgets.json`](../../../docs/doc-budgets.json) does, checked by `node .ci/scripts/check-doc-budgets.ts` on every PR (job `doc-budgets`, blocking) and by a non-blocking `PostToolUse` hook (`.claude/settings.json`) right after an edit. Roles: `living` (re-read at every resume → bounded), `archive` (write-once → exempt, but flagged when it grows in a PR), `exempt` (generated, legal, or product docs).
+On Kuzzle and another Kuzzle project, freshly compacted hubs were back past 100 KB within days: every pass appended a dated report and nothing bounded it. Here [`docs/doc-budgets.json`](../../../docs/doc-budgets.json) does, checked by `node .ci/scripts/check-doc-budgets.ts` on every PR (job `doc-budgets`, blocking) and by a non-blocking `PostToolUse` hook (`.claude/settings.json`) right after an edit. Roles: `living` (re-read at every resume → bounded), `archive` (write-once → exempt, but flagged when it grows in a PR), `exempt` (generated, legal, or product docs).
 
 | File | Budget | When it overflows |
 | --- | --- | --- |

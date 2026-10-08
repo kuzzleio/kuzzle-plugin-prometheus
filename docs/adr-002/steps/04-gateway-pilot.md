@@ -21,6 +21,8 @@ The HTTP/TCP ingestion gateway, a Node service outside Kuzzle, exposes its metri
 - 2026-10-08 — Module: gauge `collect` callback (kuzzle-prometheus#5, `1.0.0-beta.2`), sync or async, a failure logged without failing the scrape.
 - 2026-10-08 — Gateway migrated: its Fastify plugin creates the instance (`prefix: "gateway_"`, `service` per app) and serves `render()`; metrics declared on it with unchanged names; `prom-client` removed. Draft PR opened on the gateway's repository, on `kuzzle-prometheus@1.0.0-beta.2`: it stays a draft until the production versions (1.0.0, then without the `minimumReleaseAgeExclude` entry).
 
+- 2026-10-08 — Review pass on both repositories before the real-application test: the plugin moves to `kuzzle-prometheus@1.0.0-beta.2` (it was on beta.1, without the gauge `collect`); `docs/upgrading.md` documents the plugin API change and pins Node 20 users to `~5.0`.
+
 ## Local decisions / gotchas
 
 - **Names unchanged versus naming rules**: the module enforces snake_case, `_total` on counters and no common label in `labelNames` at declaration. Inventory the gateway's metrics first; a name the rules reject needs a decision (rename, which breaks dashboards, or a change in the module) before migrating. Outcome: every name complies.

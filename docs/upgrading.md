@@ -2,7 +2,7 @@
 
 ## From 5.0 to 5.1
 
-The plugin's code moved to [`kuzzle-prometheus`](https://github.com/kuzzleio/kuzzle-prometheus) (its `kuzzle-prometheus/kuzzle` entry point); this package re-exports it. Metric names, routes, configuration keys and their defaults do not change.
+The plugin's code moved to [`kuzzle-prometheus`](https://github.com/kuzzleio/kuzzle-prometheus) (its `kuzzle-prometheus/kuzzle` entry point); this package re-exports it. Metric names, routes, configuration keys and their defaults do not change; one TypeScript-level change concerns code that calls the plugin directly, see [Plugin API](#plugin-api).
 
 ### What changes
 
@@ -12,11 +12,22 @@ The plugin's code moved to [`kuzzle-prometheus`](https://github.com/kuzzleio/kuz
 | Prometheus client | `prom-client` 15.1.3 | `@prometheus-io/client` 0.16 (its successor), through `kuzzle-prometheus` |
 | Request duration buckets | fixed | `core.requestDurationBuckets` (same default) |
 | Application metrics | not supported | `plugin.metrics.counter()` / `gauge()` / `histogram()`, see [Kuzzle plugin → Application metrics](https://github.com/kuzzleio/kuzzle-prometheus/blob/1-dev/docs/kuzzle.md#application-metrics) |
-| Common labels | — | `labels.project` / `environment` / `service`, or the `KUZZLE_PROMETHEUS_*` variables |
+| Common labels | `labels`, any name | same, plus the reserved names `project` / `environment` / `service` and the `KUZZLE_PROMETHEUS_*` variables |
 
 New series, which do not affect existing dashboards: `nodejs_eventloop_utilization_summary` and `nodejs_eventloop_utilization_histogram`, and `kuzzle_prometheus_label_sets_rejected_total` once an application metric drops label combinations.
 
 The order of the labels in the text output of the histograms changed (`nodeId` and your labels before `action`, `controller`…). Prometheus identifies a series by its label set: queries, dashboards and alerts are not affected; only a tool comparing raw text lines would be.
+
+### Plugin API
+
+Only code that uses the `PrometheusPlugin` instance itself is affected; registering it with `app.plugin.use()` and configuring it do not change.
+
+| | 5.0 | 5.1 |
+| --- | --- | --- |
+| `plugin.metrics` | method `metrics(request)`: the handler of `GET /_/metrics` | the `Metrics` instance for application metrics; the handler is renamed `serveMetrics(request)` |
+| `plugin.config.labels` | `JSONObject` | `Record<string, string>`: values are converted to strings |
+
+Replace calls to `plugin.metrics(request)` with `plugin.serveMetrics(request)`.
 
 ### Steps
 
@@ -32,7 +43,7 @@ Version 5.0.0 is a maintenance release. It is a major version because it raises 
 
 ### What changes
 
-| | 4.x | 5.x |
+| | 4.x | 5.0 |
 | --- | --- | --- |
 | Node.js | not declared | `^20.19.0`, `^22.12.0` or `^24.0.0` (`engines`) |
 | Kuzzle | `>=2.16.9 <3`, checked at load only | `>=2.59.0 <3.0.0`, checked at load and declared as a **peer dependency** |
@@ -57,10 +68,10 @@ Version 5.0.0 is a maintenance release. It is a major version because it raises 
 3. **Plugin**:
 
    ```sh
-   npm install kuzzle-plugin-prometheus@^5
+   npm install kuzzle-plugin-prometheus@~5.0
    ```
 
-   Nothing else: the code registering the plugin and its configuration stay the same.
+   Nothing else: the code registering the plugin and its configuration stay the same. Once on Node.js 22.12+ or 24, continue with [From 5.0 to 5.1](#from-50-to-51).
 4. **Check**: `curl "http://<node>:7512/_metrics?format=prometheus"` on each node returns the same metric names as before.
 
 To stay on 4.x for now, pin `kuzzle-plugin-prometheus@^4`. Future 4.x fixes, if any, will be published under the npm dist-tag `release-4.x`.
