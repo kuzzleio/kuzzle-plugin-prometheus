@@ -31,4 +31,5 @@ The HTTP/TCP ingestion gateway, a Node service outside Kuzzle, exposes its metri
 ## Validation
 
 - Gateway: types, lint, format, 27 tests.
-- Ingestor run against RabbitMQ with HTTP and TCP traffic, `/metrics` compared with `main`: same names, labels, buckets and values; added: `service="ingestor"`, the event loop utilization metrics, and the Prometheus `Content-Type`. Rerun on the published `1.0.0-beta.2`: same result, `collect` gauges set. The worker needs a Kuzzle: compiled, not run.
+- Ingestor run against RabbitMQ with HTTP and TCP traffic, `/metrics` compared with `main`: same names, labels, buckets and values; added: `service="ingestor"`, the event loop utilization metrics, and the Prometheus `Content-Type`. Rerun on the published `1.0.0-beta.2`: same result, `collect` gauges set.
+- Worker run in Docker (the gateway's `Dockerfile.dev`) against RabbitMQ and this repository's demo Kuzzle 2.59: every worker metric recorded with `service="worker"` (consumed, parse duration, invalid, dead-lettered, Kuzzle query duration and outcome, requeued, backoff, RabbitMQ connection). Outside Docker, `tsx` on Node 24.11 fails on a `kuzzle-sdk` named import, on the gateway's `main` too: unrelated to the migration.
