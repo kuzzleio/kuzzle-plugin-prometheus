@@ -61,7 +61,8 @@ State observed on 2026-10-06:
 - Step 02 done: `kuzzleio/kuzzle-prometheus` is bootstrapped (kuzzle-prometheus#1) and publishes to npm through OIDC trusted publishing (placeholder `0.0.0-bootstrap.0`; the first `feat` releases 1.0.0).
 - Step 03 done: the module and the plugin live in `kuzzle-prometheus` (`1.0.0-beta.1` on npm `beta`); this repository re-exports it (`5.1.0-beta.1`, #56) and keeps only the integration guide. Both betas validated on the demo stack.
 - Step 04 open: pilot on the HTTP/TCP gateway, the first real service on the module.
-- **Next action:** inventory the gateway's metrics (names, types, labels) and check them against the module's naming rules before migrating.
+- Gateway migrated in a **draft** PR on its repository (kept as draft until the production versions), on `kuzzle-prometheus@1.0.0-beta.2` (gauge `collect` added for it): `/metrics` unchanged but for the common labels.
+- **Next action:** run the gateway worker against a Kuzzle; the PR is finalised on `kuzzle-prometheus` 1.0.0.
 
 ## Steps
 
@@ -70,7 +71,7 @@ State observed on 2026-10-06:
 | 01 | TypeScript `strict` on the current code | ✅ Done | #53 | [detail](steps/01-typescript-strict.md) |
 | 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | ✅ Done | kuzzle-prometheus#1 | [detail](steps/02-kuzzle-prometheus-repository.md) |
 | 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | ✅ Done | kuzzle-prometheus#2, #3, #4, #56 | [detail](steps/03-module-extraction.md) |
-| 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | 🟦 In progress | — | [detail](steps/04-gateway-pilot.md) |
+| 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | 🟦 In progress | kuzzle-prometheus#5 | [detail](steps/04-gateway-pilot.md) |
 | 05 | PaaS: pod discovery in Alloy, first Kuzzle alert rules in Cockpit | ⬜ To do | — | — |
 | 06 | IoT platform: plugin loaded by default in `registerKIoTP`, opt-out, templates updated | ⬜ To do | — | — |
 
