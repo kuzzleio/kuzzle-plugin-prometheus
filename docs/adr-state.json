@@ -21,7 +21,7 @@
       "status": "active",
       "statusLabel": "🟦 Step 04 · gateway pilot",
       "openStep": "docs/adr-002/steps/04-gateway-pilot.md",
-      "nextAction": "Inventory the HTTP/TCP gateway's metrics (names, types, labels) and check them against the module's naming rules before migrating it to kuzzle-prometheus.",
+      "nextAction": "Get the gateway migration PR reviewed and merged, run its worker against a Kuzzle, then close step 04.",
       "blockers": [],
       "openPoints": [
         "Doc links to kuzzle-prometheus point to its 1-dev branch: switch them to master when 1.0.0 is released.",
