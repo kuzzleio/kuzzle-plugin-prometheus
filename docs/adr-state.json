@@ -25,7 +25,7 @@
       "blockers": [],
       "openPoints": [
         "Plugin beta validated on the demo stack only: test it in a real Kuzzle application before releasing kuzzle-prometheus 1.0.0 and kuzzle-plugin-prometheus 5.1.0.",
-        "The plugin pins kuzzle-prometheus 1.0.0-beta.2: move it to ^1.0.0 once 1.0.0 is on latest, before merging 5-dev into master.",
+        "The plugin pins kuzzle-prometheus 1.0.0-beta.3: move it to ^1.0.0 once 1.0.0 is on latest, before merging 5-dev into master.",
         "At 1.0.0: remove the bootstrap dist-tag of kuzzle-prometheus (latest is still 0.0.0-bootstrap.0) and check latest.",
         "Cross-repo links point to dev branches (here 1-dev, in kuzzle-prometheus 5-dev): switch them to master at each release."
       ]

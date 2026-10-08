@@ -57,7 +57,7 @@ State observed on 2026-10-06:
 
 ## Cold start
 
-- Steps 01–03 done: the module and the plugin live in `kuzzle-prometheus` (`1.0.0-beta.2` on npm `beta`; npm `latest` is still the empty `0.0.0-bootstrap.0`); this repository re-exports it and keeps only the integration guide.
+- Steps 01–03 done: the module and the plugin live in `kuzzle-prometheus` (`1.0.0-beta.3` on npm `beta`; npm `latest` is still the empty `0.0.0-bootstrap.0`); this repository re-exports it and keeps only the integration guide.
 - Step 04 open: pilot on the HTTP/TCP gateway, the first real service on the module.
 - Gateway migrated in a **draft** PR on its repository (kept as draft until the production versions), on `kuzzle-prometheus@1.0.0-beta.2` (gauge `collect` added for it): `/metrics` unchanged but for the common labels.
 - Ingestor and worker both validated end to end on the beta.
@@ -102,7 +102,7 @@ Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so t
 ## Open points
 
 - Cross-repository links point to dev branches: here to `kuzzle-prometheus`'s `1-dev` (switch at 1.0.0), there to this repository's `5-dev` (`README.md`, `docs/kuzzle.md`; switch at 5.1.0).
-- The plugin depends on `kuzzle-prometheus@1.0.0-beta.2` exactly: move it to `^1.0.0` once 1.0.0 is on `latest`, before merging `5-dev` into `master`.
+- The plugin depends on `kuzzle-prometheus@1.0.0-beta.3` exactly: move it to `^1.0.0` once 1.0.0 is on `latest`, before merging `5-dev` into `master`.
 - At 1.0.0, remove the `bootstrap` dist-tag of `kuzzle-prometheus` and check that `latest` is 1.0.0.
 - The plugin beta is validated on the demo stack only: test it in a real Kuzzle application before releasing `kuzzle-prometheus` 1.0.0 and `kuzzle-plugin-prometheus` 5.1.0.
 
