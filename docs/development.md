@@ -2,24 +2,26 @@
 
 ## Prerequisites
 
-- Node.js 24 (`.nvmrc`; `nvm use`). The plugin supports 20.19+, 22.12+ and 24; CI tests all three.
+- Node.js 24 (`.nvmrc`; `nvm use`). The plugin supports 22.12+ and 24; CI tests both.
 - Docker with Compose v2, for the local stack and the functional tests.
 
 ```sh
 npm ci
-npm run build   # tsc: emits index.js, lib/**/*.js and their .d.ts next to the sources
+npm run build   # tsc: emits index.js and index.d.ts
 ```
+
+## Where the code lives
+
+The plugin's code is in [`kuzzle-prometheus`](https://github.com/kuzzleio/kuzzle-prometheus) (`src/kuzzle/`), with its unit and functional tests: a fix or a feature goes there first (see its `AGENTS.md`), then reaches this package through a bump of the `kuzzle-prometheus` dependency. This repository holds the re-export, the integration guide, the Grafana dashboards, the local stack, and the ADRs of the effort.
 
 ## Repository layout
 
 | Path | Content |
 | --- | --- |
-| `index.ts` | Package entry point: re-exports `lib/PrometheusPlugin`. |
-| `lib/PrometheusPlugin.ts` | The Kuzzle plugin: default configuration, the `server:afterMetrics` pipe, the request hooks, the `prometheus:metrics` action (`GET /_/metrics`). |
-| `lib/services/MetricService.ts` | The prom-client registries and metrics: Kuzzle gauges, request histogram, Node.js metrics. |
+| `index.ts` | Package entry point: re-exports `kuzzle-prometheus/kuzzle`. |
 | `application/app.ts` | The Kuzzle application of the local stack: the plugin, plus a `testing:failure` action that always fails (500), to produce errors. |
-| `tests/unit/` | Unit tests (Vitest), with a mocked Kuzzle context. |
-| `tests/functional/` | Functional tests (Vitest) against the running stack, over HTTP and WebSocket. |
+| `tests/unit/` | Checks the re-export (Vitest). The plugin's unit tests live in `kuzzle-prometheus`. |
+| `tests/functional/` | Functional tests (Vitest) against the running stack, over HTTP and WebSocket: they guard the contract (metric names, routes, labels) of the released package. |
 | `config/` | Configuration of the local stack: `kuzzlerc` (plugin configuration), `prometheus.yml`, Grafana datasource and dashboards. |
 | `docs/` | This documentation, and the ADRs (`docs/adr-<n>/`). |
 | `changelogs/` | Changelogs per release channel, written by semantic-release. Do not edit. |
@@ -35,7 +37,7 @@ docker compose up -d --wait
 | Service | Role | Address |
 | --- | --- | --- |
 | `kuzzle-installer` | runs `npm ci` in the mounted repository, then exits | — |
-| `kuzzle` | Kuzzle running `application/app.ts` with `tsx watch`: a change in `lib/` restarts it | through Traefik |
+| `kuzzle` | Kuzzle running `application/app.ts` with `tsx watch` | through Traefik |
 | `traefik` | load balancer in front of the Kuzzle replicas | <http://localhost:7512> (HTTP, WebSocket), `localhost:1883` (MQTT) |
 | `elasticsearch`, `redis` | Kuzzle's storage | `localhost:9200`, `localhost:6379` |
 | `prometheus` | scrapes the Kuzzle containers directly (`config/prometheus.yml`) | <http://localhost:9090> |
@@ -49,7 +51,7 @@ docker compose up -d --wait --scale kuzzle=3
 
 Then make requests (`curl http://localhost:7512/_now`, the Admin Console, an SDK) and watch the dashboards. `GET http://localhost:7512/_/testing/failure` produces a 500.
 
-The Kuzzle image follows `NODE_VERSION` (20, 22 or 24; default 24): `NODE_VERSION=20 docker compose up -d --wait`. The images are `kuzzleio/kuzzle-runner:<major>-trixie-slim`: the bookworm-based tags lack the glibc 2.38 that Kuzzle 2.59's uWebSockets.js needs.
+The Kuzzle image follows `NODE_VERSION` (22 or 24; default 24): `NODE_VERSION=22 docker compose up -d --wait`. The images are `kuzzleio/kuzzle-runner:<major>-trixie-slim`: the bookworm-based tags lack the glibc 2.38 that Kuzzle 2.59's uWebSockets.js needs.
 
 Stop with `docker compose down`.
 
@@ -70,7 +72,7 @@ On macOS, the host cannot run the functional tests once the stack has installed 
 docker compose exec -T kuzzle npx vitest run --project functional
 ```
 
-CI (`.github/workflows/tests.workflow.yml`) runs the lint on Node 24, and the unit and functional tests on Node 20, 22 and 24, on every pull request and on every push to a development or release branch.
+CI (`.github/workflows/tests.workflow.yml`) runs the lint on Node 24, and the unit and functional tests on Node 22 and 24, on every pull request and on every push to a development or release branch.
 
 ## Branches
 

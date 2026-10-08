@@ -14,7 +14,7 @@ The Kuzzle team runs three kinds of Node.js stacks on its PaaS (Scaleway Kuberne
 State observed on 2026-10-06:
 
 - **This plugin** binds its collection and exposition logic (`lib/services/MetricService.ts`, `prom-client` registry, default and request metrics) to the Kuzzle plugin API (`lib/PrometheusPlugin.ts`). Nothing in it can be reused by a non-Kuzzle service.
-- **No application metric is collected on the PaaS.** In each cluster a Grafana Alloy instance scrapes infrastructure targets (cAdvisor, kube-state-metrics, blackbox probes, Redis) and `remote_write`s them to Scaleway Cockpit, whose ruler evaluates the alert rules. Alloy has no discovery of annotated pods. The `prometheus.io/*` annotations set by the `kuzzle` Helm chart are therefore ignored, and their default path (`/_/metrics`) does not seem to match this plugin's route (`/_/prometheus/metrics`).
+- **No application metric is collected on the PaaS.** In each cluster a Grafana Alloy instance scrapes infrastructure targets (cAdvisor, kube-state-metrics, blackbox probes, Redis) and `remote_write`s them to Scaleway Cockpit, whose ruler evaluates the alert rules. Alloy has no discovery of annotated pods. The `prometheus.io/*` annotations set by the `kuzzle` Helm chart are therefore ignored; their default path (`/_/metrics`) is the plugin's route (corrected in step 03: this line first said `/_/prometheus/metrics`).
 - **Adoption**: only the PaaS console's own API loads the plugin (4.2.1). The IoT platform, Hypervision and their project templates do not. The console already injects `kuzzle_plugins__prometheus__labels__{project,environment}` into every customer backend, which has no effect while the plugin is not loaded. Version 5.0.0, released on the same day, has no known user.
 - **Other Node services**: the HTTP/TCP gateway exposes its own `prom-client` metrics (`gateway_ingestor_*`) through a Fastify plugin. The MQTT gateway exposes none.
 - **`prom-client` 15.1.3 is deprecated on npm** ("replaced by `@prometheus-io/client`"). Its successor (0.16.x) requires Node `^22 || ^24 || >=26`. Every production image already runs Node 22 or 24.
@@ -59,8 +59,8 @@ State observed on 2026-10-06:
 
 - Decision recorded on 2026-10-06. Step 01 done: the plugin compiles in `strict` (#53).
 - Step 02 done: `kuzzleio/kuzzle-prometheus` is bootstrapped (kuzzle-prometheus#1) and publishes to npm through OIDC trusted publishing (placeholder `0.0.0-bootstrap.0`; the first `feat` releases 1.0.0).
-- Step 03 open: nothing extracted yet.
-- **Next action:** move `MetricService` and its tests into `kuzzle-prometheus` as the framework-agnostic `.` entry point, on `@prometheus-io/client`.
+- Step 03 open: the module and the plugin are in `kuzzle-prometheus` (`1.0.0-beta.1` on npm `beta`); this repository re-exports it and keeps only the integration guide.
+- **Next action:** merge the re-export PR (publishes `kuzzle-plugin-prometheus` 5.1.0-beta), validate both betas in a Kuzzle application, then close step 03.
 
 ## Steps
 
@@ -68,9 +68,9 @@ State observed on 2026-10-06:
 | --- | --- | --- | --- | --- |
 | 01 | TypeScript `strict` on the current code | ✅ Done | #53 | [detail](steps/01-typescript-strict.md) |
 | 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | ✅ Done | kuzzle-prometheus#1 | [detail](steps/02-kuzzle-prometheus-repository.md) |
-| 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | 🟦 In progress | — | [detail](steps/03-module-extraction.md) |
+| 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | 🟦 In progress | kuzzle-prometheus#2, #3, #4 | [detail](steps/03-module-extraction.md) |
 | 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | ⬜ To do | — | — |
-| 05 | PaaS: pod discovery in Alloy, `kuzzle` chart path fix, first Kuzzle alert rules in Cockpit | ⬜ To do | — | — |
+| 05 | PaaS: pod discovery in Alloy, first Kuzzle alert rules in Cockpit | ⬜ To do | — | — |
 | 06 | IoT platform: plugin loaded by default in `registerKIoTP`, opt-out, templates updated | ⬜ To do | — | — |
 
 Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so that the default only ships once the metrics are collected.
@@ -87,10 +87,17 @@ Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so t
 - 2026-10-06 — `kuzzleio/kuzzle-prometheus` created (public, Apache-2.0, default branch `master`).
 - 2026-10-06 — Configurable request buckets are redone in the module; the 4.x branch `feat/add-request-duration-bucket-config` is a reference only.
 - 2026-10-08 — `kuzzle-prometheus` publishes through npm OIDC trusted publishing, after a manual placeholder publish (`0.0.0-bootstrap.0`) ([step 02](steps/02-kuzzle-prometheus-repository.md)).
+- 2026-10-08 — `kuzzle-prometheus` releases betas from `1-dev`; `master` (1.0.0) after the beta is validated ([step 03](steps/03-module-extraction.md)).
+- 2026-10-08 — Documentation first, shipped in the package, with guides for agents: `docs/agents.md` (integrating) and `AGENTS.md` (contributing).
+- 2026-10-08 — Common labels from `KUZZLE_PROMETHEUS_{PROJECT,ENVIRONMENT,SERVICE}` (options win), left out when empty.
+- 2026-10-08 — Cardinality limit drops new label combinations (warn once, counter), never throws at runtime; declaration errors throw at startup.
+- 2026-10-08 — Plugin route is `GET /_/metrics`: the `kuzzle` chart's default path already matches, nothing to fix in step 05.
+- 2026-10-08 — Reference documentation lives in `kuzzle-prometheus`; this repository keeps an integration guide for a Kuzzle stack.
+- 2026-10-08 — No cluster aggregation in the module until a service needs it.
 
 ## Open points
 
-- The `kuzzle` chart's metrics path: confirm the actual route before fixing it (step 05).
+- Links from this repository to the `kuzzle-prometheus` docs point to its `1-dev` branch: switch them to `master` when 1.0.0 is released.
 
 ## References
 
