@@ -21,7 +21,7 @@
       "status": "active",
       "statusLabel": "🟦 Step 04 · gateway pilot",
       "openStep": "docs/adr-002/steps/04-gateway-pilot.md",
-      "nextAction": "Run the gateway worker against a Kuzzle; the gateway's draft PR is finalised on kuzzle-prometheus 1.0.0.",
+      "nextAction": "Test the plugin in a real Kuzzle application, release kuzzle-prometheus 1.0.0, then move the gateway's draft PR to it and close step 04.",
       "blockers": [],
       "openPoints": [
         "Doc links to kuzzle-prometheus point to its 1-dev branch: switch them to master when 1.0.0 is released.",
