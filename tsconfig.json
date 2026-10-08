@@ -17,7 +17,6 @@
     "types": ["node"]
   },
   "include": [
-    "lib/**/*.ts",
     "index.ts"
   ],
   "exclude": [

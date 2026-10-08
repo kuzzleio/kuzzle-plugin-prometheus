@@ -1,7 +1,7 @@
 name: Tests
 
 # Reusable: the same checks gate pull requests and every push to a dev or
-# release branch. Node 20, 22 and 24 are the supported runtimes (ADR-0001);
+# release branch. Node 22 and 24 are the supported runtimes (ADR-0002);
 # lint does not depend on the runtime, so it runs once, on 24.
 on:
   workflow_call:
@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["20", "22", "24"]
+        node-version: ["22", "24"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["20", "22", "24"]
+        node-version: ["22", "24"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

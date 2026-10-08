@@ -1,9 +1,8 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  // The build emits lib/**/*.js next to the sources: resolve the .ts first,
-  // or a test would load a stale compiled module alongside its source (two
-  // copies of each class, `instanceof` failing across them).
+  // The build emits index.js next to index.ts: resolve the .ts first, or a
+  // test would load a stale compiled module alongside its source.
   resolve: {
     extensions: [".ts", ".mts", ".mjs", ".js", ".json"],
   },
