@@ -13,11 +13,12 @@
     "prod": "node application/app.js",
     "prepack": "npm run build",
     "dev": "tsx watch --inspect=0.0.0.0:9229 application/app.ts",
-    "test": "npm run test:lint && npm run test:unit && npm run test:functional",
+    "test": "npm run test:lint && npm run test:types && npm run test:unit && npm run test:functional",
     "test:unit": "vitest run --project unit",
     "test:functional": "vitest run --project functional",
     "test:lint": "eslint .",
     "test:lint:fix": "eslint . --fix",
+    "test:types": "tsc -p tsconfig.check.json",
     "build": "tsc --build tsconfig.json",
     "clean": "touch index.ts && npm run build | grep TSFILE | cut -d' ' -f 2 | xargs rm",
     "package:create": "npm run build && npm pack"
@@ -48,8 +49,7 @@
     "kuzzle": "2.59.0",
     "tsx": "4.23.15",
     "typescript": "6.0.3",
-    "vitest": "4.1.11",
-    "ws": "8.22.0"
+    "vitest": "4.1.11"
   },
   "files": [
     "index.js",

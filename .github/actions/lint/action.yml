@@ -1,5 +1,5 @@
-name: ESLint
-description: Run ESLint
+name: Lint
+description: Run ESLint and the TypeScript check
 runs:
   using: "composite"
   steps:
@@ -8,3 +8,4 @@ runs:
       run: |
            npm ci
            npm run test:lint
+           npm run test:types

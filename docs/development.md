@@ -62,9 +62,10 @@ Stop with `docker compose down`.
 | Command | What it runs |
 | --- | --- |
 | `npm run test:lint` | ESLint 10 with [`eslint-plugin-kuzzle`](https://github.com/kuzzleio/eslint-plugin-kuzzle) and its Prettier style (`npm run test:lint:fix` fixes what it can). |
+| `npm run test:types` | TypeScript check of the plugin, the demo application and the tests (`tsconfig.check.json`); the build only covers `index.ts`. |
 | `npm run test:unit` | Vitest, project `unit`. No stack needed. |
 | `npm run test:functional` | Vitest, project `functional`, against the stack on `localhost:7512`, which must be up. |
-| `npm test` | All three. |
+| `npm test` | All four. |
 
 On macOS, the host cannot run the functional tests once the stack has installed Linux binaries; run them in the container:
 
@@ -72,7 +73,7 @@ On macOS, the host cannot run the functional tests once the stack has installed 
 docker compose exec -T kuzzle npx vitest run --project functional
 ```
 
-CI (`.github/workflows/tests.workflow.yml`) runs the lint on Node 24, and the unit and functional tests on Node 22 and 24, on every pull request and on every push to a development or release branch.
+CI (`.github/workflows/tests.workflow.yml`) runs the lint and the TypeScript check on Node 24, and the unit and functional tests on Node 22 and 24, on every pull request and on every push to a development or release branch.
 
 ## Branches
 
