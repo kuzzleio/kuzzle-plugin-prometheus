@@ -65,7 +65,7 @@ Stop with `docker compose down`.
 | `npm run test:types` | TypeScript check of the plugin, the demo application and the tests (`tsconfig.check.json`); the build only covers `index.ts`. |
 | `npm run test:unit` | Vitest, project `unit`. No stack needed. |
 | `npm run test:functional` | Vitest, project `functional`, against the stack on `localhost:7512`, which must be up. |
-| `npm test` | All three. |
+| `npm test` | All four. |
 
 On macOS, the host cannot run the functional tests once the stack has installed Linux binaries; run them in the container:
 
