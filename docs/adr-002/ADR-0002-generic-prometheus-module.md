@@ -58,16 +58,17 @@ State observed on 2026-10-06:
 ## Cold start
 
 - Decision recorded on 2026-10-06. Step 01 done: the plugin compiles in `strict` (#53).
-- Step 02 open: `kuzzleio/kuzzle-prometheus` is bootstrapped (kuzzle-prometheus#1: entry points, TypeScript `strict`, Node 22/24 CI, release workflow). Nothing is published on npm yet.
-- **Next action:** set up npm publishing for `kuzzle-prometheus` (first manual publish, trusted publisher, bot App installed), close step 02, then open step 03.
+- Step 02 done: `kuzzleio/kuzzle-prometheus` is bootstrapped (kuzzle-prometheus#1) and publishes to npm through OIDC trusted publishing (placeholder `0.0.0-bootstrap.0`; the first `feat` releases 1.0.0).
+- Step 03 open: nothing extracted yet.
+- **Next action:** move `MetricService` and its tests into `kuzzle-prometheus` as the framework-agnostic `.` entry point, on `@prometheus-io/client`.
 
 ## Steps
 
 | # | Step | Status | PR(s) | Detail |
 | --- | --- | --- | --- | --- |
 | 01 | TypeScript `strict` on the current code | ✅ Done | #53 | [detail](steps/01-typescript-strict.md) |
-| 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | 🟦 In progress | kuzzle-prometheus#1 | [detail](steps/02-kuzzle-prometheus-repository.md) |
-| 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | ⬜ To do | — | — |
+| 02 | Create `kuzzleio/kuzzle-prometheus` with the ADR-0001 baseline (CI, semantic-release, OIDC publishing), modelled on `kuzzle-logger` | ✅ Done | kuzzle-prometheus#1 | [detail](steps/02-kuzzle-prometheus-repository.md) |
+| 03 | Extract the module into it (`.` + `./kuzzle`), move to `@prometheus-io/client`, typed API, common labels, configurable request buckets; `kuzzle-plugin-prometheus` 5.x re-exports it | 🟦 In progress | — | [detail](steps/03-module-extraction.md) |
 | 04 | Pilot: migrate the HTTP/TCP gateway to the module, metric names unchanged | ⬜ To do | — | — |
 | 05 | PaaS: pod discovery in Alloy, `kuzzle` chart path fix, first Kuzzle alert rules in Cockpit | ⬜ To do | — | — |
 | 06 | IoT platform: plugin loaded by default in `registerKIoTP`, opt-out, templates updated | ⬜ To do | — | — |
@@ -85,6 +86,7 @@ Order: 01 → 02 → 03. Then 04 and 05 can run in parallel. 06 comes last, so t
 - 2026-10-06 — Enabled by default in `registerKIoTP`, opt-out with `plugins.prometheus.enabled: false`.
 - 2026-10-06 — `kuzzleio/kuzzle-prometheus` created (public, Apache-2.0, default branch `master`).
 - 2026-10-06 — Configurable request buckets are redone in the module; the 4.x branch `feat/add-request-duration-bucket-config` is a reference only.
+- 2026-10-08 — `kuzzle-prometheus` publishes through npm OIDC trusted publishing, after a manual placeholder publish (`0.0.0-bootstrap.0`) ([step 02](steps/02-kuzzle-prometheus-repository.md)).
 
 ## Open points
 
