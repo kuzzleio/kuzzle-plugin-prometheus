@@ -1,5 +1,4 @@
 import { assert, test } from "vitest";
-import { WebSocket } from "ws";
 
 const host = "localhost:7512";
 
@@ -37,10 +36,10 @@ test('Trying to fetch Prometheus formatted metrics from server:metrics with the 
 
 test('Trying to fetch Prometheus formatted metrics from server:metrics with the format parameter set to "prometheus" through WebSocket', async () => {
   const connection = new WebSocket(`ws://${host}`);
-  let result;
+  let data: string | undefined;
 
   connection.onmessage = (message) => {
-    result = message.data;
+    data = String(message.data);
     connection.close();
   };
 
@@ -54,11 +53,12 @@ test('Trying to fetch Prometheus formatted metrics from server:metrics with the 
     );
   };
 
-  while (connection.readyState !== WebSocket.CLOSED && !result) {
+  while (connection.readyState !== WebSocket.CLOSED && !data) {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
-  result = JSON.parse(result);
+  assert(data !== undefined);
+  const result = JSON.parse(data);
   assert(typeof result === "object");
   assert(typeof result.result.api === "object");
   assert(result.node !== undefined);
