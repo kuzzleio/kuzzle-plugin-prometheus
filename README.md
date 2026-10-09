@@ -1,3 +1,8 @@
+> [!WARNING]
+> **Deprecated.** `kuzzle-plugin-prometheus` is replaced by [**`kuzzle-prometheus`**](https://github.com/kuzzleio/kuzzle-prometheus): its Kuzzle plugin is the `kuzzle-prometheus/kuzzle` entry point, with the same metrics, routes and configuration. This repository is archived; 4.2.1 is the last version and receives no further fixes.
+>
+> To migrate, follow [Migrating from kuzzle-plugin-prometheus](https://github.com/kuzzleio/kuzzle-prometheus/blob/1-dev/docs/migrating-from-kuzzle-plugin-prometheus.md). The documentation below describes 4.2.1.
+
 <p align="center">
   <img src="https://user-images.githubusercontent.com/7868838/58807296-115aa100-8618-11e9-910f-8e2e1f3a893d.png"/>
 </p>
